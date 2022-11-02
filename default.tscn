@@ -1,0 +1,102 @@
+[gd_scene load_steps=10 format=2]
+
+[ext_resource path="res://addons/kenney_prototypes/assets/colors/light/scenes/prototype_light_04.tscn" type="PackedScene" id=1]
+[ext_resource path="res://entities/Player/Player.tscn" type="PackedScene" id=2]
+[ext_resource path="res://debug_cam.gd" type="Script" id=3]
+[ext_resource path="res://PlayerInput.gd" type="Script" id=4]
+[ext_resource path="res://CameraTarget.gd" type="Script" id=5]
+[ext_resource path="res://addons/kenney_prototypes/assets/colors/dark/textures/texture_04.png" type="Texture" id=6]
+
+[sub_resource type="Environment" id=1]
+background_mode = 1
+background_color = Color( 0.631373, 0.913725, 1, 1 )
+fog_enabled = true
+fog_color = Color( 0.631373, 0.913725, 1, 1 )
+fog_depth_end = 50.0
+
+[sub_resource type="SpatialMaterial" id=3]
+albedo_texture = ExtResource( 6 )
+uv1_triplanar = true
+
+[sub_resource type="BoxShape" id=2]
+
+[node name="Default" type="Spatial"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="."]
+transform = Transform( 0.875861, -0.228919, 0.424811, 0, 0.88032, 0.47438, -0.482564, -0.415491, 0.771038, 0, 8.40226, 0 )
+light_color = Color( 1, 0.992157, 0.937255, 1 )
+light_energy = 1.5
+shadow_enabled = true
+shadow_color = Color( 0.215686, 0.396078, 0.584314, 1 )
+
+[node name="PrototypeCube" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2, 0, 0, 0, 2, 0, 0, 0, 2, 1, 0, 1 )
+
+[node name="PrototypeCube4" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2, 0, 0, 0, 2.6, 0, 0, 0, 2, 1, 0, 11 )
+
+[node name="PrototypeCube5" parent="." instance=ExtResource( 1 )]
+transform = Transform( 2, 0, 0, 0, 2.6, 0, 0, 0, 2, 7.99489, 0, 11 )
+
+[node name="PrototypeCube6" parent="." instance=ExtResource( 1 )]
+transform = Transform( 1.84786, 0, 1.65089, 0, 3.03128, 0, -1.56594, 0, 1.94811, 9.59072, -9.53674e-07, 9.60137 )
+
+[node name="PrototypeCube7" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.237537, 0, 3.89984, 0, 3.82443, 0, -2.41046, 0, 0.384307, 9.25979, -9.53674e-07, 7.26341 )
+
+[node name="PrototypeCube3" parent="." instance=ExtResource( 1 )]
+transform = Transform( 0.52, 0, 0, 0, 0.3, 0, 0, 0, 3.20045, 3, 3.39362, 5 )
+
+[node name="Ground" type="CSGBox" parent="."]
+material_override = SubResource( 3 )
+use_collision = true
+width = 100.0
+height = 0.05
+depth = 100.0
+
+[node name="RigidBody" type="RigidBody" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 6.21222, 13.8642 )
+mass = 10.0
+
+[node name="CSGBox" type="CSGBox" parent="RigidBody"]
+
+[node name="CollisionShape" type="CollisionShape" parent="RigidBody"]
+shape = SubResource( 2 )
+
+[node name="Camera" type="Camera" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.92366, 7.8294, 11.4469 )
+script = ExtResource( 3 )
+target_path = NodePath("../CameraTarget")
+look_at = true
+
+[node name="Player1" parent="." groups=["player"] instance=ExtResource( 2 )]
+transform = Transform( -4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 2.38588, 5.64459, 2.92725 )
+
+[node name="PlayerInput" type="Spatial" parent="Player1"]
+script = ExtResource( 4 )
+move_left_action = "player_1_move_left"
+move_right_action = "player_1_move_right"
+move_forward_action = "player_1_move_forward"
+move_backward_action = "player_1_move_backward"
+jump_action = "player_1_jump"
+start_hosting_abseil_action = "player_1_start_hosting_abseil"
+
+[node name="Player2" parent="." groups=["player"] instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -5.30136, 0.92801, 1.84102 )
+player_index = 1
+
+[node name="PlayerInput" type="Spatial" parent="Player2"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 1.78001, 0, 0 )
+script = ExtResource( 4 )
+move_left_action = "player_2_move_left"
+move_right_action = "player_2_move_right"
+move_forward_action = "player_2_move_forward"
+move_backward_action = "player_2_move_backward"
+jump_action = "player_2_jump"
+start_hosting_abseil_action = "player_2_start_hosting_abseil"
+
+[node name="CameraTarget" type="Position3D" parent="."]
+script = ExtResource( 5 )
