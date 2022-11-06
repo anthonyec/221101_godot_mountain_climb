@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=2]
+
+[sub_resource type="CapsuleMesh" id=27]
+radius = 0.025
+mid_height = 0.5
+
+[sub_resource type="CapsuleShape" id=28]
+radius = 0.2
+height = 0.5
+
+[node name="Segment" type="RigidBody"]
+collision_mask = 2
+mass = 2.0
+can_sleep = false
+linear_damp = 1.0
+angular_damp = 1.0
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+mesh = SubResource( 27 )
+skeleton = NodePath("../..")
+
+[node name="CollisionShape" type="CollisionShape" parent="."]
+shape = SubResource( 28 )

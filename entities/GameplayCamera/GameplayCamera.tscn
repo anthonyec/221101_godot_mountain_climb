@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://entities/GameplayCamera/GameplayCamera.gd" type="Script" id=1]
+
+[node name="GameplayCamera" type="Spatial"]
+script = ExtResource( 1 )
+target_path = NodePath("../CameraTarget")
+pitch = 45.0
+
+[node name="Rig" type="Spatial" parent="."]
+unique_name_in_owner = true
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+
+[node name="Camera" type="Camera" parent="Rig"]
+unique_name_in_owner = true
