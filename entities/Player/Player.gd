@@ -160,39 +160,19 @@ func start_hosting_abseil() -> void:
 	if state != "move" or !is_on_floor():
 		return
 	
-	var space_state = get_world().direct_space_state
-	var result_down = space_state.intersect_ray(global_transform.origin - global_transform.basis.z, global_transform.origin - global_transform.basis.z - (Vector3.UP * 2))
-	var result_in = space_state.intersect_ray(global_transform.origin - global_transform.basis.z - (Vector3.UP * 2), (global_transform.origin - global_transform.basis.z - (Vector3.UP * 2) + global_transform.basis.z))
 	
-	DebugDraw.draw_line_3d(global_transform.origin - global_transform.basis.z, global_transform.origin - global_transform.basis.z - (Vector3.UP * 2), Color.red)
-	DebugDraw.draw_line_3d(global_transform.origin - global_transform.basis.z - (Vector3.UP * 2), (global_transform.origin - global_transform.basis.z - (Vector3.UP * 2) + global_transform.basis.z), Color.red)
+	var abseil = load("res://entities/Rope/Rope.tscn")
+	var abseil_instance: Spatial = abseil.instance()
 	
-	if result_down.empty() and !result_in.empty():
-		look_at(global_transform.origin + result_in.normal, Vector3.UP)
-		global_rotation.x = 0
-		global_rotation.z = 0
-		
-		
-		var abseil = load("res://entities/Rope/Rope.tscn")
-		var abseil_instance: Spatial = abseil.instance()
-		
-		abseil_instance.global_rotation = global_rotation
-		abseil_instance.root_attachment = get_path()
-		get_parent().add_child(abseil_instance)
-		
-		
-		var vertical_distance_from_player = global_transform.origin.y - result_in.position.y
-		
-		abseil_instance.global_transform.origin = result_in.position
-		abseil_instance.global_transform.origin.y = abseil_instance.global_transform.origin.y + vertical_distance_from_player
-		
-		global_transform.origin.x = result_in.position.x
-		global_transform.origin.z = result_in.position.z
-		global_transform.origin = global_transform.origin + (global_transform.basis.z * 1)
-		
-		objects_in_possession.append(abseil_instance)
-		state = "abseil_host"
-		
+	abseil_instance.global_rotation = global_rotation
+	abseil_instance.root_attachment = get_path()
+	get_parent().add_child(abseil_instance)
+	
+	abseil_instance.global_transform.origin = global_transform.origin
+	
+	objects_in_possession.append(abseil_instance)
+	state = "abseil_host"
+	
 func remove_objects_in_posession() -> void:
 	for index in objects_in_possession.size():
 		var object = objects_in_possession[index]
