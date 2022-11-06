@@ -109,12 +109,12 @@ mesh = SubResource( 4 )
 material/0 = ExtResource( 1 )
 
 [node name="MeshInstance20" type="MeshInstance" parent="PrototypeWorld"]
-transform = Transform( 2.01679, 0, 0, 0, 2.01679, 0, 0, 0, 2.01679, 2.94658, 2.04789, -7.55251 )
+transform = Transform( 2.01679, 0, 0, 0, 2.01679, 0, 0, 0, 2.01679, 2.94658, 2.04789, -6.99211 )
 mesh = SubResource( 4 )
 material/0 = ExtResource( 1 )
 
 [node name="CollisionShape20" type="CollisionShape" parent="PrototypeWorld"]
-transform = Transform( 2.01679, 0, 0, 0, 2.01679, 0, 0, 0, 2.01679, 2.94658, 2.04789, -7.55251 )
+transform = Transform( 2.01679, 0, 0, 0, 2.01679, 0, 0, 0, 2.01679, 2.94658, 2.04789, -6.99211 )
 shape = SubResource( 26 )
 
 [node name="CollisionShape" type="CollisionShape" parent="PrototypeWorld"]

@@ -3,9 +3,9 @@ extends KinematicBody
 
 export var player_index: int = 0
 export var gravity: float = 20
-export var jump_strength: float = 9
+export var jump_strength: float = 5
 export var rotation_speed: float = 20
-export var walk_speed: float = 4
+export var walk_speed: float = 5
 export var climb_speed: float = 2
 export var state: String = "move"
 
@@ -35,6 +35,11 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("start_hosting_abseil_" + String(player_index)):
 		start_hosting_abseil()
+		
+	if event.is_action_pressed("shout_" + String(player_index)):
+		SFX.play_attached_to_node("voice/woman_shout_{%n}", self, {
+			"unit_db": 12
+		})
 
 func abseil_host_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
@@ -46,15 +51,35 @@ func abseil_host_state(delta: float):
 	movement = move_and_slide_with_snap(movement, snap_vector, Vector3.UP, true)
 	
 	var segment: RigidBody = objects_in_possession[0].get_middle_segment()
+	var position = objects_in_possession[0].get_position_on_rope(2)
 	
+	DebugDraw.draw_box(position, Vector3(0.1, 0.1, 0.1), Color.red)
 	face_towards(segment.global_transform.origin)
-	
+
+var distance_on_rope: float = 0	
+
 func abseil_climb_state(delta: float):
-	movement.x = 0
-	movement.z = 0
-	movement.y = (-input_direction.y) * climb_speed
-	movement = move_and_slide(movement, Vector3.UP)
-	print(input_direction, ", ", movement.y)
+	if !objects_in_possession[0]:
+		objects_in_possession.clear()
+		state = "moving"
+	
+	if input_direction.y < 0:
+		distance_on_rope = distance_on_rope - 0.01
+	if input_direction.y > 0:
+		distance_on_rope = distance_on_rope + 0.01
+		
+	var segment: RigidBody = objects_in_possession[0].get_closest_segment(global_transform.origin)
+	
+	if input_direction.x < 0:	
+		segment.add_central_force(-global_transform.basis.x * 50)
+	if input_direction.x > 0:
+		segment.add_central_force(global_transform.basis.x * 50)
+	
+	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
+	DebugDraw.draw_box(head_position, Vector3(0.1, 0.1, 0.1), Color.red)
+	
+	look_at(head_position, Vector3.UP)
+	global_transform.origin = objects_in_possession[0].get_position_on_rope(distance_on_rope)
 	
 func grab_state(delta):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
@@ -76,7 +101,7 @@ var into_jump_movement: Vector3 = Vector3.ZERO
 
 func jumping_state(delta: float):
 	if into_jump_movement == Vector3.ZERO:
-		into_jump_movement = movement * 1.2
+		into_jump_movement = movement * 1.5
 	
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
@@ -131,12 +156,29 @@ func move_state(delta: float):
 	var current_facing_direction = global_transform.basis.z
 	var angle_difference = current_facing_direction.signed_angle_to((direction * -1), Vector3.UP)
 	
+	if Input.is_action_just_pressed("grab_" + String(player_index)):
+		var rope = get_parent().get_node_or_null("Rope")
+		
+		if rope == null:
+			return
+			
+		var segment = rope.get_closest_segment(global_transform.origin)
+		var segment_index = rope.get_closest_segment_index(global_transform.origin)
+		
+		if segment.global_transform.origin.distance_to(global_transform.origin) < 2:
+			var distance = rope.get_distance_on_rope_from_segment(segment_index)
+			
+			distance_on_rope = distance
+			objects_in_possession.append(rope)
+			state = "abseil_climb"	
+	
 	if is_on_floor() and Input.is_action_just_pressed("jump_" + String(player_index)):
 		movement.y = jump_strength
 		snap_vector = Vector3.ZERO
 		state = "jumping"
 		
-	rotate(global_transform.basis.y, angle_difference * rotation_speed * delta)
+#	rotate(global_transform.basis.y, angle_difference * rotation_speed * delta)
+	face_towards(global_transform.origin + direction)
 	movement = move_and_slide_with_snap(movement, snap_vector, Vector3.UP, true)
 
 func end_abseil(end_position: Vector3) -> void:
@@ -164,6 +206,7 @@ func start_hosting_abseil() -> void:
 	var abseil = load("res://entities/Rope/Rope.tscn")
 	var abseil_instance: Spatial = abseil.instance()
 	
+	abseil_instance.name = "Rope"
 	abseil_instance.global_rotation = global_rotation
 	abseil_instance.root_attachment = get_path()
 	get_parent().add_child(abseil_instance)

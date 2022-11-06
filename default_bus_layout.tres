@@ -2,6 +2,7 @@
 
 [sub_resource type="AudioEffectReverb" id=1]
 resource_name = "Reverb"
+damping = 0.8
 
 [resource]
 bus/0/effect/0/effect = SubResource( 1 )
