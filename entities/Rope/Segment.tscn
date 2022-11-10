@@ -1,23 +1,25 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://dug5iqwtidq4l"]
 
-[sub_resource type="CapsuleMesh" id=27]
+[sub_resource type="CapsuleMesh" id="27"]
 radius = 0.025
-mid_height = 0.5
+height = 0.5
 
-[sub_resource type="CapsuleShape" id=28]
+[sub_resource type="CapsuleShape3D" id="28"]
 radius = 0.2
 height = 0.5
 
-[node name="Segment" type="RigidBody"]
-collision_mask = 2
+[node name="Segment" type="RigidBody3D"]
+collision_layer = 4
 mass = 2.0
 can_sleep = false
 linear_damp = 1.0
 angular_damp = 1.0
 
-[node name="MeshInstance" type="MeshInstance" parent="."]
-mesh = SubResource( 27 )
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("27")
 skeleton = NodePath("../..")
 
-[node name="CollisionShape" type="CollisionShape" parent="."]
-shape = SubResource( 28 )
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+shape = SubResource("28")

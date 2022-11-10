@@ -2,14 +2,14 @@
 
 [ext_resource path="res://entities/GameplayCamera/GameplayCamera.gd" type="Script" id=1]
 
-[node name="GameplayCamera" type="Spatial"]
+[node name="GameplayCamera" type="Node3D"]
 script = ExtResource( 1 )
 target_path = NodePath("../CameraTarget")
 pitch = 45.0
 
-[node name="Rig" type="Spatial" parent="."]
+[node name="Rig" type="Node3D" parent="."]
 unique_name_in_owner = true
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
+transform = Transform3D( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0 )
 
-[node name="Camera" type="Camera" parent="Rig"]
+[node name="Camera3D" type="Camera3D" parent="Rig"]
 unique_name_in_owner = true

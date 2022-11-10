@@ -1,4 +1,4 @@
-extends Position3D
+extends Marker3D
 
 func _process(delta: float) -> void:
 	var player_1 = get_parent().get_node("Player1")

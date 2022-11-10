@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/woman_shout_5.wav-64d227a134081c1fbb62b3aa04f1d4c8.sample"
+type="AudioStreamWAV"
+uid="uid://bboookosh67h8"
+path="res://.godot/imported/woman_shout_5.wav-64d227a134081c1fbb62b3aa04f1d4c8.sample"
 
 [deps]
 
 source_file="res://singletons/SFX/audio/voice/woman_shout_5.wav"
-dest_files=[ "res://.import/woman_shout_5.wav-64d227a134081c1fbb62b3aa04f1d4c8.sample" ]
+dest_files=["res://.godot/imported/woman_shout_5.wav-64d227a134081c1fbb62b3aa04f1d4c8.sample"]
 
 [params]
 

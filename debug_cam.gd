@@ -1,10 +1,10 @@
-extends Camera
+extends Camera3D
 
 signal select_into_world(position)
 
-export var target_path: NodePath
-export var orbit: bool
-export var look_at: bool
+@export var target_path: NodePath
+@export var orbit: bool
+@export var look_at: bool
 
 var speed_slow: float = 2
 var speed_normal: float = 15
@@ -30,13 +30,13 @@ var keys = {
 }
 
 var mouseButtons = {
-	"camera_aim": BUTTON_RIGHT
+	"camera_aim": MOUSE_BUTTON_RIGHT
 }
 
 func add_input_actions():
 	for key in keys:
 		var eventKey = InputEventKey.new()
-		eventKey.set_scancode(keys[key])
+		eventKey.set_keycode(keys[key])
 		InputMap.add_action(key)
 		InputMap.action_add_event(key, eventKey)
 		
@@ -52,7 +52,7 @@ func _ready():
 
 	target_object = get_node_or_null(target_path)
 	
-	if (target_object && target_position):
+	if target_object != null and target_position != null:
 		target_position = target_object.global_transform.origin
 		target_distance = target_position.distance_to(self.global_transform.origin)
 
@@ -72,8 +72,8 @@ func _process(delta):
 	if orbit:		
 		self.translate(Vector3.RIGHT * delta * speed * horizontal_axis)
 		self.translate(Vector3.DOWN * delta * speed * vertical_axis)
-		# self.set_translation(target_position * target_distance) # does not work yet
-		self.look_at(target_object.global_transform.origin, Vector3.UP)
+		# self.set_position(target_position * target_distance) # does not work yet
+#		self.look_at(target_object.global_transform.origin, Vector3.UP) # TODO: Fix for Godot 4.x
 	else:
 		self.translate(Vector3.FORWARD * delta * speed * -vertical_axis)
 		self.translate(Vector3.RIGHT * delta * speed * horizontal_axis)
@@ -123,12 +123,13 @@ func _input(event):
 		self.load_camera()
 
 func get_save_filename() -> String:
-	var scene_id = String(get_parent().get_instance_id())
+	var scene_id = str(get_parent().get_instance_id())
 	return "user://dev_cam_" + scene_id + ".save"
 
 func save_camera():
-	var save_game = File.new()
-	var data = to_json({
+	var save_game = FileAccess.open(get_save_filename(), FileAccess.WRITEREAD)
+	
+	var data = JSON.new().stringify({
 		"pos_x": self.global_transform.origin.x,
 		"pos_y": self.global_transform.origin.y,
 		"pos_z": self.global_transform.origin.z,
@@ -137,30 +138,34 @@ func save_camera():
 		"rot_z": self.rotation.z
 	})
 	
-	save_game.open(get_save_filename(), File.WRITE)
 	save_game.store_line(data);
 	
 	save_game.close()	
 
 func load_camera():
-	var save_game = File.new()
+	var save_game = FileAccess.open(get_save_filename(), FileAccess.READ)
 	
 	if not save_game.file_exists("user://dev_cam.save"):
 		print("No saved data for dev cam")
 		return
-		
-	save_game.open(get_save_filename(), File.READ)
 	
-	while save_game.get_position() < save_game.get_len():
-		var node_data = parse_json(save_game.get_line())
+	while save_game.get_position() < save_game.get_length():
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(save_game.get_line())
+		var node_data = test_json_conv.get_data()
 		self.global_transform.origin = Vector3(node_data["pos_x"], node_data["pos_y"], node_data["pos_z"])
 		self.rotation = Vector3(node_data["rot_x"], node_data["rot_y"], node_data["rot_z"])
 	
 	save_game.close()
 	
 func select_into_world_space():
-	var space_state = get_world().direct_space_state
-	var result = space_state.intersect_ray(global_transform.origin, global_transform.origin + (-global_transform.basis.z) * 1000)
+	var space_state = get_world_3d().direct_space_state
+	var result = space_state.intersect_ray(
+		PhysicsRayQueryParameters3D.create(
+			global_transform.origin, 
+			global_transform.origin + (-global_transform.basis.z) * 1000
+			)
+		)
 	
 	if result:
 		emit_signal("select_into_world", result.position)

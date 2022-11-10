@@ -1,13 +1,14 @@
 [remap]
 
 importer="wav"
-type="AudioStreamSample"
-path="res://.import/wind_loop.wav-0c532c01e1f87a62dfd89cb6e6e5e93b.sample"
+type="AudioStreamWAV"
+uid="uid://dey3trujnu83q"
+path="res://.godot/imported/wind_loop.wav-0c532c01e1f87a62dfd89cb6e6e5e93b.sample"
 
 [deps]
 
 source_file="res://wind_loop.wav"
-dest_files=[ "res://.import/wind_loop.wav-0c532c01e1f87a62dfd89cb6e6e5e93b.sample" ]
+dest_files=["res://.godot/imported/wind_loop.wav-0c532c01e1f87a62dfd89cb6e6e5e93b.sample"]
 
 [params]
 

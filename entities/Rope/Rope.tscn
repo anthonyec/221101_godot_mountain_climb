@@ -1,22 +1,22 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://uut3d6ch7nv4"]
 
-[ext_resource path="res://entities/Rope/Rope.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://entities/Rope/Rope.gd" id="1"]
 
-[sub_resource type="SphereMesh" id=1]
+[sub_resource type="SphereMesh" id="1"]
 radius = 0.3
 height = 0.6
 
-[node name="Rope" type="Spatial"]
-script = ExtResource( 1 )
+[node name="Rope" type="Node3D"]
+script = ExtResource("1")
 
-[node name="MeshInstance" type="MeshInstance" parent="."]
-transform = Transform( 0.0846371, 0, 0, 0, 1, 0, 0, 0, 0.19703, 0, 0, 0 )
-mesh = SubResource( 1 )
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0846371, 0, 0, 0, 1, 0, 0, 0, 0.19703, 0, 0, 0)
+mesh = SubResource("1")
 
-[node name="MeshInstance3" type="MeshInstance" parent="."]
-transform = Transform( -3.69961e-09, -1, 0, 0.0846371, -4.37114e-08, 0, 0, 0, 0.19703, 0, 0, 0 )
-mesh = SubResource( 1 )
+[node name="MeshInstance3" type="MeshInstance3D" parent="."]
+transform = Transform3D(-3.69961e-09, -1, 0, 0.0846371, -4.37114e-08, 0, 0, 0, 0.19703, 0, 0, 0)
+mesh = SubResource("1")
 
-[node name="MeshInstance2" type="MeshInstance" parent="."]
-transform = Transform( 0.0846371, 0, 0, 0, -4.37114e-08, -0.19703, 0, 1, -8.61247e-09, 0, 0, 0 )
-mesh = SubResource( 1 )
+[node name="MeshInstance2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.0846371, 0, 0, 0, -4.37114e-08, -0.19703, 0, 1, -8.61247e-09, 0, 0, 0)
+mesh = SubResource("1")

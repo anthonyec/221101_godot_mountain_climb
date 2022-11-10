@@ -1,9 +1,9 @@
-[gd_resource type="AudioBusLayout" load_steps=2 format=2]
+[gd_resource type="AudioBusLayout" load_steps=2 format=3 uid="uid://h6ys5y0r31uv"]
 
-[sub_resource type="AudioEffectReverb" id=1]
+[sub_resource type="AudioEffectReverb" id="1"]
 resource_name = "Reverb"
 damping = 0.8
 
 [resource]
-bus/0/effect/0/effect = SubResource( 1 )
+bus/0/effect/0/effect = SubResource("1")
 bus/0/effect/0/enabled = true

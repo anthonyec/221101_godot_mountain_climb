@@ -1,11 +1,11 @@
-extends Spatial
+extends Node3D
 
-export var move_left_action: String
-export var move_right_action: String
-export var move_forward_action: String
-export var move_backward_action: String
-export var jump_action: String
-export var start_hosting_abseil_action: String
+@export var move_left_action: String
+@export var move_right_action: String
+@export var move_forward_action: String
+@export var move_backward_action: String
+@export var jump_action: String
+@export var start_hosting_abseil_action: String
 
 func _process(_delta: float) -> void:
 	var input_direction: Vector2 = Input.get_vector(
