@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 @export var player_index: int = 0
 @export var gravity: float = 20
-@export var jump_strength: float = 5
+@export var jump_strength: float = 8
 @export var rotation_speed: float = 20
 @export var walk_speed: float = 5
 @export var climb_speed: float = 2
@@ -140,7 +140,7 @@ var into_jump_movement: Vector3 = Vector3.ZERO
 
 func jumping_state(delta: float):
 	if into_jump_movement == Vector3.ZERO:
-		into_jump_movement = movement * 1.5
+		into_jump_movement = movement * 1.2
 	
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
