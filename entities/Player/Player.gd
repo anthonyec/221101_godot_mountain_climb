@@ -7,6 +7,7 @@ extends CharacterBody3D
 @export var walk_speed: float = 5
 @export var climb_speed: float = 2
 @export var state: String = "move"
+@export var auto_grab_ledge: bool = false
 
 @onready var model: Node3D = $Model
 
@@ -130,7 +131,7 @@ func grab_state(_delta):
 		model.transform.origin.y = 0
 		state = "move"
 		
-	if !Input.is_action_pressed("grab_" + str(player_index)):
+	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
 		global_transform.origin = model.global_transform.origin
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
@@ -194,7 +195,7 @@ func falling_state(delta):
 	DebugDraw.draw_line_3d(global_transform.origin - (global_transform.basis.z * 1.5) + Vector3.UP, global_transform.origin - (global_transform.basis.z * 1.5), Color.RED)
 	DebugDraw.draw_line_3d(global_transform.origin + (Vector3.UP * 0.5), global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2, Color.RED)
 	
-	if (!result_down.is_empty() or !result_down_2.is_empty()) and !result_front.is_empty() and Input.is_action_pressed("grab_" + str(player_index)):
+	if (!result_down.is_empty() or !result_down_2.is_empty()) and !result_front.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
 		var final_result_down = result_down if not result_down.is_empty() else result_down_2
 		global_transform.origin = final_result_down.position + Vector3.UP
 		look_at(global_transform.origin - result_front.normal, Vector3.UP)
