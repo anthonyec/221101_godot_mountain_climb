@@ -1,4 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://dug5iqwtidq4l"]
+[gd_scene load_steps=4 format=3 uid="uid://dug5iqwtidq4l"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_25hgj"]
+albedo_color = Color(0.321569, 0.239216, 0.027451, 1)
 
 [sub_resource type="CapsuleMesh" id="27"]
 radius = 0.025
@@ -17,6 +20,7 @@ angular_damp = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+material_override = SubResource("StandardMaterial3D_25hgj")
 mesh = SubResource("27")
 skeleton = NodePath("../..")
 

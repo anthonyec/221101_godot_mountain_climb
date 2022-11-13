@@ -1,4 +1,3 @@
-#warning-ignore:RETURN_VALUE_DISCARDED
 extends CharacterBody3D
 
 @export var player_index: int = 0
@@ -27,6 +26,7 @@ func _process(delta: float) -> void:
 	match state:
 		"abseil_host": abseil_host_state(delta)
 		"abseil_climb": abseil_climb_state(delta)
+		"abseil_move": abseil_move_state(delta)
 		"move": move_state(delta)
 		"falling": falling_state(delta)
 		"jumping": jumping_state(delta)
@@ -65,28 +65,56 @@ func abseil_host_state(delta: float):
 var distance_on_rope: float = 0	
 
 func abseil_climb_state(_delta: float):
-	if !objects_in_possession[0]:
+	if not Input.is_action_pressed("grab_" + str(player_index)):
 		objects_in_possession.clear()
-		state = "moving"
+		state = "move"
+		return
 	
 	if input_direction.y < 0:
 		distance_on_rope = distance_on_rope - 0.01
 	if input_direction.y > 0:
 		distance_on_rope = distance_on_rope + 0.01
-		
-	var segment: RigidBody3D = objects_in_possession[0].get_closest_segment(global_transform.origin)
-	
-	if input_direction.x < 0:	
-		segment.apply_central_force(-global_transform.basis.x * 50)
-	if input_direction.x > 0:
-		segment.apply_central_force(global_transform.basis.x * 50)
-	
+
 	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
+	var distance_to_head_position = head_position.distance_to(global_transform.origin)
+	
 	DebugDraw.draw_box(head_position, Vector3(0.1, 0.1, 0.1), Color.RED)
 	
-	look_at(head_position, Vector3.UP)
 	global_transform.origin = objects_in_possession[0].get_position_on_rope(distance_on_rope)
 	
+	var _move_and_slide = move_and_slide()
+	
+	if is_on_floor() and distance_to_head_position < 1:
+#		state = "abseil_move"
+		pass
+
+func abseil_move_state(delta):
+	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+
+	movement.x = direction.x * walk_speed
+	movement.z = direction.z * walk_speed
+	movement.y -= gravity * delta
+	
+	set_velocity(movement)
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	
+	var _move_and_slide = move_and_slide()
+	
+	if input_direction.y < 0:
+		distance_on_rope = distance_on_rope - 0.01
+	if input_direction.y > 0:
+		distance_on_rope = distance_on_rope + 0.01
+	
+	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
+	var distance_to_head_position = head_position.distance_to(global_transform.origin)
+	var segment: RigidBody3D = objects_in_possession[0].get_closest_segment(global_transform.origin)
+	
+	if distance_to_head_position > 1.5:
+		state = "abseil_climb"
+	
+	DebugDraw.draw_box(segment.global_transform.origin, Vector3(0.1, 0.1, 0.1), Color.RED)
+
 func grab_state(_delta):
 	var _direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 

@@ -54,30 +54,38 @@ func _physics_process(delta: float) -> void:
 	if leaf_node:
 		segments[segments.size() - 1].global_transform.origin = leaf_node.global_transform.origin
 		segments[segments.size() - 1].freeze = true
-		
+
+# Return the position on the rope given a distance in world units. 
+# E.g, a distance of 10 meters on a 20 meter rope will give a position halfway.
 func get_position_on_rope(distance: float) -> Vector3:
 	distance = clamp(distance, 0, total_length)
 	
 	var percent: float = distance / total_length
-	var index_float: float = percent * float(segment_count)
-	var index: int = floor(index_float)
-	var remainder: float = index_float - int(index_float)
 	
-	# TODO: This is messy and not elegant because I can't be bothered to do nice
-	# maths right now.
-	if index == segment_count - 1:		
-		# If the length is the total length, then just place the point at the end manually.
-		var segment: RigidBody3D = segments[index]
-		var previous_segment: RigidBody3D = segments[index - 1]
-		var direction = previous_segment.global_transform.origin.direction_to(segment.global_transform.origin)
-		
-		return segment.global_transform.origin + (direction * (segment_length / 2))
-		
-	var segment: RigidBody3D = segments[index]
-	var next_segment: RigidBody3D = segments[index + 1]
-	var direction = segment.global_transform.origin.direction_to(next_segment.global_transform.origin)
-
-	return segment.global_transform.origin + (direction * remainder)
+	# Don't use size - 1 otherwise the percent will be wrong. Not sure why.
+	# TODO: Find out why to really understand.
+	var index: float = floor(percent * float(segments.size()))
+	var clamped_index: float = clamp(index, 0, segments.size() - 1)
+	
+	# Using hard-coded segment length will result in jumps between segments
+	# because phyics will cause tiny gaps to appear between segments. This could be
+	# fixed either by using "real-time" segment length or ensuring there are no gaps.
+	var nearest_segment_length = index * segment_length
+	var distance_in_segment = distance - nearest_segment_length
+	
+	var segment: RigidBody3D = segments[clamped_index]
+	var direction = -segment.global_transform.basis.z
+	
+	# Subtract half the segment length because the pivot point of the segments 
+	# is in the center. This makes it act like the pivot is at the start.
+	var start_position = segment.global_transform.origin - (direction * (segment_length / 2))
+	var end_position = start_position + (direction * segment_length)
+	
+	# TODO: Fix this. THis is done because index isn't subtracting 1.
+	if distance == total_length:
+		return end_position
+	
+	return start_position + (direction * distance_in_segment)
 	
 func get_distance_on_rope_from_segment(index: int) -> float:
 	return (float(index) / (segments.size() - 1)) * total_length
@@ -86,7 +94,7 @@ func get_last_segment() -> RigidBody3D:
 	return segments[segments.size() - 1]
 	
 func get_middle_segment() -> RigidBody3D:
-	var index: int = floor((segments.size() / 2)) 
+	var index: int = floor((segments.size() / 2)  - 1) 
 	return segments[index]
 
 func get_closest_segment_index(position: Vector3) -> int:
