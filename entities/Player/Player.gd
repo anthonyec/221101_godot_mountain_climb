@@ -10,6 +10,7 @@ extends CharacterBody3D
 @export var auto_grab_ledge: bool = false
 
 @onready var model: Node3D = $Model
+@onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
 
 var movement: Vector3 = Vector3.ZERO
 var snap_vector: Vector3 = Vector3.ZERO
@@ -17,6 +18,8 @@ var input_direction: Vector2 = Vector2.ZERO
 var objects_in_possession = []
 
 func _process(delta: float) -> void:
+	DebugDraw.set_text("player " + str(player_index) + " state", state)	
+
 	input_direction = Input.get_vector(
 		"move_left_" + str(player_index),
 		"move_right_" + str(player_index),
@@ -50,6 +53,11 @@ func abseil_host_state(delta: float):
 	movement.z = direction.z * walk_speed
 	movement.y -= gravity * delta
 	
+	if direction.length():
+		animation.play_backwards("Run")
+	else:
+		animation.play("Idle")
+	
 	set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
 	set_up_direction(Vector3.UP)
@@ -66,6 +74,8 @@ func abseil_host_state(delta: float):
 var distance_on_rope: float = 0	
 
 func abseil_climb_state(_delta: float):
+	animation.play_backwards("Jump")
+	
 	if not Input.is_action_pressed("grab_" + str(player_index)):
 		objects_in_possession.clear()
 		state = "move"
@@ -117,6 +127,8 @@ func abseil_move_state(delta):
 	DebugDraw.draw_box(segment.global_transform.origin, Vector3(0.1, 0.1, 0.1), Color.RED)
 
 func grab_state(_delta):
+	animation.play("WallSlide")
+	
 	var _direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 
 	set_velocity(movement)
@@ -138,12 +150,20 @@ func grab_state(_delta):
 		state = "falling"
 
 var into_jump_movement: Vector3 = Vector3.ZERO
+var time_in_jump_state: float = 0
 
 func jumping_state(delta: float):
+	animation.play("Jump")
+	
 	if into_jump_movement == Vector3.ZERO:
 		into_jump_movement = movement * 1.2
 	
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	
+	time_in_jump_state += delta
+	
+	if time_in_jump_state < 0.2 and Input.is_action_pressed("jump_" + str(player_index)):
+		movement.y += 0.35
 	
 	movement.x = into_jump_movement.x + direction.x
 	movement.z = into_jump_movement.z + direction.z
@@ -156,9 +176,25 @@ func jumping_state(delta: float):
 	movement = velocity
 		
 	if movement.y < 0:
+		time_in_jump_state = 0
 		state = "falling"
-		
+
+var time_last_on_ground: int = 0
+var coytee_enabled: bool = true
+
 func falling_state(delta):
+	animation.play("Fall")
+	
+	if into_jump_movement == Vector3.ZERO:
+		into_jump_movement = movement
+	
+	if coytee_enabled and (Time.get_ticks_msec() - time_last_on_ground) < 150 and Input.is_action_pressed("jump_" + str(player_index)):
+		coytee_enabled = false
+		movement.y = jump_strength / 2
+		snap_vector = Vector3.ZERO
+		time_in_jump_state = 0
+		state = "jumping"
+		
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
 	movement.x = into_jump_movement.x + direction.x
@@ -171,29 +207,20 @@ func falling_state(delta):
 	var _move_and_slide = move_and_slide()
 	movement = velocity
 	
-	var space_state = get_world_3d().direct_space_state
-	var result_down = space_state.intersect_ray(
-		PhysicsRayQueryParameters3D.create(
-			global_transform.origin - global_transform.basis.z + (Vector3.UP * 1.5), 
-			global_transform.origin - global_transform.basis.z
-		)
-	)
-	var result_down_2 = space_state.intersect_ray(
-		PhysicsRayQueryParameters3D.create(
-			global_transform.origin - (global_transform.basis.z * 1.5) + Vector3.UP, 
-			global_transform.origin - (global_transform.basis.z * 1.5)
-		)
-	)
-	var result_front = space_state.intersect_ray(
-		PhysicsRayQueryParameters3D.create(
-			global_transform.origin + (Vector3.UP * 0.5),
-			global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2
-		)
-	)
+	Raycast.debug = true
 	
-	DebugDraw.draw_line_3d(global_transform.origin - global_transform.basis.z + (Vector3.UP * 1.5), global_transform.origin - global_transform.basis.z, Color.RED)
-	DebugDraw.draw_line_3d(global_transform.origin - (global_transform.basis.z * 1.5) + Vector3.UP, global_transform.origin - (global_transform.basis.z * 1.5), Color.RED)
-	DebugDraw.draw_line_3d(global_transform.origin + (Vector3.UP * 0.5), global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2, Color.RED)
+	var result_down = Raycast.intersect_ray(
+		global_transform.origin - global_transform.basis.z + (Vector3.UP),
+		global_transform.origin - global_transform.basis.z
+	)
+	var result_down_2 = Raycast.intersect_ray(
+		global_transform.origin - (global_transform.basis.z * 1.5) + Vector3.UP, 
+		global_transform.origin - (global_transform.basis.z * 1.5)
+	)
+	var result_front = Raycast.intersect_ray(
+		global_transform.origin + (Vector3.UP * 0.5),
+		global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2
+	)
 	
 	if (!result_down.is_empty() or !result_down_2.is_empty()) and !result_front.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
 		var final_result_down = result_down if not result_down.is_empty() else result_down_2
@@ -212,6 +239,9 @@ func falling_state(delta):
 		state = "move"
 
 func move_state(delta: float):
+	time_last_on_ground = 0
+	coytee_enabled = true
+	
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
 	movement.x = direction.x * walk_speed
@@ -221,6 +251,11 @@ func move_state(delta: float):
 	var current_facing_direction = global_transform.basis.z
 	var _angle_difference = current_facing_direction.signed_angle_to((direction * -1), Vector3.UP)
 	
+	if direction.length():
+		animation.play("Run")
+	else:
+		animation.play("Idle")
+		
 	if Input.is_action_just_pressed("grab_" + str(player_index)):
 		var rope = get_parent().get_node_or_null("Rope")
 		
@@ -238,11 +273,15 @@ func move_state(delta: float):
 			state = "abseil_climb"	
 	
 	if is_on_floor() and Input.is_action_just_pressed("jump_" + str(player_index)):
-		movement.y = jump_strength
+		movement.y = jump_strength / 2
 		snap_vector = Vector3.ZERO
+		time_in_jump_state = 0
 		state = "jumping"
 		
-#	rotate(global_transform.basis.y, angle_difference * rotation_speed * delta)
+	if not is_on_floor():
+		time_last_on_ground = Time.get_ticks_msec()
+		state = "falling"
+	
 	face_towards(global_transform.origin + direction)
 	set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`

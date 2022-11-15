@@ -1,5 +1,6 @@
 extends Node3D
 
+@export var debug: bool = false
 @export var target_paths: Array
 @export var distance: float = 10
 @export var pitch: float = 0
@@ -36,6 +37,11 @@ func _process(delta: float) -> void:
 	# Roation.
 	global_rotation.y = lerp_angle(global_rotation.y, deg_to_rad(yaw), delta * speed)
 	rig.global_rotation.x = lerp_angle(rig.global_rotation.x, deg_to_rad(-pitch), delta * speed)
+	
+	if debug:
+		DebugDraw.set_text("distance", distance)
+		DebugDraw.set_text("pitch", pitch)
+		DebugDraw.set_text("yaw", yaw)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action("rotate_camera_left"):

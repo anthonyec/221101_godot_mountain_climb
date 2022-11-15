@@ -1,0 +1,81 @@
+[gd_scene load_steps=5 format=3 uid="uid://celdt7e0rapnk"]
+
+[sub_resource type="GDScript" id="GDScript_vc0r6"]
+script/source = "extends Area3D
+
+@export var gameplay_camera: Node3D
+@export var players_required: int = 1
+@export var distance: float = 10
+@export var pitch: float = 45
+@export var yaw: float = -90
+@export var distance_enabled: bool = true
+@export var pitch_enabled: bool = true
+@export var yaw_enabled: bool = true
+@export var return_to_previous_settings: bool = true
+
+var number_of_players: int = 0
+var original_distance: float = 0
+var original_pitch: float = 0
+var original_yaw: float = 0
+
+func _on_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
+	number_of_players += 1
+	
+	if number_of_players < players_required:
+		return
+	
+	original_distance = gameplay_camera.distance
+	original_pitch = gameplay_camera.pitch
+	original_yaw = gameplay_camera.yaw
+	
+	if distance_enabled:
+		gameplay_camera.distance = distance
+	
+	if pitch_enabled:
+		gameplay_camera.pitch = pitch
+	
+	if yaw_enabled:
+		gameplay_camera.yaw = yaw
+
+func _on_body_shape_exited(body_rid, body, body_shape_index, local_shape_index):
+	number_of_players -= 1
+	
+	if number_of_players < players_required:
+		return
+	
+	if !return_to_previous_settings:
+		return
+	
+	if distance_enabled:
+		gameplay_camera.distance = original_distance
+	
+	if pitch_enabled:
+		gameplay_camera.pitch = original_pitch
+	
+	if yaw_enabled:
+		gameplay_camera.yaw = original_yaw
+"
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_512h4"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_v0on7"]
+transparency = 1
+albedo_color = Color(0, 1, 1, 0.172549)
+
+[sub_resource type="BoxMesh" id="BoxMesh_a1ogp"]
+
+[node name="CameraHint" type="Area3D" node_paths=PackedStringArray("gameplay_camera")]
+collision_mask = 2
+script = SubResource("GDScript_vc0r6")
+gameplay_camera = NodePath("")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_512h4")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+visible = false
+material_override = SubResource("StandardMaterial3D_v0on7")
+mesh = SubResource("BoxMesh_a1ogp")
+
+[connection signal="body_shape_entered" from="." to="." method="_on_body_shape_entered"]
+[connection signal="body_shape_exited" from="." to="." method="_on_body_shape_exited"]
