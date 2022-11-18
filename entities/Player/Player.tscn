@@ -23,13 +23,6 @@ script = ExtResource("1")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)
 shape = SubResource("5")
 
-[node name="Decal" type="Decal" parent="."]
-transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -5.95234, 0)
-extents = Vector3(0.3, 5, 0.3)
-texture_albedo = ExtResource("2_uldvi")
-albedo_mix = 0.5
-upper_fade = 1e-05
-
 [node name="Model" type="Node3D" parent="."]
 
 [node name="GodotRobot" parent="Model" instance=ExtResource("3_4x2ks")]
@@ -45,3 +38,10 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.4
 visible = false
 mesh = SubResource("4")
 skeleton = NodePath("../..")
+
+[node name="Decal" type="Decal" parent="Model"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -5.95234, 0)
+extents = Vector3(0.3, 5, 0.3)
+texture_albedo = ExtResource("2_uldvi")
+albedo_mix = 0.5
+upper_fade = 1e-05

@@ -129,7 +129,7 @@ func abseil_move_state(delta):
 func grab_state(_delta):
 	animation.play("WallSlide")
 	
-	var _direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	var direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 
 	set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
@@ -138,6 +138,58 @@ func grab_state(_delta):
 	var _move_and_slide = move_and_slide()
 	movement = velocity
 	
+	var downwards_ledge_check = Raycast.cast_in_direction(
+		# Position is in front and at head height of the player.
+		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y), 
+		# Cast downwards relative to the player.
+		-global_transform.basis.y
+	)
+	
+	var downwards_ledge_check_left = Raycast.cast_in_direction(
+		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y) - (global_transform.basis.x * 0.25), 
+		-global_transform.basis.y
+	)
+	
+	var downwards_ledge_check_right = Raycast.cast_in_direction(
+		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y) + (global_transform.basis.x * 0.25), 
+		-global_transform.basis.y
+	)
+	
+	if downwards_ledge_check:
+		var forwards_wall_check = Raycast.cast_in_direction(
+			# Relative to the hit position, slightly towards the player shooting into the wall and slightly below the hit position.
+			downwards_ledge_check.position + (global_transform.basis.z * 0.5) + (-global_transform.basis.y * 0.3), 
+			# Cast forwards relative to the player.
+			-global_transform.basis.z
+		)
+		
+		if forwards_wall_check:
+			var shimmy_direction = forwards_wall_check.normal.cross(downwards_ledge_check.normal)
+			var shimmy_strength = -global_transform.basis.x.dot(direction)
+			var shimmy_strength_clamped = clamp(
+				shimmy_strength,
+				-1 if downwards_ledge_check_right else 0,
+				1 if downwards_ledge_check_left else 0
+			)
+			var climb_up_strength = -global_transform.basis.z.dot(direction)
+			
+			movement = shimmy_direction * shimmy_strength_clamped
+			
+			global_transform.origin = forwards_wall_check.position + (forwards_wall_check.normal * 0.45)
+			face_towards(forwards_wall_check.position)
+			
+			if climb_up_strength > 0.8:
+				global_transform.origin = downwards_ledge_check.position + global_transform.basis.y
+				state = "move"
+			
+			DebugDraw.set_text("shimmy_strength", shimmy_strength)
+			DebugDraw.set_text("climb_up_strength", climb_up_strength)
+			
+			DebugDraw.draw_cube(downwards_ledge_check.position, 0.1, Color.RED)
+			DebugDraw.draw_cube(forwards_wall_check.position, 0.1, Color.BLUE)
+			DebugDraw.draw_ray_3d(forwards_wall_check.position, direction, 2, Color.GREEN)
+			DebugDraw.draw_ray_3d(forwards_wall_check.position, shimmy_direction, 3, Color.BLUE)
+
 	if Input.is_action_just_pressed("jump_" + str(player_index)):
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
@@ -228,8 +280,8 @@ func falling_state(delta):
 		look_at(global_transform.origin - result_front.normal, Vector3.UP)
 		global_rotation.x = 0
 		global_rotation.z = 0
-		model.transform.origin.z = 1
-		model.transform.origin.y = -1.5
+		global_transform.origin = global_transform.origin + global_transform.basis.z
+		global_transform.origin = global_transform.origin - (global_transform.basis.y * 1.5)
 		into_jump_movement = Vector3.ZERO
 		movement = Vector3.ZERO
 		state = "grab"
