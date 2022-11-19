@@ -50,6 +50,12 @@ func _input(event: InputEvent) -> void:
 	if event.is_action("rotate_camera_right"):
 		yaw = yaw - 5
 		
+	if event.is_action("rotate_camera_down"):
+		pitch = pitch + 5
+	
+	if event.is_action("rotate_camera_up"):
+		pitch = pitch - 5
+		
 	if event.is_action("zoom_out") and distance != 0:
 		distance = distance - 1
 	

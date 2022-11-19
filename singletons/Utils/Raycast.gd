@@ -22,6 +22,24 @@ func intersect_ray(start_position: Vector3, end_position: Vector3):
 	return space_state.intersect_ray(
 		PhysicsRayQueryParameters3D.create(start_position, end_position)
 	)
+	
+# TODO: Fix return type. Should be Dictionary[] but couldn't get it working.
+func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 0.5) -> Array:
+	var space_state = get_world_3d().direct_space_state
+	var params = PhysicsShapeQueryParameters3D.new()
+	var shape = CylinderShape3D.new()
+	var shape_transform = Transform3D(Basis(Vector3.UP, 0), position)
+	
+	params.shape = shape
+	params.transform = shape_transform
+	
+	shape.height = height
+	shape.radius = radius
+	
+	if debug:
+		DebugDraw.draw_box(shape_transform.origin, Vector3(radius, height, radius), debug_color)
+	
+	return space_state.intersect_shape(params)
 
 func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0) -> Dictionary:
 	return intersect_ray(start_position, start_position + (direction * length))

@@ -178,8 +178,31 @@ func grab_state(_delta):
 			global_transform.origin = forwards_wall_check.position + (forwards_wall_check.normal * 0.45)
 			face_towards(forwards_wall_check.position)
 			
-			if climb_up_strength > 0.8:
-				global_transform.origin = downwards_ledge_check.position + global_transform.basis.y
+			var start_climb_up_position: Vector3 = downwards_ledge_check.position + (global_transform.basis.y * 1.5) + (forwards_wall_check.normal * 0.6)
+			var end_climb_up_position: Vector3 = downwards_ledge_check.position + (global_transform.basis.y * 1.5) + (-forwards_wall_check.normal * 0.5)
+			
+			# TODO: Turn iterations stuff into a Raycast helper. Not sure what the name would be?
+			var hit: Array = []
+			var iterations: int = 5
+			
+			for index in range(0, iterations):
+				var percent = float(index) / float(iterations)
+				var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
+				var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.5)
+				
+				if shape_hit:
+					hit = shape_hit
+					break
+			
+			var climb_up_position = downwards_ledge_check.position + (global_transform.basis.y) + (-forwards_wall_check.normal * 0.5)
+
+			if climb_up_strength > 0.8 and hit.is_empty():
+				global_transform.origin = climb_up_position
+				state = "move"
+				
+			if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.5:
+				model.transform.origin.z = 0
+				model.transform.origin.y = 0
 				state = "move"
 			
 			DebugDraw.set_text("shimmy_strength", shimmy_strength)
@@ -189,11 +212,6 @@ func grab_state(_delta):
 			DebugDraw.draw_cube(forwards_wall_check.position, 0.1, Color.BLUE)
 			DebugDraw.draw_ray_3d(forwards_wall_check.position, direction, 2, Color.GREEN)
 			DebugDraw.draw_ray_3d(forwards_wall_check.position, shimmy_direction, 3, Color.BLUE)
-
-	if Input.is_action_just_pressed("jump_" + str(player_index)):
-		model.transform.origin.z = 0
-		model.transform.origin.y = 0
-		state = "move"
 		
 	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
 		global_transform.origin = model.global_transform.origin
@@ -265,17 +283,13 @@ func falling_state(delta):
 		global_transform.origin - global_transform.basis.z + (Vector3.UP),
 		global_transform.origin - global_transform.basis.z
 	)
-	var result_down_2 = Raycast.intersect_ray(
-		global_transform.origin - (global_transform.basis.z * 1.5) + Vector3.UP, 
-		global_transform.origin - (global_transform.basis.z * 1.5)
-	)
 	var result_front = Raycast.intersect_ray(
 		global_transform.origin + (Vector3.UP * 0.5),
 		global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2
 	)
 	
-	if (!result_down.is_empty() or !result_down_2.is_empty()) and !result_front.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
-		var final_result_down = result_down if not result_down.is_empty() else result_down_2
+	if (!result_down.is_empty() and !result_front.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge)):
+		var final_result_down = result_down
 		global_transform.origin = final_result_down.position + Vector3.UP
 		look_at(global_transform.origin - result_front.normal, Vector3.UP)
 		global_rotation.x = 0
