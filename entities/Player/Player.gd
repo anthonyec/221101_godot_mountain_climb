@@ -28,6 +28,7 @@ func _process(delta: float) -> void:
 	)
 	
 	match state:
+		"debug": debug_state(delta)
 		"abseil_host": abseil_host_state(delta)
 		"abseil_climb": abseil_climb_state(delta)
 		"abseil_move": abseil_move_state(delta)
@@ -37,6 +38,12 @@ func _process(delta: float) -> void:
 		"grab": grab_state(delta)
 
 func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("debug_" + str(player_index)):
+		if state == "debug":
+			state = "move"
+		else:
+			state = "debug"
+		
 	if event.is_action_pressed("start_hosting_abseil_" + str(player_index)):
 		print("start")
 		start_hosting_abseil()
@@ -46,6 +53,20 @@ func _input(event: InputEvent) -> void:
 			"volume_db": 12
 		})
 
+func debug_state(delta: float):
+	var input = Vector3(input_direction.x, 0, input_direction.y)
+	
+	if Input.is_action_pressed("jump_" + str(player_index)):
+		input.y = -input.z
+		input.z = 0
+		input.x = 0
+		
+	var direction: Vector3 = transform_direction_to_camera_angle(input)
+	
+	movement = Vector3.ZERO
+	
+	translate(direction / 10)
+	
 func abseil_host_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
@@ -138,6 +159,7 @@ func grab_state(_delta):
 	var _move_and_slide = move_and_slide()
 	movement = velocity
 	
+	# TODO: Put into own function as it's used when falling.
 	var downwards_ledge_check = Raycast.cast_in_direction(
 		# Position is in front and at head height of the player.
 		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y), 
@@ -277,7 +299,9 @@ func falling_state(delta):
 	var _move_and_slide = move_and_slide()
 	movement = velocity
 	
-	Raycast.debug = true
+	if is_on_floor() and snap_vector == Vector3.ZERO:
+		into_jump_movement = Vector3.ZERO
+		state = "move"
 	
 	var result_down = Raycast.intersect_ray(
 		global_transform.origin - global_transform.basis.z + (Vector3.UP),
@@ -299,12 +323,20 @@ func falling_state(delta):
 		into_jump_movement = Vector3.ZERO
 		movement = Vector3.ZERO
 		state = "grab"
-	
-	if is_on_floor() and snap_vector == Vector3.ZERO:
-		into_jump_movement = Vector3.ZERO
-		state = "move"
+
 
 func move_state(delta: float):
+	var shortest_fan_out_hit = Raycast.fan_out(
+		global_transform.origin + (global_transform.basis.y * 0.5),
+		-global_transform.basis.z, 
+		2,
+	)
+	
+	print(shortest_fan_out_hit)
+	
+	if shortest_fan_out_hit:
+		DebugDraw.draw_cube(shortest_fan_out_hit.position, 0.1, Color.RED)
+	
 	time_last_on_ground = 0
 	coytee_enabled = true
 	

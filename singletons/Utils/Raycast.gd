@@ -1,17 +1,30 @@
 extends Node3D
 
-@export var debug = false
+@export var debug = true
 @export var debug_color = Color.RED
 
 func offset_by(radius: float, angle: float, distance: float):
 	return Vector2(cos(angle) * (radius + distance), sin(angle) * (radius + distance))
 
-func fan_out(parameters: PhysicsRayQueryParameters3D, angle: float, count: int):
-	var start_angle: float = 0
-	var end_angle: float = 90
+func fan_out(start_position: Vector3, direction: Vector3, length: float = 1.0, angle_range: float = 90.0, total: int = 20, up: Vector3 = Vector3.UP):
+	var angle_diff = deg_to_rad(angle_range)
+	var angle_segment = angle_diff / total
+	
+	var shortest_distance_squared = INF
+	var shortest_hit = {}
+	
+	for index in total:
+		var angle = (angle_segment * index) - (angle_diff / 2)
+		var hit = cast_in_direction(start_position, direction.rotated(up, angle), length)
+		
+		if hit:
+			var distance_squared = start_position.distance_to(hit.position)
+			
+			if distance_squared < shortest_distance_squared:
+				shortest_distance_squared = distance_squared
+				shortest_hit = hit
 
-	var direction = parameters.from.direction_to(parameters.to)
-	pass
+	return shortest_hit
 
 func intersect_ray(start_position: Vector3, end_position: Vector3):
 	var space_state = get_world_3d().direct_space_state
