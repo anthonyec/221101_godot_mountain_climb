@@ -10,20 +10,24 @@ extends CharacterBody3D
 @export var auto_grab_ledge: bool = false
 @export var max_ledge_floor_angle: float = 40
 @export var ledge_hang_distance_from_wall: float = 0.45
-@export var ledge_grab_height: float = 1
+@export var ledge_grab_height: float = 1.2
 @export var ledge_search_distance: float = 1
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var model: Node3D = $Model
 @onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
 
+var previous_state: String = state
+var time_in_current_state: int = 0
 var movement: Vector3 = Vector3.ZERO
 var snap_vector: Vector3 = Vector3.ZERO
 var input_direction: Vector2 = Vector2.ZERO
 var objects_in_possession = []
 
 func _process(delta: float) -> void:
-	DebugDraw.set_text("player " + str(player_index) + " state", state)	
+	DebugDraw.set_text("player " + str(player_index) + " state", state)
+	
+	time_in_current_state += int(delta * 1000)
 
 	input_direction = Input.get_vector(
 		"move_left_" + str(player_index),
@@ -45,9 +49,9 @@ func _process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
 		if state == "debug":
-			state = "move"
+			transition_to_state("move")
 		else:
-			state = "debug"
+			transition_to_state("debug")
 		
 	if event.is_action_pressed("start_hosting_abseil_" + str(player_index)):
 		print("start")
@@ -57,6 +61,11 @@ func _input(event: InputEvent) -> void:
 		var _sfx = SFX.play_attached_to_node("voice/woman_shout_{%n}", self, {
 			"volume_db": 12
 		})
+
+func transition_to_state(new_state: String):
+	time_in_current_state = 0
+	previous_state = state
+	state = new_state
 
 func debug_state(delta: float):
 	var input = Vector3(input_direction.x, 0, input_direction.y)
@@ -69,8 +78,11 @@ func debug_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(input)
 	
 	movement = Vector3.ZERO
-	
 	translate(direction / 10)
+	
+	var debug_raycasting = (time_in_current_state / 1000) % 2 != 0
+	DebugDraw.set_text("Raycast debugging (wait 1 sec to change)", debug_raycasting)
+	Raycast.debug = debug_raycasting
 	
 func abseil_host_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
@@ -94,7 +106,9 @@ func abseil_host_state(delta: float):
 	var segment: RigidBody3D = objects_in_possession[0].get_middle_segment()
 	var position_on_rope = objects_in_possession[0].get_position_on_rope(2)
 	
-	DebugDraw.draw_box(position_on_rope, Vector3(0.1, 0.1, 0.1), Color.RED)
+	if Raycast.debug:
+		DebugDraw.draw_box(position_on_rope, Vector3(0.1, 0.1, 0.1), Color.RED)
+		
 	face_towards(segment.global_transform.origin)
 
 var distance_on_rope: float = 0	
@@ -104,7 +118,7 @@ func abseil_climb_state(_delta: float):
 	
 	if not Input.is_action_pressed("grab_" + str(player_index)):
 		objects_in_possession.clear()
-		state = "move"
+		transition_to_state("move")
 		return
 	
 	if input_direction.y < 0:
@@ -115,14 +129,15 @@ func abseil_climb_state(_delta: float):
 	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
 	var distance_to_head_position = head_position.distance_to(global_transform.origin)
 	
-	DebugDraw.draw_box(head_position, Vector3(0.1, 0.1, 0.1), Color.RED)
+	if Raycast.debug:
+		DebugDraw.draw_box(head_position, Vector3(0.1, 0.1, 0.1), Color.RED)
 	
 	global_transform.origin = objects_in_possession[0].get_position_on_rope(distance_on_rope)
 	
 	var _move_and_slide = move_and_slide()
 	
 	if is_on_floor() and distance_to_head_position < 1:
-#		state = "abseil_move"
+#		transition_to_state(abseil_move")
 		pass
 
 func abseil_move_state(delta):
@@ -148,12 +163,15 @@ func abseil_move_state(delta):
 	var segment: RigidBody3D = objects_in_possession[0].get_closest_segment(global_transform.origin)
 	
 	if distance_to_head_position > 1.5:
-		state = "abseil_climb"
+		transition_to_state("abseil_climb")
 	
-	DebugDraw.draw_box(segment.global_transform.origin, Vector3(0.1, 0.1, 0.1), Color.RED)
+	if Raycast.debug:
+		DebugDraw.draw_box(segment.global_transform.origin, Vector3(0.1, 0.1, 0.1), Color.RED)
 
 func grab_state(_delta):
 	animation.play("WallSlide")
+	
+	print(time_in_current_state)
 	
 	var direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 
@@ -166,7 +184,11 @@ func grab_state(_delta):
 	
 	var ledge_info = find_ledge_info()
 	
-	assert(!ledge_info.is_empty(), "Cannot find ledge info") # TODO: Handle this.
+#	assert(!ledge_info.is_empty(), "Cannot find ledge info") # TODO: Handle this.
+	if ledge_info.is_empty():
+		print("Failed to find ledge info in grab state")
+		transition_to_state("move")
+		return
 	
 	var ledge_check_left = Raycast.cast_in_direction(
 		ledge_info.floor.position + (Vector3.UP * 0.5) - (global_transform.basis.x * 0.25), # TODO: Replace with player width / 2 var.
@@ -194,8 +216,8 @@ func grab_state(_delta):
 	global_transform.origin = ledge_info.hang_position
 	face_towards(ledge_info.wall.position)
 	
-	var start_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.5) + (ledge_info.wall.normal * 0.6)
-	var end_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.5) + (-ledge_info.wall.normal * 0.5)
+	var start_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.25) + (ledge_info.wall.normal * 0.6)
+	var end_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.25) + (-ledge_info.wall.normal * 0.5)
 	
 	# TODO: Turn iterations stuff into a Raycast helper. Not sure what the name would be?
 	var hit: Array = []
@@ -204,7 +226,7 @@ func grab_state(_delta):
 	for index in range(0, iterations):
 		var percent = float(index) / float(iterations)
 		var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
-		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.5)
+		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25)
 		
 		if shape_hit:
 			hit = shape_hit
@@ -212,20 +234,27 @@ func grab_state(_delta):
 	
 	var climb_up_position = ledge_info.floor.position + (global_transform.basis.y) + (-ledge_info.wall.normal * 0.5)
 	
-	if climb_up_strength > 0.8 and hit.is_empty():
+	if hit.is_empty() and Raycast.debug:
+		DebugDraw.draw_line_3d(global_transform.origin, climb_up_position, Color.GREEN)
+		DebugDraw.draw_cube(climb_up_position, 0.5, Color.GREEN)
+		
+	if Raycast.debug:
+		DebugDraw.draw_ray_3d(global_transform.origin, direction, 2, Color.GREEN)
+	
+	if climb_up_strength > 0.8 and hit.is_empty() and time_in_current_state > 200:
 		global_transform.origin = climb_up_position
-		state = "move"
+		transition_to_state("move")
 		
 	if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.5:
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
-		state = "move"
+		transition_to_state("move")
 		
 	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
 		global_transform.origin = model.global_transform.origin
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
-		state = "falling"
+		transition_to_state("falling")
 
 var into_jump_movement: Vector3 = Vector3.ZERO
 var time_in_jump_state: float = 0
@@ -255,7 +284,7 @@ func jumping_state(delta: float):
 		
 	if movement.y < 0:
 		time_in_jump_state = 0
-		state = "falling"
+		transition_to_state("falling")
 
 func find_ledge_info() -> Dictionary:
 	var wall_hit = Raycast.fan_out(
@@ -311,7 +340,7 @@ func falling_state(delta):
 		movement.y = jump_strength / 2
 		snap_vector = Vector3.ZERO
 		time_in_jump_state = 0
-		state = "jumping"
+		transition_to_state("jumping")
 		
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
@@ -327,7 +356,7 @@ func falling_state(delta):
 	
 	if is_on_floor() and snap_vector == Vector3.ZERO:
 		into_jump_movement = Vector3.ZERO
-		state = "move"
+		transition_to_state("move")
 		
 	var ledge_info = find_ledge_info()
 	
@@ -337,7 +366,7 @@ func falling_state(delta):
 		movement = Vector3.ZERO
 		input_direction = Vector2.ZERO
 		face_towards(ledge_info.wall.position)
-		state = "grab"
+		transition_to_state("grab")
 
 func move_state(delta: float):
 	find_ledge_info()
@@ -373,17 +402,17 @@ func move_state(delta: float):
 			
 			distance_on_rope = distance
 			objects_in_possession.append(rope)
-			state = "abseil_climb"	
+			transition_to_state("abseil_climb"	)
 	
 	if is_on_floor() and Input.is_action_just_pressed("jump_" + str(player_index)):
 		movement.y = jump_strength / 2
 		snap_vector = Vector3.ZERO
 		time_in_jump_state = 0
-		state = "jumping"
+		transition_to_state("jumping")
 		
 	if not is_on_floor():
 		time_last_on_ground = Time.get_ticks_msec()
-		state = "falling"
+		transition_to_state("falling")
 	
 	face_towards(global_transform.origin + direction)
 	set_velocity(movement)
@@ -396,18 +425,18 @@ func move_state(delta: float):
 func end_abseil(end_position: Vector3) -> void:
 	if state == "abseil_climb":
 		global_transform.origin = end_position
-		state = "move"
+		transition_to_state("move")
 		
 func start_abseil(start_position: Vector3, rope_rotation: Vector3) -> void:
 	if state == "move":
 		movement = Vector3.ZERO
 		global_rotation = rope_rotation
 		global_transform.origin = start_position
-		state = "abseil_climb"
+		transition_to_state("abseil_climb")
 		
 func start_hosting_abseil() -> void:
 	if state == "abseil_host":
-		state = "move"
+		transition_to_state("move")
 		remove_objects_in_posession()
 		return
 	
@@ -426,7 +455,7 @@ func start_hosting_abseil() -> void:
 	abseil_instance.global_transform.origin = global_transform.origin
 	
 	objects_in_possession.append(abseil_instance)
-	state = "abseil_host"
+	transition_to_state("abseil_host")
 	
 func remove_objects_in_posession() -> void:
 	for index in objects_in_possession.size():

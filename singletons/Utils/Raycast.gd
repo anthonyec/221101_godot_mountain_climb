@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var debug = true
+@export var debug = false
 @export var debug_color = Color.RED
 
 func offset_by(radius: float, angle: float, distance: float):
