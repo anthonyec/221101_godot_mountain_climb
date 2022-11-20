@@ -8,7 +8,12 @@ extends CharacterBody3D
 @export var climb_speed: float = 2
 @export var state: String = "move"
 @export var auto_grab_ledge: bool = false
+@export var max_ledge_floor_angle: float = 40
+@export var ledge_hang_distance_from_wall: float = 0.45
+@export var ledge_grab_height: float = 1
+@export var ledge_search_distance: float = 1
 
+@onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var model: Node3D = $Model
 @onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
 
@@ -159,81 +164,62 @@ func grab_state(_delta):
 	var _move_and_slide = move_and_slide()
 	movement = velocity
 	
-	# TODO: Put into own function as it's used when falling.
-	var downwards_ledge_check = Raycast.cast_in_direction(
-		# Position is in front and at head height of the player.
-		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y), 
-		# Cast downwards relative to the player.
-		-global_transform.basis.y
+	var ledge_info = find_ledge_info()
+	
+	assert(!ledge_info.is_empty(), "Cannot find ledge info") # TODO: Handle this.
+	
+	var ledge_check_left = Raycast.cast_in_direction(
+		ledge_info.floor.position + (Vector3.UP * 0.5) - (global_transform.basis.x * 0.25), # TODO: Replace with player width / 2 var.
+		-global_transform.basis.y,
+		1.2
 	)
 	
-	var downwards_ledge_check_left = Raycast.cast_in_direction(
-		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y) - (global_transform.basis.x * 0.25), 
-		-global_transform.basis.y
+	var ledge_check_right = Raycast.cast_in_direction(
+		ledge_info.floor.position + (Vector3.UP * 0.5) + (global_transform.basis.x * 0.25), # TODO: Replace with player width / 2 var.
+		-global_transform.basis.y,
+		1.2
 	)
 	
-	var downwards_ledge_check_right = Raycast.cast_in_direction(
-		global_transform.origin + (-global_transform.basis.z * 0.5) + (global_transform.basis.y) + (global_transform.basis.x * 0.25), 
-		-global_transform.basis.y
+	var shimmy_direction = ledge_info.wall.normal.cross(ledge_info.floor.normal)
+	var shimmy_strength = -global_transform.basis.x.dot(direction)
+	var shimmy_strength_clamped = clamp(
+		shimmy_strength,
+		-1 if ledge_check_right else 0,
+		1 if ledge_check_left else 0
 	)
+	var climb_up_strength = -global_transform.basis.z.dot(direction)
 	
-	if downwards_ledge_check:
-		var forwards_wall_check = Raycast.cast_in_direction(
-			# Relative to the hit position, slightly towards the player shooting into the wall and slightly below the hit position.
-			downwards_ledge_check.position + (global_transform.basis.z * 0.5) + (-global_transform.basis.y * 0.3), 
-			# Cast forwards relative to the player.
-			-global_transform.basis.z
-		)
+	movement = shimmy_direction * shimmy_strength_clamped
+	
+	global_transform.origin = ledge_info.hang_position
+	face_towards(ledge_info.wall.position)
+	
+	var start_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.5) + (ledge_info.wall.normal * 0.6)
+	var end_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.5) + (-ledge_info.wall.normal * 0.5)
+	
+	# TODO: Turn iterations stuff into a Raycast helper. Not sure what the name would be?
+	var hit: Array = []
+	var iterations: int = 5
+	
+	for index in range(0, iterations):
+		var percent = float(index) / float(iterations)
+		var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
+		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.5)
 		
-		if forwards_wall_check:
-			var shimmy_direction = forwards_wall_check.normal.cross(downwards_ledge_check.normal)
-			var shimmy_strength = -global_transform.basis.x.dot(direction)
-			var shimmy_strength_clamped = clamp(
-				shimmy_strength,
-				-1 if downwards_ledge_check_right else 0,
-				1 if downwards_ledge_check_left else 0
-			)
-			var climb_up_strength = -global_transform.basis.z.dot(direction)
-			
-			movement = shimmy_direction * shimmy_strength_clamped
-			
-			global_transform.origin = forwards_wall_check.position + (forwards_wall_check.normal * 0.45)
-			face_towards(forwards_wall_check.position)
-			
-			var start_climb_up_position: Vector3 = downwards_ledge_check.position + (global_transform.basis.y * 1.5) + (forwards_wall_check.normal * 0.6)
-			var end_climb_up_position: Vector3 = downwards_ledge_check.position + (global_transform.basis.y * 1.5) + (-forwards_wall_check.normal * 0.5)
-			
-			# TODO: Turn iterations stuff into a Raycast helper. Not sure what the name would be?
-			var hit: Array = []
-			var iterations: int = 5
-			
-			for index in range(0, iterations):
-				var percent = float(index) / float(iterations)
-				var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
-				var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.5)
-				
-				if shape_hit:
-					hit = shape_hit
-					break
-			
-			var climb_up_position = downwards_ledge_check.position + (global_transform.basis.y) + (-forwards_wall_check.normal * 0.5)
-
-			if climb_up_strength > 0.8 and hit.is_empty():
-				global_transform.origin = climb_up_position
-				state = "move"
-				
-			if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.5:
-				model.transform.origin.z = 0
-				model.transform.origin.y = 0
-				state = "move"
-			
-			DebugDraw.set_text("shimmy_strength", shimmy_strength)
-			DebugDraw.set_text("climb_up_strength", climb_up_strength)
-			
-			DebugDraw.draw_cube(downwards_ledge_check.position, 0.1, Color.RED)
-			DebugDraw.draw_cube(forwards_wall_check.position, 0.1, Color.BLUE)
-			DebugDraw.draw_ray_3d(forwards_wall_check.position, direction, 2, Color.GREEN)
-			DebugDraw.draw_ray_3d(forwards_wall_check.position, shimmy_direction, 3, Color.BLUE)
+		if shape_hit:
+			hit = shape_hit
+			break
+	
+	var climb_up_position = ledge_info.floor.position + (global_transform.basis.y) + (-ledge_info.wall.normal * 0.5)
+	
+	if climb_up_strength > 0.8 and hit.is_empty():
+		global_transform.origin = climb_up_position
+		state = "move"
+		
+	if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.5:
+		model.transform.origin.z = 0
+		model.transform.origin.y = 0
+		state = "move"
 		
 	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
 		global_transform.origin = model.global_transform.origin
@@ -271,6 +257,46 @@ func jumping_state(delta: float):
 		time_in_jump_state = 0
 		state = "falling"
 
+func find_ledge_info() -> Dictionary:
+	var wall_hit = Raycast.fan_out(
+		global_transform.origin + (global_transform.basis.y * 0.5),
+		-global_transform.basis.z, 
+		ledge_search_distance,
+	)
+	
+	if wall_hit:
+		var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
+		var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * ledge_grab_height), Vector3.DOWN, ledge_grab_height)
+		
+		if floor_hit.is_empty():
+			return {}
+			
+		var floor_normal: Vector3 = floor_hit.normal
+		var floor_angle = abs(floor_normal.angle_to(Vector3.UP))
+		
+		if (floor_angle > deg_to_rad(max_ledge_floor_angle)):
+			return {}
+		
+		var suggested_hang_position = floor_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.75) # TODO: Tidy up 0.75 with var name for player_height / 2
+		
+		# TODO: Implement exlcuding self. The last argument does not work hehe.
+		var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, [self])
+
+		var is_hang_position_blocked = false
+		
+		for collision in hang_position_hit:
+			if collision.collider != self:
+				is_hang_position_blocked = true
+
+		if not is_hang_position_blocked:
+			return {
+				"hang_position": suggested_hang_position,
+				"floor": floor_hit,
+				"wall": wall_hit
+			}
+			
+	return {}
+
 var time_last_on_ground: int = 0
 var coytee_enabled: bool = true
 
@@ -302,40 +328,19 @@ func falling_state(delta):
 	if is_on_floor() and snap_vector == Vector3.ZERO:
 		into_jump_movement = Vector3.ZERO
 		state = "move"
+		
+	var ledge_info = find_ledge_info()
 	
-	var result_down = Raycast.intersect_ray(
-		global_transform.origin - global_transform.basis.z + (Vector3.UP),
-		global_transform.origin - global_transform.basis.z
-	)
-	var result_front = Raycast.intersect_ray(
-		global_transform.origin + (Vector3.UP * 0.5),
-		global_transform.origin + (Vector3.UP * 0.5) - global_transform.basis.z * 2
-	)
-	
-	if (!result_down.is_empty() and !result_front.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge)):
-		var final_result_down = result_down
-		global_transform.origin = final_result_down.position + Vector3.UP
-		look_at(global_transform.origin - result_front.normal, Vector3.UP)
-		global_rotation.x = 0
-		global_rotation.z = 0
-		global_transform.origin = global_transform.origin + global_transform.basis.z
-		global_transform.origin = global_transform.origin - (global_transform.basis.y * 1.5)
+	if !ledge_info.is_empty() and ledge_info.hang_position != null and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
+		global_transform.origin = ledge_info.hang_position
 		into_jump_movement = Vector3.ZERO
 		movement = Vector3.ZERO
+		input_direction = Vector2.ZERO
+		face_towards(ledge_info.wall.position)
 		state = "grab"
 
-
 func move_state(delta: float):
-	var shortest_fan_out_hit = Raycast.fan_out(
-		global_transform.origin + (global_transform.basis.y * 0.5),
-		-global_transform.basis.z, 
-		2,
-	)
-	
-	print(shortest_fan_out_hit)
-	
-	if shortest_fan_out_hit:
-		DebugDraw.draw_cube(shortest_fan_out_hit.position, 0.1, Color.RED)
+	find_ledge_info()
 	
 	time_last_on_ground = 0
 	coytee_enabled = true
