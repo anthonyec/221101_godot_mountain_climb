@@ -1,6 +1,6 @@
 extends Node3D
 
-@export var debug = false
+@export var debug = true
 @export var debug_color = Color.RED
 
 func offset_by(radius: float, angle: float, distance: float):
@@ -26,7 +26,8 @@ func fan_out(start_position: Vector3, direction: Vector3, length: float = 1.0, a
 
 	return shortest_hit
 
-func intersect_ray(start_position: Vector3, end_position: Vector3):
+# TODO: Actually implement exlucde lmao.
+func intersect_ray(start_position: Vector3, end_position: Vector3, exclude: Array = []):
 	var space_state = get_world_3d().direct_space_state
 	
 	if debug:
@@ -41,18 +42,17 @@ func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 
 	var space_state = get_world_3d().direct_space_state
 	var params = PhysicsShapeQueryParameters3D.new()
 	var shape = CylinderShape3D.new()
-	var shape_transform = Transform3D(Basis(Vector3.UP, 0), position)
 	
 	shape.height = height
 	shape.radius = radius
 	
 	params.shape = shape
-	params.transform = shape_transform
-	
+	params.transform.origin = position
+
 	if debug:
-		DebugDraw.draw_box(shape_transform.origin, Vector3(radius * 2, height, radius * 2), debug_color)
+		DebugDraw.draw_box(params.transform.origin, Vector3(radius * 2, height, radius * 2), debug_color)
 	
 	return space_state.intersect_shape(params)
 
-func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0) -> Dictionary:
-	return intersect_ray(start_position, start_position + (direction * length))
+func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0, exclude: Array = []) -> Dictionary:
+	return intersect_ray(start_position, start_position + (direction * length), exclude)

@@ -309,7 +309,7 @@ use_collision = true
 size = Vector3(11, 0.5, 0.5)
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="."]
-transform = Transform3D(0.912599, 0, 0.408856, 0, 1, 0, -0.408856, 0, 0.912599, 5.99821, 1.51739, 0)
+transform = Transform3D(0.912599, 0, 0.408856, 0, 1, 0, -0.408856, 0, 0.912599, 9.211, 1.51739, -3.34229)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(2, 2, 2)
@@ -339,13 +339,13 @@ use_collision = true
 size = Vector3(7.8735, 2, 2)
 
 [node name="CSGBox3D52" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.0058, 4.82828, 4.99747)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.9513, 5.85614, 4.99747)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(7.8735, 3.41733, 2)
 
 [node name="CSGBox3D51" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.9611, 2.78714, 4.98977)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 19.0139, 2.78714, 4.98977)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(7.44648, 6.1111, 1.51722)
@@ -392,8 +392,20 @@ material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(2, 2, 2)
 
+[node name="CSGBox3D63" type="CSGBox3D" parent="."]
+transform = Transform3D(0.872496, -0.488621, 0, 0.488621, 0.872496, 0, 0, 0, 1, 0, 1.51739, 10.9693)
+material_override = ExtResource("5_ccnoe")
+use_collision = true
+size = Vector3(8.91863, 2, 0.430073)
+
 [node name="CSGBox3D7" type="CSGBox3D" parent="."]
 transform = Transform3D(0.973329, -0.225766, -0.0407494, 0.229398, 0.959918, 0.161043, 0.00275809, -0.166095, 0.986106, 5.94521, 1.51739, 7.01968)
+material_override = ExtResource("5_ccnoe")
+use_collision = true
+size = Vector3(2, 3.03848, 2)
+
+[node name="CSGBox3D62" type="CSGBox3D" parent="."]
+transform = Transform3D(0.973329, -0.225766, -0.0407494, 0.229398, 0.959918, 0.161043, 0.00275809, -0.166095, 0.986106, 5.94521, 0.516311, 0.665951)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(2, 3.03848, 2)
@@ -465,4 +477,18 @@ yaw = 180.0
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.82918, 1.14727, 0)
 use_collision = true
 radius = 1.52487
+sides = 16
+
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
+transform = Transform3D(2.35911, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, -7.04968, 1.14727, 8.89407)
+use_collision = true
+radius = 1.52487
+height = 0.66053
+sides = 16
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.817579, 0, 0, 0, -4.36386e-08, -0.998334, 0, 0.998334, -4.36386e-08, -7.04968, 1.14727, 10.8643)
+use_collision = true
+radius = 1.52487
+height = 0.66053
 sides = 16

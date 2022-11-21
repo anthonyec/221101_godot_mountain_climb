@@ -9,7 +9,7 @@ extends CharacterBody3D
 @export var state: String = "move"
 @export var auto_grab_ledge: bool = false
 @export var max_ledge_floor_angle: float = 40
-@export var ledge_hang_distance_from_wall: float = 0.45
+@export var ledge_hang_distance_from_wall: float = 0.42
 @export var ledge_grab_height: float = 1.2
 @export var ledge_search_distance: float = 1
 
@@ -170,8 +170,7 @@ func abseil_move_state(delta):
 
 func grab_state(_delta):
 	animation.play("WallSlide")
-	
-	print(time_in_current_state)
+	collision_shape.disabled = true
 	
 	var direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 
@@ -187,28 +186,19 @@ func grab_state(_delta):
 #	assert(!ledge_info.is_empty(), "Cannot find ledge info") # TODO: Handle this.
 	if ledge_info.is_empty():
 		print("Failed to find ledge info in grab state")
+		collision_shape.disabled = false
 		transition_to_state("move")
 		return
 	
-	var ledge_check_left = Raycast.cast_in_direction(
-		ledge_info.floor.position + (Vector3.UP * 0.5) - (global_transform.basis.x * 0.25), # TODO: Replace with player width / 2 var.
-		-global_transform.basis.y,
-		1.2
-	)
-	
-	var ledge_check_right = Raycast.cast_in_direction(
-		ledge_info.floor.position + (Vector3.UP * 0.5) + (global_transform.basis.x * 0.25), # TODO: Replace with player width / 2 var.
-		-global_transform.basis.y,
-		1.2
-	)
-	
-	var shimmy_direction = ledge_info.wall.normal.cross(ledge_info.floor.normal)
+	var shimmy_direction = ledge_info.edge_direction
 	var shimmy_strength = -global_transform.basis.x.dot(direction)
 	var shimmy_strength_clamped = clamp(
 		shimmy_strength,
-		-1 if ledge_check_right else 0,
-		1 if ledge_check_left else 0
+		## TODO: Any way to fix this so it isn't flipped round in a very unintutive way?
+		-1 if !ledge_info.has_reached_right_bound else 0,
+		1 if !ledge_info.has_reached_left_bound else 0,
 	)
+	
 	var climb_up_strength = -global_transform.basis.z.dot(direction)
 	
 	movement = shimmy_direction * shimmy_strength_clamped
@@ -219,7 +209,9 @@ func grab_state(_delta):
 	var start_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.25) + (ledge_info.wall.normal * 0.6)
 	var end_climb_up_position: Vector3 = ledge_info.floor.position + (global_transform.basis.y * 1.25) + (-ledge_info.wall.normal * 0.5)
 	
-	# TODO: Turn iterations stuff into a Raycast helper. Not sure what the name would be?
+	var debug_prev = Raycast.debug
+	Raycast.debug = false
+	# TODO: Turn iterations stuff into a Raycast helper. I think the name would be sweep. Might alreayd be build in, search ShapeSweep3D.
 	var hit: Array = []
 	var iterations: int = 5
 	
@@ -231,8 +223,9 @@ func grab_state(_delta):
 		if shape_hit:
 			hit = shape_hit
 			break
+	Raycast.debug = debug_prev
 	
-	var climb_up_position = ledge_info.floor.position + (global_transform.basis.y) + (-ledge_info.wall.normal * 0.5)
+	var climb_up_position = ledge_info.floor.position + (global_transform.basis.y)
 	
 	if hit.is_empty() and Raycast.debug:
 		DebugDraw.draw_line_3d(global_transform.origin, climb_up_position, Color.GREEN)
@@ -243,17 +236,20 @@ func grab_state(_delta):
 	
 	if climb_up_strength > 0.8 and hit.is_empty() and time_in_current_state > 200:
 		global_transform.origin = climb_up_position
+		collision_shape.disabled = false
 		transition_to_state("move")
 		
-	if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.5:
+	if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.4:
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
+		collision_shape.disabled = false
 		transition_to_state("move")
 		
 	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
 		global_transform.origin = model.global_transform.origin
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
+		collision_shape.disabled = false
 		transition_to_state("falling")
 
 var into_jump_movement: Vector3 = Vector3.ZERO
@@ -281,6 +277,11 @@ func jumping_state(delta: float):
 	set_floor_stop_on_slope_enabled(true)
 	var _move_and_slide = move_and_slide()
 	movement = velocity
+	
+	if time_in_current_state > 5000:
+		print("In JUMP state longer than expected")
+		global_transform.origin += Vector3.UP * 2
+		transition_to_state("move")
 		
 	if movement.y < 0:
 		time_in_jump_state = 0
@@ -293,38 +294,97 @@ func find_ledge_info() -> Dictionary:
 		ledge_search_distance,
 	)
 	
-	if wall_hit:
-		var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
-		var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * ledge_grab_height), Vector3.DOWN, ledge_grab_height)
+	if wall_hit.is_empty():
+		return {}
 		
-		if floor_hit.is_empty():
-			return {}
-			
-		var floor_normal: Vector3 = floor_hit.normal
-		var floor_angle = abs(floor_normal.angle_to(Vector3.UP))
+	var wall_angle = wall_hit.normal.angle_to(Vector3.UP)
+	
+	# This is a naive check to see if walls are "wall like". It avoids glitches
+	# with tilted platforms. Though ideally `intersect_cylinder` would correctly.
+	# TODO: This has problems with walls that slope outwards at the bottom.
+	# Might need to be a seperate kind of grab.
+	if wall_angle < deg_to_rad(80) or wall_angle > deg_to_rad(120):
+		return {}
 		
-		if (floor_angle > deg_to_rad(max_ledge_floor_angle)):
-			return {}
-		
-		var suggested_hang_position = floor_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.75) # TODO: Tidy up 0.75 with var name for player_height / 2
-		
-		# TODO: Implement exlcuding self. The last argument does not work hehe.
-		var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, [self])
+	var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
+	var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * ledge_grab_height), Vector3.DOWN, ledge_grab_height)
+	
+	if floor_hit.is_empty():
+		return {}
+	
+	var floor_normal: Vector3 = floor_hit.normal
+	var floor_angle = abs(floor_normal.angle_to(Vector3.UP))
+	
+	if (floor_angle > deg_to_rad(max_ledge_floor_angle)):
+		return {}
 
-		var is_hang_position_blocked = false
+	var edge_hit = {}
+	var edge_sweep_iterations = 15 # TODO: Move somewhere else
+	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal
+	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (wall_hit.normal * ledge_hang_distance_from_wall * 2)
+	
+	for index in edge_sweep_iterations:
+		var sweep_position = start_edge_sweep_position.lerp(end_edge_sweep_position, float(index) / float(edge_sweep_iterations))
+		var sweep_hit = Raycast.cast_in_direction(sweep_position, -floor_hit.normal, 1.2, [self])
 		
-		for collision in hang_position_hit:
-			if collision.collider != self:
-				is_hang_position_blocked = true
+		if sweep_hit and sweep_hit.collider != self:
+			edge_hit = sweep_hit
+		
+		if sweep_hit.is_empty():
+			break
+	
+	if edge_hit.is_empty():
+		return {}
+		
+	var edge_direction = wall_hit.normal.cross(floor_hit.normal)
+	
+	var floor_left_bound = Raycast.cast_in_direction(
+		edge_hit.position + (Vector3.UP * 0.5) + (edge_direction * 0.25), # TODO: Replace with player width / 2 var.
+		Vector3.DOWN,
+		ledge_search_distance
+	)
+	var floor_right_bound = Raycast.cast_in_direction(
+		edge_hit.position + (Vector3.UP * 0.5) - (edge_direction * 0.25), # TODO: Replace with player width / 2 var.
+		Vector3.DOWN,
+		ledge_search_distance
+	)
+	
+	if Raycast.debug:
+		DebugDraw.draw_cube(edge_hit.position, 0.2, Color.BLUE)
+		DebugDraw.draw_ray_3d(edge_hit.position - (edge_direction * 0.25), edge_direction, 0.5, Color.BLUE)
+	
+	var suggested_hang_position = edge_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.6) # TODO: Tidy up with var name for player_height / 2
+	
+	# TODO: Implement exlcuding self. The last argument does not work hehe.
+	# TODO: Find out why the cylinder sometimes in the same position of the ledge, which seems very wrong.
+	var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, [self])
 
-		if not is_hang_position_blocked:
-			return {
-				"hang_position": suggested_hang_position,
-				"floor": floor_hit,
-				"wall": wall_hit
-			}
+	var is_hang_position_blocked = false
+	
+	for collision in hang_position_hit:
+		if collision.collider != self:
+			is_hang_position_blocked = true
+			break
 			
-	return {}
+	DebugDraw.set_text("is_hang_position_blocked", is_hang_position_blocked)
+	
+	if is_hang_position_blocked:
+		return {}
+		
+	var has_reached_left_bound = floor_left_bound.is_empty() or rad_to_deg(floor_left_bound.normal.angle_to(Vector3.UP)) > max_ledge_floor_angle
+	var has_reached_right_bound = floor_right_bound.is_empty() or rad_to_deg(floor_right_bound.normal.angle_to(Vector3.UP)) > max_ledge_floor_angle
+	
+	DebugDraw.set_text("has_reached_left_bound", has_reached_left_bound)
+	DebugDraw.set_text("has_reached_right_bound", has_reached_right_bound)
+		
+	return {
+		"hang_position": suggested_hang_position,
+		"floor": floor_hit,
+		"wall": wall_hit,
+		"edge_direction": edge_direction,
+		"has_reached_left_bound": has_reached_left_bound,
+		"has_reached_right_bound": has_reached_right_bound
+	}
 
 var time_last_on_ground: int = 0
 var coytee_enabled: bool = true
@@ -360,13 +420,18 @@ func falling_state(delta):
 		
 	var ledge_info = find_ledge_info()
 	
-	if !ledge_info.is_empty() and ledge_info.hang_position != null and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
+	if !ledge_info.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
 		global_transform.origin = ledge_info.hang_position
 		into_jump_movement = Vector3.ZERO
 		movement = Vector3.ZERO
 		input_direction = Vector2.ZERO
 		face_towards(ledge_info.wall.position)
 		transition_to_state("grab")
+		
+	if time_in_current_state > 5000:
+		print("In FALLING state longer than expected")
+		global_transform.origin += Vector3.UP * 2
+		transition_to_state("move")
 
 func move_state(delta: float):
 	find_ledge_info()
