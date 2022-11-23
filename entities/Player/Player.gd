@@ -381,6 +381,7 @@ func find_ledge_info() -> Dictionary:
 		"hang_position": suggested_hang_position,
 		"floor": floor_hit,
 		"wall": wall_hit,
+		"edge": edge_hit,
 		"edge_direction": edge_direction,
 		"has_reached_left_bound": has_reached_left_bound,
 		"has_reached_right_bound": has_reached_right_bound
