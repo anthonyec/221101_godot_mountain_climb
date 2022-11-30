@@ -11,7 +11,6 @@ albedo_color = Color(0.803922, 0.396078, 0.352941, 1)
 size = Vector3(0.5, 0.5, 1)
 
 [node name="WoodPickup" type="Area3D" groups=["wood_pickup"]]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.337, 0.559259, 0.971997)
 script = ExtResource("1_bbxth")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

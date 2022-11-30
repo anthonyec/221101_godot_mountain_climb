@@ -48,6 +48,7 @@ func _process(delta: float) -> void:
 		"jumping": jumping_state(delta)
 		"grab": grab_state(delta)
 		"pickup": pickup_state(delta)
+		"camp": camp_state(delta)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
@@ -86,6 +87,22 @@ func debug_state(delta: float):
 	DebugDraw.set_text("Raycast debugging (wait 1 sec to change)", debug_raycasting)
 	Raycast.debug = debug_raycasting
 	collision_shape.disabled = false
+	
+func camp_state(_delta: float):
+	var main_camera = get_parent().get_node("GameplayCamera/Rig/Camera3D") as Camera3D
+	var camp_camera = get_parent().get_node("CampingScene/Camera3D") as Camera3D
+	
+	if time_in_current_state < 1000:
+		get_parent().get_node("Checkpoint").set_respawn_position(global_transform.origin)
+		camp_camera.make_current()
+	
+	if time_in_current_state > 1000 and Input.is_action_just_pressed("camp_" + str(player_index)):
+		get_parent().get_node("Player1").transition_to_state("move")
+		get_parent().get_node("Player2").transition_to_state("move")
+		
+		main_camera.make_current()
+		transition_to_state("move")
+		return
 	
 func abseil_host_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
@@ -529,7 +546,8 @@ func move_state(delta: float):
 				if total_sticks >= 6:
 					other_player.sticks_collected = 0
 					sticks_collected = 0
-					print("TIME TO CAMP")
+					other_player.transition_to_state("camp")
+					self.transition_to_state("camp")
 
 	face_towards(global_transform.origin + direction)
 	set_velocity(movement)
