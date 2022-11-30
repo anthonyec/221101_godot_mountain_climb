@@ -113,3 +113,4 @@ func get_closest_segment_index(position: Vector3) -> int:
 			
 func get_closest_segment(position: Vector3) -> RigidBody3D:		
 	return segments[get_closest_segment_index(position)]
+

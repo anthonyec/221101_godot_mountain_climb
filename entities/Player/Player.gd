@@ -12,10 +12,12 @@ extends CharacterBody3D
 @export var ledge_hang_distance_from_wall: float = 0.42
 @export var ledge_grab_height: float = 1.2
 @export var ledge_search_distance: float = 1
+@export var sticks_collected: int = 0
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var model: Node3D = $Model
 @onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
+@onready var pickup_collision: Area3D = $PickupArea
 
 var previous_state: String = state
 var time_in_current_state: int = 0
@@ -26,6 +28,7 @@ var objects_in_possession = []
 
 func _process(delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_index) + " state", state)
+	DebugDraw.set_text("player sticks " + str(player_index), sticks_collected)
 	
 	time_in_current_state += int(delta * 1000)
 
@@ -39,12 +42,12 @@ func _process(delta: float) -> void:
 	match state:
 		"debug": debug_state(delta)
 		"abseil_host": abseil_host_state(delta)
-		"abseil_climb": abseil_climb_state(delta)
-		"abseil_move": abseil_move_state(delta)
+		"abseil_climb_air": abseil_climb_air(delta)
 		"move": move_state(delta)
 		"falling": falling_state(delta)
 		"jumping": jumping_state(delta)
 		"grab": grab_state(delta)
+		"pickup": pickup_state(delta)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
@@ -54,7 +57,6 @@ func _input(event: InputEvent) -> void:
 			transition_to_state("debug")
 		
 	if event.is_action_pressed("start_hosting_abseil_" + str(player_index)):
-		print("start")
 		start_hosting_abseil()
 		
 	if event.is_action_pressed("shout_" + str(player_index)):
@@ -83,6 +85,7 @@ func debug_state(delta: float):
 	var debug_raycasting = (time_in_current_state / 1000) % 2 != 0
 	DebugDraw.set_text("Raycast debugging (wait 1 sec to change)", debug_raycasting)
 	Raycast.debug = debug_raycasting
+	collision_shape.disabled = false
 	
 func abseil_host_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
@@ -111,62 +114,60 @@ func abseil_host_state(delta: float):
 		
 	face_towards(segment.global_transform.origin)
 
-var distance_on_rope: float = 0	
+var grabbed_rope = null
+var distance_on_rope = -1
 
-func abseil_climb_state(_delta: float):
+func abseil_climb_air(_delta: float):
 	animation.play_backwards("Jump")
-	
-	if not Input.is_action_pressed("grab_" + str(player_index)):
-		objects_in_possession.clear()
+#	collision_shape.disabled = true
+
+	if !Input.is_action_pressed("grab_" + str(player_index)):
+		distance_on_rope = -1
 		transition_to_state("move")
 		return
 	
-	if input_direction.y < 0:
-		distance_on_rope = distance_on_rope - 0.01
-	if input_direction.y > 0:
-		distance_on_rope = distance_on_rope + 0.01
-
-	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
-	var distance_to_head_position = head_position.distance_to(global_transform.origin)
-	
-	if Raycast.debug:
-		DebugDraw.draw_box(head_position, Vector3(0.1, 0.1, 0.1), Color.RED)
-	
-	global_transform.origin = objects_in_possession[0].get_position_on_rope(distance_on_rope)
-	
-	var _move_and_slide = move_and_slide()
-	
-	if is_on_floor() and distance_to_head_position < 1:
-#		transition_to_state(abseil_move")
-		pass
-
-func abseil_move_state(delta):
+	if grabbed_rope == null:
+		distance_on_rope = -1
+		transition_to_state("move")
+		push_warning("Failed to find rope")
+		return
+		
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
-
-	movement.x = direction.x * walk_speed
-	movement.z = direction.z * walk_speed
-	movement.y -= gravity * delta
+	var position_on_rope = grabbed_rope.get_position_on_rope(distance_on_rope)
 	
-	set_velocity(movement)
-	set_up_direction(Vector3.UP)
-	set_floor_stop_on_slope_enabled(true)
+	var segment = grabbed_rope.get_closest_segment(position_on_rope)
+	var blob: CollisionShape3D = segment.get_node("Blob")
+	var sphere: SphereShape3D = blob.shape
 	
-	var _move_and_slide = move_and_slide()
+#	sphere.radius = 0.8
 	
+	DebugDraw.draw_ray_3d(global_transform.origin, direction, 2, Color.GREEN)
+	
+	face_towards(grabbed_rope.global_transform.origin)
+	
+	# Go up the rope.
 	if input_direction.y < 0:
-		distance_on_rope = distance_on_rope - 0.01
+		distance_on_rope -= 0.02
+	
+	# Go down the rope.
 	if input_direction.y > 0:
-		distance_on_rope = distance_on_rope + 0.01
+		distance_on_rope += 0.02
+		
+	Raycast.cast_in_direction(global_transform.origin, -global_transform.basis.z, 1)
 	
-	var head_position = objects_in_possession[0].get_position_on_rope(distance_on_rope - 1)
-	var distance_to_head_position = head_position.distance_to(global_transform.origin)
-	var segment: RigidBody3D = objects_in_possession[0].get_closest_segment(global_transform.origin)
+	# TODO: Ignore the rope collision itself by adding tags to each segment.
+	var ground_hit = Raycast.cast_in_direction(global_transform.origin, Vector3.DOWN, 2)
 	
-	if distance_to_head_position > 1.5:
-		transition_to_state("abseil_climb")
+	if ground_hit and time_in_current_state > 300 and input_direction.y > 0:
+		pass
+#		collision_shape.disabled = false
+#		distance_on_rope = -1
+#		transition_to_state("move")
 	
-	if Raycast.debug:
-		DebugDraw.draw_box(segment.global_transform.origin, Vector3(0.1, 0.1, 0.1), Color.RED)
+	find_ledge_info()
+	
+	global_transform.origin = position_on_rope
+	var _move_and_slide = move_and_slide()
 
 func grab_state(_delta):
 	animation.play("WallSlide")
@@ -185,7 +186,7 @@ func grab_state(_delta):
 	
 #	assert(!ledge_info.is_empty(), "Cannot find ledge info") # TODO: Handle this.
 	if ledge_info.is_empty():
-		print("Failed to find ledge info in grab state")
+		push_warning("Failed to find ledge info in grab state")
 		collision_shape.disabled = false
 		transition_to_state("move")
 		return
@@ -279,7 +280,7 @@ func jumping_state(delta: float):
 	movement = velocity
 	
 	if time_in_current_state > 5000:
-		print("In JUMP state longer than expected")
+		push_warning("In JUMP state longer than expected")
 		global_transform.origin += Vector3.UP * 2
 		transition_to_state("move")
 		
@@ -287,6 +288,21 @@ func jumping_state(delta: float):
 		time_in_jump_state = 0
 		transition_to_state("falling")
 
+func find_nearest_rope():
+	var ropes = get_tree().get_nodes_in_group("rope")
+	var nearest_rope = null
+
+	for rope in ropes:
+		if rope.has_method("get_closest_segment"):
+			var closest_segment: RigidBody3D = rope.get_closest_segment(global_transform.origin)
+			var distance = closest_segment.global_transform.origin.distance_to(global_transform.origin)
+			
+			if distance < 2:
+				nearest_rope = rope
+				break
+		
+	return nearest_rope
+	
 func find_ledge_info() -> Dictionary:
 	var wall_hit = Raycast.fan_out(
 		global_transform.origin + (global_transform.basis.y * 0.5),
@@ -430,11 +446,33 @@ func falling_state(delta):
 		transition_to_state("grab")
 		
 	if time_in_current_state > 5000:
-		print("In FALLING state longer than expected")
+		push_warning("In FALLING state longer than expected")
 		global_transform.origin += Vector3.UP * 2
 		transition_to_state("move")
 
+var pickup_object: Node3D = null
+
+func pickup_state(_detla: float):
+	animation.play("Emote2")
+	animation.playback_speed = 5
+		
+	if pickup_object:
+		face_towards(pickup_object.global_transform.origin)
+	
+	await animation.animation_finished
+
+	if pickup_object and pickup_object.has_method("pick_up"):
+		pickup_object.pick_up()
+		pickup_object = null
+		sticks_collected += 1
+	
+	transition_to_state("move")
+	animation.playback_speed = 1
+	# TODO: Find out why I can't do null here.
+#	pickup_object = null
+	
 func move_state(delta: float):
+	# TODO: This is here just for debug purposes, to go around and look at ledges.
 	find_ledge_info()
 	
 	time_last_on_ground = 0
@@ -454,23 +492,18 @@ func move_state(delta: float):
 	else:
 		animation.play("Idle")
 		
-	if Input.is_action_just_pressed("grab_" + str(player_index)):
-		var rope = get_parent().get_node_or_null("Rope")
-		
-		if rope == null:
-			return
-			
-		var segment = rope.get_closest_segment(global_transform.origin)
-		var segment_index = rope.get_closest_segment_index(global_transform.origin)
-		
-		if segment.global_transform.origin.distance_to(global_transform.origin) < 2:
-			var distance = rope.get_distance_on_rope_from_segment(segment_index)
-			
-			distance_on_rope = distance
-			objects_in_possession.append(rope)
-			transition_to_state("abseil_climb"	)
+	var nearest_rope = find_nearest_rope()
 	
-	if is_on_floor() and Input.is_action_just_pressed("jump_" + str(player_index)):
+	if Raycast.debug and nearest_rope:
+		DebugDraw.draw_cube(nearest_rope.global_transform.origin, 1, Color.PURPLE)
+	
+	if nearest_rope and Input.is_action_just_pressed("grab_" + str(player_index)):
+		grabbed_rope = nearest_rope
+		var grabbed_segment_index = nearest_rope.get_closest_segment_index(global_transform.origin)
+		distance_on_rope = nearest_rope.get_distance_on_rope_from_segment(grabbed_segment_index)
+		transition_to_state("abseil_climb_air")
+	
+	if Input.is_action_just_pressed("jump_" + str(player_index)):
 		movement.y = jump_strength / 2
 		snap_vector = Vector3.ZERO
 		time_in_jump_state = 0
@@ -480,6 +513,24 @@ func move_state(delta: float):
 		time_last_on_ground = Time.get_ticks_msec()
 		transition_to_state("falling")
 	
+	if Input.is_action_just_pressed("grab_" + str(player_index)):
+		for area in pickup_collision.get_overlapping_areas():
+			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
+				pickup_object = area
+				transition_to_state("pickup")
+				break
+				
+	if Input.is_action_just_pressed("camp_" + str(player_index)):
+		for area in pickup_collision.get_overlapping_areas():
+			if area.get_parent().is_in_group("player"):
+				var other_player = area.get_parent()
+				var total_sticks = sticks_collected + other_player.sticks_collected
+				
+				if total_sticks >= 6:
+					other_player.sticks_collected = 0
+					sticks_collected = 0
+					print("TIME TO CAMP")
+
 	face_towards(global_transform.origin + direction)
 	set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
@@ -508,7 +559,6 @@ func start_hosting_abseil() -> void:
 	
 	if state != "move" or !is_on_floor():
 		return
-	
 	
 	var abseil = load("res://entities/Rope/Rope.tscn")
 	var abseil_instance: Node3D = abseil.instantiate()

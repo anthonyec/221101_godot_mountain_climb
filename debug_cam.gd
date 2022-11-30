@@ -146,7 +146,7 @@ func load_camera():
 	var save_game = FileAccess.open(get_save_filename(), FileAccess.READ)
 	
 	if not save_game.file_exists("user://dev_cam.save"):
-		print("No saved data for dev cam")
+		push_warning("No saved data for dev cam")
 		return
 	
 	while save_game.get_position() < save_game.get_length():

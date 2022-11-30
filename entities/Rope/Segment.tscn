@@ -1,15 +1,18 @@
-[gd_scene load_steps=4 format=3 uid="uid://dug5iqwtidq4l"]
+[gd_scene load_steps=5 format=3 uid="uid://dug5iqwtidq4l"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_25hgj"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r77sv"]
 albedo_color = Color(0.321569, 0.239216, 0.027451, 1)
 
-[sub_resource type="CapsuleMesh" id="27"]
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_kw3nb"]
 radius = 0.025
 height = 0.5
 
-[sub_resource type="CapsuleShape3D" id="28"]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_ovq3h"]
 radius = 0.2
 height = 0.5
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_rix4b"]
+radius = 0.145695
 
 [node name="Segment" type="RigidBody3D"]
 collision_layer = 4
@@ -20,10 +23,14 @@ angular_damp = 1.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-material_override = SubResource("StandardMaterial3D_25hgj")
-mesh = SubResource("27")
+material_override = SubResource("StandardMaterial3D_r77sv")
+mesh = SubResource("CapsuleMesh_kw3nb")
 skeleton = NodePath("../..")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
-shape = SubResource("28")
+shape = SubResource("CapsuleShape3D_ovq3h")
+
+[node name="Blob" type="CollisionShape3D" parent="."]
+transform = Transform3D(0.834223, 0, 0.551427, 0, 1, 0, -0.551427, 0, 0.834223, 0, 0, 0)
+shape = SubResource("SphereShape3D_rix4b")

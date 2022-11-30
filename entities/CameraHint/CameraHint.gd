@@ -16,8 +16,6 @@ func _process(delta):
 	pass
 
 func _on_body_shape_entered(body_rid, body, body_shape_index, local_shape_index):
-	print(gameplay_camera)
-	return
 	original_distance = gameplay_camera.distance
 	original_pitch = gameplay_camera.pitch
 	original_yaw = gameplay_camera.yaw

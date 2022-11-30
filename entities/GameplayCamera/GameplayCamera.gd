@@ -32,7 +32,7 @@ func _process(delta: float) -> void:
 	)
 	
 	# Zooming.
-	camera.transform.origin.z = lerp(camera.transform.origin.z, clamp(distance, 1, 100), delta * speed)
+	camera.transform.origin.z = lerp(camera.transform.origin.z, clamp(distance, 1.0, 100.0), delta * speed)
 	
 	# Roation.
 	global_rotation.y = lerp_angle(global_rotation.y, deg_to_rad(yaw), delta * speed)
@@ -40,8 +40,8 @@ func _process(delta: float) -> void:
 	
 	if debug:
 		DebugDraw.set_text("distance", distance)
-		DebugDraw.set_text("pitch", pitch)
 		DebugDraw.set_text("yaw", yaw)
+		DebugDraw.set_text("pitch", pitch)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action("rotate_camera_left"):

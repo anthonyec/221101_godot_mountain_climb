@@ -6,17 +6,15 @@ var loaded: bool = false
 var sounds: Dictionary = {}
 
 func _ready():
-	print("SFX: Started")
-
 	var current_directory_path = self.get_script().get_path()
 	var base_directory_path = str(current_directory_path).replace("/SFX.gd", "/audio")
 	var results = scan_directory(base_directory_path, ".wav")
 	
 	if results.is_empty():
-		print("SFX: Warning, no sound files were found.")
+		push_warning("SFX: Warning, no sound files were found.")
 		
 		for result in scan_directory(base_directory_path):
-			print("SFX: Non-sound file found: ", result)
+			push_warning("SFX: Non-sound file found: ", result)
 			
 	for result in results:
 		# Remove the leading "/" and remove_at the trailing file extension including period.
@@ -41,7 +39,7 @@ func _ready():
 	
 func create(sound_name: String, options = {}) -> AudioStreamPlayer3D:
 	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		print("SFX: The sound called '", sound_name, "' does not exist.")
+		push_error("SFX: The sound called '", sound_name, "' does not exist.")
 		return AudioStreamPlayer3D.new()
 		
 	var file = get_sound_file(sound_name)
@@ -51,7 +49,7 @@ func create(sound_name: String, options = {}) -> AudioStreamPlayer3D:
 	
 func play_attached_to_node(sound_name: String, node: Node3D, options = {}) -> AudioStreamPlayer3D:
 	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		print("SFX: The sound called '", sound_name, "' does not exist.")
+		push_error("SFX: The sound called '", sound_name, "' does not exist.")
 		return AudioStreamPlayer3D.new()
 		
 	var file = get_sound_file(sound_name)
@@ -65,7 +63,7 @@ func play_attached_to_node(sound_name: String, node: Node3D, options = {}) -> Au
 
 func play_at_location(sound_name: String, position_in_world: Vector3, options = {}) -> AudioStreamPlayer3D:
 	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		print("SFX: The sound called '", sound_name, "' does not exist.")
+		push_error("SFX: The sound called '", sound_name, "' does not exist.")
 		return AudioStreamPlayer3D.new()
 		
 	var file = get_sound_file(sound_name)
@@ -81,7 +79,7 @@ func play_at_location(sound_name: String, position_in_world: Vector3, options = 
 # TODO: Match all settings for everywhere to be the same as spatial sound.
 func play_everywhere(sound_name: String, options = {}) -> AudioStreamPlayer:
 	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		print("SFX: The sound called '", sound_name, "' does not exist.")
+		push_error("SFX: The sound called '", sound_name, "' does not exist.")
 		return AudioStreamPlayer.new()
 		
 	var file = get_sound_file(sound_name)
@@ -153,7 +151,7 @@ func scan_directory(path: String, fileNameEndsWith: String = ""):
 	var directory = DirAccess.open(path)
 	
 	if directory == null:
-		print("SFX: Failed to open path: " + path)
+		push_error("SFX: Failed to open path: " + path)
 		return []
 
 	var results = []

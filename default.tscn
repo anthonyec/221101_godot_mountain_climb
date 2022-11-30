@@ -1,13 +1,16 @@
-[gd_scene load_steps=10 format=3 uid="uid://bdd60q3wm6joa"]
+[gd_scene load_steps=16 format=3 uid="uid://bdd60q3wm6joa"]
 
 [ext_resource type="Script" path="res://default.gd" id="1_dkhqu"]
 [ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="3_r8qi8"]
 [ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://wind_loop.wav" id="4"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="4_sqhbd"]
+[ext_resource type="Script" path="res://entities/Stamina/Stamina.gd" id="4_tlylg"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="5_ccnoe"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="6_e5o6w"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0ripk"]
+[ext_resource type="PackedScene" uid="uid://uut3d6ch7nv4" path="res://entities/Rope/Rope.tscn" id="9_trjaf"]
 
 [sub_resource type="Environment" id="1"]
 background_mode = 1
@@ -17,6 +20,44 @@ volumetric_fog_enabled = true
 volumetric_fog_density = 0.02
 volumetric_fog_albedo = Color(0.87451, 0.968627, 1, 1)
 volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
+
+[sub_resource type="Animation" id="Animation_i38th"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Node3D4:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-28.6046, 8.52119, 13.434)]
+}
+
+[sub_resource type="Animation" id="Animation_uitor"]
+resource_name = "Rope Wiggle"
+length = 5.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("../Node3D4:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 2.5),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector3(-28.6046, 8.52119, 13.434), Vector3(-29.5171, 8.52119, 13.434)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_tldy5"]
+_data = {
+"RESET": SubResource("Animation_i38th"),
+"Rope Wiggle": SubResource("Animation_uitor")
+}
 
 [node name="Default" type="Node3D"]
 script = ExtResource("1_dkhqu")
@@ -41,9 +82,14 @@ speed = 1.0
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -2.23638, 2.41462, 2.92725)
 player_index = 1
 
+[node name="Stamina" parent="Player1" instance=ExtResource("3_r8qi8")]
+
 [node name="Player2" parent="." groups=["player"] instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.61428, 1.5274, 1.84102)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.8903, 1.5274, 6.58697)
 player_index = 2
+
+[node name="Stamina" parent="Player2" instance=ExtResource("3_r8qi8")]
+script = ExtResource("4_tlylg")
 
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(0.710208, -0.0186935, 0.703743, 0.0181654, 0.999801, 0.00822541, -0.703757, 0.006942, 0.710407, 4.51594, 30.9783, -35.1081)
@@ -295,7 +341,6 @@ transform = Transform3D(0.912599, 0, 0.408856, 0, 1, 0, -0.408856, 0, 0.912599, 
 use_collision = true
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="CSGCombiner3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(2, 2, 2)
@@ -341,6 +386,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8575, 1.51739, 0)
 material_override = ExtResource("5_ccnoe")
 use_collision = true
 size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D67" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4796, 3.78899, 13.4789)
+material_override = ExtResource("5_ccnoe")
+use_collision = true
+size = Vector3(2, 6.56069, 2)
+
+[node name="CSGBox3D68" type="CSGBox3D" parent="."]
+transform = Transform3D(0.834223, 0, 0.551427, 0, 1, 0, -0.551427, 0, 0.834223, -22.7121, 5.96475, 13.4789)
+material_override = ExtResource("5_ccnoe")
+use_collision = true
+size = Vector3(2, 2.15547, 2)
 
 [node name="CSGBox3D50" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4559, 1.51739, 0)
@@ -509,7 +566,6 @@ pitch_enabled = false
 [node name="CameraHint6" parent="." node_paths=PackedStringArray("gameplay_camera") instance=ExtResource("8_0ripk")]
 transform = Transform3D(10.7567, 0, 0, 0, 12.0885, 0, 0, 0, 7.61318, -13.1446, 16.445, -34.8987)
 gameplay_camera = NodePath("../GameplayCamera")
-distance = 10.0
 pitch = 40.0
 yaw = 180.0
 
@@ -538,3 +594,39 @@ use_collision = true
 radius = 1.52487
 height = 0.66053
 sides = 16
+
+[node name="Node3D" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4956, 7.65399, 14.3773)
+
+[node name="Rope" parent="." instance=ExtResource("9_trjaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4956, 7.65399, 14.3773)
+root_attachment = NodePath("../Node3D")
+
+[node name="Node3D2" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.6745, 8.52119, 13.434)
+
+[node name="Rope2" parent="." instance=ExtResource("9_trjaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.6745, 8.52119, 13.434)
+root_attachment = NodePath("../Node3D2")
+
+[node name="Node3D3" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.614, 5.29399, 13.434)
+
+[node name="Rope3" parent="." instance=ExtResource("9_trjaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.614, 5.29399, 13.434)
+root_attachment = NodePath("../Node3D3")
+
+[node name="Node3D4" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.6046, 8.52119, 13.434)
+
+[node name="Rope4" parent="." instance=ExtResource("9_trjaf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.6046, 8.52119, 13.434)
+root_attachment = NodePath("../Node3D4")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Rope4")
+autoplay = "Rope Wiggle"
+playback_speed = 3.0
+libraries = {
+"": SubResource("AnimationLibrary_tldy5")
+}
