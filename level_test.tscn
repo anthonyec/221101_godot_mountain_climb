@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cqu3snkn4g3k5"]
+[gd_scene load_steps=15 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
@@ -11,6 +11,8 @@
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0hn72"]
 [ext_resource type="PackedScene" uid="uid://cmqnkwo2su52t" path="res://entities/WoodPickup/WoodPickup.tscn" id="9_ithm3"]
+[ext_resource type="PackedScene" uid="uid://c2d2g0baa1uwf" path="res://entities/StateMachine/StateMachine.tscn" id="12_wie0s"]
+[ext_resource type="Script" path="res://entities/Player/states/Move.gd" id="13_arr7i"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
 background_mode = 1
@@ -276,3 +278,8 @@ transform = Transform3D(0.507253, 0, 0.861797, 0, 1, 0, -0.861797, 0, 0.507253, 
 
 [node name="WoodPickup10" parent="." instance=ExtResource("9_ithm3")]
 transform = Transform3D(1, 0, 0, 0, 0.400829, -0.916153, 0, 0.916153, 0.400829, 3.70312, 26.1703, -13.6713)
+
+[node name="StateMachine" parent="." instance=ExtResource("12_wie0s")]
+
+[node name="Move" type="Node" parent="StateMachine"]
+script = ExtResource("13_arr7i")
