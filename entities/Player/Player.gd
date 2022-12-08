@@ -1,3 +1,4 @@
+class_name Player
 extends CharacterBody3D
 
 @export var player_index: int = 0
@@ -135,9 +136,10 @@ func abseil_host_state(delta: float):
 var grabbed_rope = null
 var distance_on_rope = -1
 
-func abseil_climb_air(_delta: float):
+func abseil_climb_air(delta: float):
 	animation.play_backwards("Jump")
 #	collision_shape.disabled = true
+	stamina.use(2.0 * delta)
 
 	if !Input.is_action_pressed("grab_" + str(player_index)):
 		distance_on_rope = -1
@@ -166,10 +168,12 @@ func abseil_climb_air(_delta: float):
 	# Go up the rope.
 	if input_direction.y < 0:
 		distance_on_rope -= 0.02
+		stamina.use(10.0 * delta)
 	
 	# Go down the rope.
 	if input_direction.y > 0:
 		distance_on_rope += 0.02
+		stamina.use(10.0 * delta)
 		
 	Raycast.cast_in_direction(global_transform.origin, -global_transform.basis.z, 1)
 	
@@ -285,6 +289,7 @@ var into_jump_movement: Vector3 = Vector3.ZERO
 var time_in_jump_state: float = 0
 
 func jumping_state(delta: float):
+	stamina.can_recover = false
 	animation.play("Jump")
 	
 	if into_jump_movement == Vector3.ZERO:
@@ -435,6 +440,7 @@ var time_last_on_ground: int = 0
 var coytee_enabled: bool = true
 
 func falling_state(delta):
+	stamina.can_recover = false
 	animation.play("Fall")
 	
 	if into_jump_movement == Vector3.ZERO:
@@ -500,6 +506,8 @@ func pickup_state(_detla: float):
 #	pickup_object = null
 	
 func move_state(delta: float):
+	stamina.can_recover = true
+	
 	# TODO: This is here just for debug purposes, to go around and look at ledges.
 	find_ledge_info()
 	

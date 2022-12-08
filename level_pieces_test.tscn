@@ -1,10 +1,9 @@
-[gd_scene load_steps=13 format=3 uid="uid://dqss127i8qu3r"]
+[gd_scene load_steps=12 format=3 uid="uid://dqss127i8qu3r"]
 
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_vck86"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_atslf"]
 [ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_j2vqq"]
 [ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="4_6y5ft"]
-[ext_resource type="Script" path="res://entities/Stamina/Stamina.gd" id="5_v48en"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="6_uwidg"]
 [ext_resource type="Material" uid="uid://d4amufhssgpme" path="res://addons/kenney_prototypes/assets/colors/green/materials/material_009.tres" id="7_63ciu"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
@@ -38,23 +37,21 @@ shadow_enabled = true
 [node name="GameplayCamera" parent="." instance=ExtResource("2_atslf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
 debug = true
-target_paths = [NodePath("../Player2")]
 distance = 5.0
 yaw = -90.0
 speed = 1.0
 
-[node name="Player1" parent="." groups=["player"] instance=ExtResource("3_j2vqq")]
+[node name="Player1" parent="." instance=ExtResource("3_j2vqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
 player_index = 1
 
 [node name="Stamina" parent="Player1" instance=ExtResource("4_6y5ft")]
 
-[node name="Player2" parent="." groups=["player"] instance=ExtResource("3_j2vqq")]
+[node name="Player2" parent="." instance=ExtResource("3_j2vqq")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 1.56953)
 player_index = 2
 
 [node name="Stamina" parent="Player2" instance=ExtResource("4_6y5ft")]
-script = ExtResource("5_v48en")
 
 [node name="CampingScene" parent="." instance=ExtResource("6_uwidg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.3976, 18.9528, -34.8805)

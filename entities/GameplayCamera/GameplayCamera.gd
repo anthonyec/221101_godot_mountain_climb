@@ -1,11 +1,11 @@
 extends Node3D
 
 @export var debug: bool = false
-@export var target_paths: Array
 @export var distance: float = 10
 @export var pitch: float = 0
 @export var yaw: float = 0
 @export var speed: float = 5
+@export var only_focus_on: int = -1
 
 @onready var rig: Node3D = $"%Rig"
 @onready var camera: Camera3D = $"%Camera3D"
@@ -13,8 +13,13 @@ extends Node3D
 var targets: Array[Node3D]
 
 func _ready() -> void:
-	for target_path in target_paths:
-		targets.append(get_node_or_null(target_path))
+	var players = get_tree().get_nodes_in_group("player")
+	
+	for index in players.size():
+		var player = players[index]
+		
+		if only_focus_on == -1 or only_focus_on == index:
+			targets.append(player)
 
 func _process(delta: float) -> void:
 	# Get the average position of all targets.

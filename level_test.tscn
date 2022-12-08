@@ -1,5 +1,6 @@
-[gd_scene load_steps=11 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=12 format=3 uid="uid://loqth6l520ji"]
 
+[ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
 [ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_5uwct"]
@@ -21,6 +22,22 @@ volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
 
 [node name="Default" type="Node3D"]
 
+[node name="UI" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="StaminaIndicator1" parent="UI" instance=ExtResource("1_r8c7u")]
+layout_mode = 1
+player_path = NodePath("../../Player1")
+
+[node name="StaminaIndicator2" parent="UI" instance=ExtResource("1_r8c7u")]
+layout_mode = 1
+player_path = NodePath("../../Player2")
+
 [node name="Checkpoint" type="Node" parent="."]
 script = ExtResource("1_x8714")
 
@@ -36,16 +53,16 @@ shadow_enabled = true
 [node name="GameplayCamera" parent="." instance=ExtResource("2_v3hew")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
 debug = true
-target_paths = [NodePath("../Player2")]
 distance = 5.0
 yaw = -90.0
 speed = 1.0
+only_focus_on = 1
 
-[node name="Player1" parent="." groups=["player"] instance=ExtResource("3_5uwct")]
+[node name="Player1" parent="." instance=ExtResource("3_5uwct")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
 player_index = 1
 
-[node name="Player2" parent="." groups=["player"] instance=ExtResource("3_5uwct")]
+[node name="Player2" parent="." instance=ExtResource("3_5uwct")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 1.56953)
 player_index = 2
 

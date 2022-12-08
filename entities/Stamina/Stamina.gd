@@ -4,6 +4,7 @@ extends Node
 signal depleted
 signal full
 
+@export var can_recover: bool = true
 @export var regain_amount: float = 20.0
 @export var pause_time: float = 1.0
 @export var max_stamina: float = 100.0
@@ -40,6 +41,9 @@ func use(amount_to_subtract: float = 1.0):
 	regain_timer.start()
 	
 func regain(amount_to_add: float = 1.0):
+	if !can_recover:
+		return
+
 	previous_amount = amount
 	amount = clamp(amount + amount_to_add, 0, max_stamina)
 
