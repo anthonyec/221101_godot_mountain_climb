@@ -24,10 +24,10 @@ func _process(delta):
 		regain(regain_amount * delta)
 	
 	if previous_amount != amount:
-		if amount == 0:
+		if is_depleted():
 			depleted.emit()
 			
-		if amount == max_stamina:
+		if is_full():
 			full.emit()
 
 func use(amount_to_subtract: float = 1.0):
@@ -42,6 +42,12 @@ func use(amount_to_subtract: float = 1.0):
 func regain(amount_to_add: float = 1.0):
 	previous_amount = amount
 	amount = clamp(amount + amount_to_add, 0, max_stamina)
+
+func is_depleted() -> bool:
+	return amount == 0
+	
+func is_full() -> bool:
+	return amount == max_stamina
 
 func _on_regain_timer_timeout() -> void:
 	regain_timer.stop()

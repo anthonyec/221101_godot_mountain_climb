@@ -18,6 +18,7 @@ extends CharacterBody3D
 @onready var model: Node3D = $Model
 @onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
 @onready var pickup_collision: Area3D = $PickupArea
+@onready var stamina: Stamina = $Stamina
 
 var previous_state: String = state
 var time_in_current_state: int = 0
@@ -186,11 +187,18 @@ func abseil_climb_air(_delta: float):
 	global_transform.origin = position_on_rope
 	var _move_and_slide = move_and_slide()
 
-func grab_state(_delta):
+func grab_state(delta):
 	animation.play("WallSlide")
 	collision_shape.disabled = true
 	
 	var direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	
+	stamina.use(2.0 * delta)
+	
+	if stamina.is_depleted():
+		collision_shape.disabled = false
+		transition_to_state("falling")
+		return
 
 	set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
@@ -216,6 +224,8 @@ func grab_state(_delta):
 		-1 if !ledge_info.has_reached_right_bound else 0,
 		1 if !ledge_info.has_reached_left_bound else 0,
 	)
+	
+	stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
 	var climb_up_strength = -global_transform.basis.z.dot(direction)
 	
@@ -261,6 +271,7 @@ func grab_state(_delta):
 		model.transform.origin.z = 0
 		model.transform.origin.y = 0
 		collision_shape.disabled = false
+		stamina.use(30.0)
 		transition_to_state("move")
 		
 	if !auto_grab_ledge and !Input.is_action_pressed("grab_" + str(player_index)):
@@ -454,7 +465,7 @@ func falling_state(delta):
 		
 	var ledge_info = find_ledge_info()
 	
-	if !ledge_info.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge):
+	if !ledge_info.is_empty() and (Input.is_action_pressed("grab_" + str(player_index)) || auto_grab_ledge) and not stamina.is_depleted():
 		global_transform.origin = ledge_info.hang_position
 		into_jump_movement = Vector3.ZERO
 		movement = Vector3.ZERO
