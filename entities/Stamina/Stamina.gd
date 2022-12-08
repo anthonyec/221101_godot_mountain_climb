@@ -1,20 +1,48 @@
+class_name Stamina
 extends Node
 
-signal stamina_depleted
-signal stamina_full
+signal depleted
+signal full
 
-@export var loss_per_second: float = 2.0
-@export var gain_per_second: float = 5.0
+@export var regain_amount: float = 20.0
+@export var pause_time: float = 1.0
 @export var max_stamina: float = 100.0
 
-var current_amount: float = 100.0
+@onready var regain_timer: Timer = $RegainTimer
 
-func _process(_delta):
-	DebugDraw.set_text("stamina_" + str(get_parent().get_instance_id()), current_amount)
+var previous_amount: float = max_stamina
+var amount: float = max_stamina
+var is_recovering: bool = false
 
-func use(amount: float = 1.0):
-	current_amount = clamp(current_amount - amount, 0, max_stamina)
+func _ready() -> void:
+	regain_timer.wait_time = pause_time
+
+func _process(delta):
+	DebugDraw.set_text("stamina_" + str(get_parent().get_instance_id()), amount)
 	
-func regain(amount: float = 1.0):
-	current_amount = clamp(current_amount + amount, 0, max_stamina)
+	if is_recovering:
+		regain(regain_amount * delta)
+	
+	if previous_amount != amount:
+		if amount == 0:
+			depleted.emit()
+			
+		if amount == max_stamina:
+			full.emit()
 
+func use(amount_to_subtract: float = 1.0):
+	is_recovering = false
+	previous_amount = amount
+	amount = clamp(amount - amount_to_subtract, 0, max_stamina)
+	
+	# Reset the timer
+	regain_timer.stop()
+	regain_timer.start()
+	
+func regain(amount_to_add: float = 1.0):
+	previous_amount = amount
+	amount = clamp(amount + amount_to_add, 0, max_stamina)
+
+func _on_regain_timer_timeout() -> void:
+	regain_timer.stop()
+	is_recovering = true
