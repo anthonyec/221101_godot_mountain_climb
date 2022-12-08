@@ -1,0 +1,825 @@
+[gd_scene load_steps=13 format=3 uid="uid://dqss127i8qu3r"]
+
+[ext_resource type="Script" path="res://Checkpoint.gd" id="1_vck86"]
+[ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_atslf"]
+[ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_j2vqq"]
+[ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="4_6y5ft"]
+[ext_resource type="Script" path="res://entities/Stamina/Stamina.gd" id="5_v48en"]
+[ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="6_uwidg"]
+[ext_resource type="Material" uid="uid://d4amufhssgpme" path="res://addons/kenney_prototypes/assets/colors/green/materials/material_009.tres" id="7_63ciu"]
+[ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
+[ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="8_bd8aj"]
+[ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="9_5qjss"]
+[ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="10_5odj7"]
+
+[sub_resource type="Environment" id="Environment_q64ch"]
+background_mode = 1
+background_color = Color(0.631373, 0.913725, 1, 1)
+ssao_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.02
+volumetric_fog_albedo = Color(0.87451, 0.968627, 1, 1)
+volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
+
+[node name="Default" type="Node3D"]
+
+[node name="Checkpoint" type="Node" parent="."]
+script = ExtResource("1_vck86")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_q64ch")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.875861, -0.228919, 0.424811, 0, 0.88032, 0.47438, -0.482564, -0.415491, 0.771038, 0, 8.40226, 0)
+light_color = Color(1, 0.992157, 0.937255, 1)
+light_energy = 1.5
+shadow_enabled = true
+
+[node name="GameplayCamera" parent="." instance=ExtResource("2_atslf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
+debug = true
+target_paths = [NodePath("../Player2")]
+distance = 5.0
+yaw = -90.0
+speed = 1.0
+
+[node name="Player1" parent="." groups=["player"] instance=ExtResource("3_j2vqq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
+player_index = 1
+
+[node name="Stamina" parent="Player1" instance=ExtResource("4_6y5ft")]
+
+[node name="Player2" parent="." groups=["player"] instance=ExtResource("3_j2vqq")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 1.56953)
+player_index = 2
+
+[node name="Stamina" parent="Player2" instance=ExtResource("4_6y5ft")]
+script = ExtResource("5_v48en")
+
+[node name="CampingScene" parent="." instance=ExtResource("6_uwidg")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.3976, 18.9528, -34.8805)
+
+[node name="Ground" type="CSGBox3D" parent="."]
+material_override = ExtResource("7_63ciu")
+use_collision = true
+size = Vector3(100, 1, 100)
+
+[node name="TwoPlayerLedgeAndRope" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.4986, 4.59751, -1.98546)
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="TwoPlayerLedgeAndRope"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+material_override = ExtResource("7_j02qa")
+use_collision = true
+size = Vector3(0.2, 4, 9)
+
+[node name="CSGBox3D16" type="CSGBox3D" parent="TwoPlayerLedgeAndRope"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -1.01621, 3.0826, -0.912001)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 2, 7)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="TwoPlayerLedgeAndRope"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -3.48337, -3.09706, 0.979175)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="TwoPlayerLedgeAndRope"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.00770001, 1.5103, -0.8975)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 1, 9)
+
+[node name="TightVerticalClimbSection" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -24.7226, 2.59314, -5.75697)
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="TightVerticalClimbSection"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.11574, -1.10699, 2.11983)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 2, 1)
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="TightVerticalClimbSection"]
+transform = Transform3D(1, 0.000925024, -1.77636e-14, -0.000925024, 1, -4.04341e-11, -1.77636e-14, 4.04341e-11, 1, -0.614953, 0.891785, 3.61974)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(1, 2, 2)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="TightVerticalClimbSection"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.10898, 2.88775, -4.36145)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="TightVerticalClimbSection"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.89251, -0.373909)
+material_override = ExtResource("7_j02qa")
+use_collision = true
+size = Vector3(0.2, 8, 10)
+
+[node name="TightVerticalClimbSection2" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -36.5049, 2.64097, -5.75697)
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.601884, -1.10729, -3.86347)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(1, 2, 1)
+
+[node name="CSGBox3D13" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.601884, -1.10729, -0.856754)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(1, 2, 1)
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09192, -1.10729, 3.66347)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 2, 1)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09192, 3.39653, 2.13133)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 1, 1)
+
+[node name="CSGBox3D16" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09192, 3.89618, -0.871944)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 1, 1)
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.09191, 4.40098, -3.88198)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(2, 1, 1)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="TightVerticalClimbSection2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.89251, -0.373909)
+material_override = ExtResource("7_j02qa")
+use_collision = true
+size = Vector3(0.2, 8, 10)
+
+[node name="TightVerticalClimbSection4" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -36.5049, 2.64097, 4.32175)
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -1.60485, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D13" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620565, -1.60485, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -1.60485, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -1.60485, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D16" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -1.60485, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -1.60485, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D19" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -1.60485, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D20" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -1.60485, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D21" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -1.60485, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D22" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -1.60485, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D23" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -0.595085, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D24" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -0.595085, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D25" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.62057, -0.595085, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D26" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -0.595085, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D27" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -0.595085, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D28" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -0.595085, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D29" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -0.595085, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D30" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -0.595085, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D31" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, -0.595085, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D32" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, -0.595085, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D33" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 0.417976, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D34" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 0.417976, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D35" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620569, 0.417976, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D36" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620563, 0.417976, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D37" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 0.417976, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D38" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 0.417976, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D39" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 0.417976, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D40" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 0.417976, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D41" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 0.417976, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D42" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 0.417976, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D43" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 1.42795, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D44" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620563, 1.42795, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D45" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620568, 1.42795, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D46" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620562, 1.42795, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D47" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 1.42795, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D48" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 1.42795, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D49" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 1.42795, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D50" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 1.42795, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D51" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 1.42795, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D52" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 1.42795, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D54" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620562, 2.43006, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D55" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620567, 2.43006, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D58" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 2.43006, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D59" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 2.43006, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D60" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 2.43006, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D61" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620571, 2.43006, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D62" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 2.43006, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D68" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 3.44228, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D70" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 3.44228, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D72" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.620564, 3.44228, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D73" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D74" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D75" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D76" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D77" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D78" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D79" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D80" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D81" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D82" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -1.60485, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D84" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D85" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D96" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.68133, -0.595085, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D86" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64207, -0.595085, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D87" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D88" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D89" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D90" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D91" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D92" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, -0.595085, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D94" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64207, 0.417976, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D95" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D97" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D98" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D99" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D100" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D102" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 0.417976, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D105" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 1.42795, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D106" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64207, 1.42795, -1.87099)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D108" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 1.42795, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D110" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 1.42795, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D118" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 2.43006, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D119" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 2.43006, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D128" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.64208, 3.44228, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D133" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66649, -1.60485, -4.87922)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D134" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -1.60485, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D135" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -1.60485, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D137" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66649, -1.60485, -0.883148)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D138" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -1.60485, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D139" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66649, -1.60485, 1.10965)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D140" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -1.60485, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D141" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66649, -1.60485, 3.11)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D142" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -1.60485, 4.11584)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D144" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -0.595085, -3.87338)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D148" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -0.595085, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D150" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -0.595085, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D151" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, -0.595085, 1.10765)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D155" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, 0.417976, -2.87682)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D158" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, 0.417976, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D160" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, 0.417976, 2.11549)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D178" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.66648, 2.43006, 0.122688)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="TightVerticalClimbSection4"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.921589, -0.373909)
+material_override = ExtResource("7_j02qa")
+use_collision = true
+size = Vector3(0.2, 6, 10)
+
+[node name="TightVerticalClimbSection5" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -25.1704, 2.64097, 4.32175)
+
+[node name="CSGBox3D178" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18374, -1.53328, -3.94315)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 1, 1)
+
+[node name="CSGBox3D180" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.18941, 3.38667, -3.31869)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 1, 4)
+
+[node name="CSGBox3D179" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 1.29477e-08, 1.96162e-09, -1.29477e-08, 0.955123, 0.296208, 1.96162e-09, -0.296208, 0.955123, -2.12621, 1.77855, 4.03879)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 1, 1)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 1.29346e-08, 1.95755e-09, -1.29346e-08, 0.955216, 0.295908, 1.95755e-09, -0.295908, 0.955216, -0.18871, 1.66991, -1.96554)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(0.2, 0.1, 5)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 1.29346e-08, 1.95755e-09, -1.29346e-08, 0.955216, 0.295908, 1.95755e-09, -0.295908, 0.955216, -0.188709, 1.61582, 2.01707)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(0.2, 0.1, 5)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="TightVerticalClimbSection5"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.921589, -0.373909)
+material_override = ExtResource("7_j02qa")
+use_collision = true
+size = Vector3(0.2, 6, 10)
+
+[node name="BalanceAcross" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.26546, 2.7087, 10.5787)
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="BalanceAcross"]
+material_override = ExtResource("10_5odj7")
+use_collision = true
+size = Vector3(12.1102, 0.5, 0.5)
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="BalanceAcross"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.52263, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="BalanceAcross"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.51502, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="BalanceAcrossDropDown" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.26546, 2.7087, 19.2399)
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="BalanceAcrossDropDown"]
+transform = Transform3D(0.961064, -0.276325, 0, 0.276325, 0.961064, 0, 0, 0, 1, 0.66775, 1.88527, 0)
+material_override = ExtResource("10_5odj7")
+use_collision = true
+size = Vector3(14, 0.5, 0.5)
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="BalanceAcrossDropDown"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.52263, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="BalanceAcrossDropDown"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.28128, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="JumpOver" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.87596, 2.7087, -4.53044)
+
+[node name="CSGBox3D13" type="CSGBox3D" parent="JumpOver"]
+material_override = ExtResource("10_5odj7")
+use_collision = true
+size = Vector3(12.1102, 0.5, 0.5)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.52263, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.51502, -1.27211, -0.0080452)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="CSGBox3D7" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4939, -0.229307, -0.00884247)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 4, 4)
+
+[node name="CSGBox3D11" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0242567, 2.81696, 6.24689)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 10, 5)
+
+[node name="CSGBox3D12" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.03192, 2.81696, 6.73471)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 10, 4)
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.410909, 2.17821, -4.68593)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(6, 9, 4)
+
+[node name="CSGBox3D8" type="CSGBox3D" parent="JumpOver"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4939, 1.81292, 4.49076)
+material_override = ExtResource("8_bd8aj")
+use_collision = true
+size = Vector3(4, 8, 5)
+
+[node name="CameraHint" parent="JumpOver" node_paths=PackedStringArray("gameplay_camera") instance=ExtResource("9_5qjss")]
+transform = Transform3D(14.6558, 0, 0, 0, 2.89229, 0, 0, 0, 5.97102, 0.610767, 0.915365, 0.567543)
+gameplay_camera = NodePath("../../GameplayCamera")
+pitch = 70.0
+yaw_enabled = false
+
+[node name="CameraHint2" parent="JumpOver" node_paths=PackedStringArray("gameplay_camera") instance=ExtResource("9_5qjss")]
+transform = Transform3D(4.55723, 0, 0, 0, 2.89229, 0, 0, 0, 4.43797, 11.6203, 3.15611, -0.121391)
+gameplay_camera = NodePath("../../GameplayCamera")
+pitch = 40.0
+yaw = -180.0
+
+[node name="CameraHint3" parent="JumpOver" node_paths=PackedStringArray("gameplay_camera") instance=ExtResource("9_5qjss")]
+transform = Transform3D(4.55723, 0, 0, 0, 2.89229, 0, 0, 0, 4.43797, 11.6203, 6.13363, 4.90299)
+gameplay_camera = NodePath("../../GameplayCamera")
+yaw = -270.0

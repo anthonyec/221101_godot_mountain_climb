@@ -1,8 +1,8 @@
-[gd_resource type="StandardMaterial3D" load_steps=2 format=2]
+[gd_resource type="StandardMaterial3D" load_steps=2 format=3 uid="uid://d4amufhssgpme"]
 
-[ext_resource path="res://addons/kenney_prototypes/assets/colors/green/textures/texture_09.png" type="Texture2D" id=1]
+[ext_resource type="Texture2D" uid="uid://oenvtic762bg" path="res://addons/kenney_prototypes/assets/colors/green/textures/texture_09.png" id="1"]
 
 [resource]
-flags_world_triplanar = true
-albedo_texture = ExtResource( 1 )
+albedo_color = Color(0, 0.317647, 0.113725, 1)
+albedo_texture = ExtResource("1")
 uv1_triplanar = true
