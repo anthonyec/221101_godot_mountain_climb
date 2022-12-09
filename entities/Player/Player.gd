@@ -1,6 +1,10 @@
 class_name Player
 extends CharacterBody3D
 
+# TODO: Find out if I need @onready annotation. Seems to work without but maybe 
+# it's safer. I originally saw it in this video: https://youtu.be/8BgAeN4RRR4?t=150
+@onready @export var other_player: Node
+
 @export var player_index: int = 0
 @export var gravity: float = 20
 @export var jump_strength: float = 8
@@ -613,7 +617,6 @@ func move_state(delta: float):
 	if Input.is_action_just_pressed("camp_" + str(player_index)):
 		for area in pickup_collision.get_overlapping_areas():
 			if area.get_parent().is_in_group("player"):
-				var other_player = area.get_parent()
 				var total_sticks = sticks_collected + other_player.sticks_collected
 				
 				if total_sticks >= 6:
