@@ -19,8 +19,6 @@ func _ready() -> void:
 	regain_timer.wait_time = pause_time
 
 func _process(delta):
-	DebugDraw.set_text("stamina_" + str(get_parent().get_instance_id()), amount)
-	
 	if is_recovering:
 		regain(regain_amount * delta)
 	

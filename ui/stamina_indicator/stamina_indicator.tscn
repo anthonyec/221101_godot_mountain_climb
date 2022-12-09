@@ -6,9 +6,11 @@
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
-offset_bottom = 40.0
+offset_bottom = 5.0
 script = ExtResource("1_qtnvw")
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
-offset_right = 100.0
-offset_bottom = 30.0
+offset_right = 40.0
+offset_bottom = 5.0
+pivot_offset = Vector2(20, 2.5)
+show_percentage = false

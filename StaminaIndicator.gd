@@ -4,9 +4,16 @@ extends Control
 
 @onready var progress_bar: ProgressBar = $ProgressBar
 @onready var player: Player = get_node(player_path)
+@onready var stamina: Stamina = player.get_node_or_null("Stamina")
+
+var is_progress_visible: bool = false
+var is_warning_visible: bool = false
 
 func _ready() -> void:
-	player.stamina.connect("full", on_stamina_full)
+	stamina.connect("full", on_stamina_full)
+	
+	if stamina.is_full():
+		hide_progress(true)
 
 func _process(delta: float) -> void:
 	var camera = get_viewport().get_camera_3d()
@@ -14,10 +21,41 @@ func _process(delta: float) -> void:
 	if !camera or !player:
 		return
 		
+	if !is_progress_visible and !stamina.is_full():
+		show_progress()
+		
+	if stamina.amount < stamina.max_stamina * 0.15:
+		progress_bar.modulate = Color(1, 0, 0, 1)
+	else:
+		progress_bar.modulate = Color(0, 1, 0, 1)
+		
 	var screen_position = camera.unproject_position(player.global_transform.origin + player.global_transform.basis.y)
 	
-	progress_bar.position = screen_position - (progress_bar.size / 2)
+	progress_bar.position = screen_position - (size / 2)
 	progress_bar.value = player.stamina.amount
 
+func show_progress() -> void:
+	var tween = get_tree().create_tween()
+
+	tween.set_parallel(true)
+	tween.tween_property(progress_bar, "scale", Vector2(1, 1), 0.5).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(progress_bar, "modulate", Color(0, 1, 0, 1), 0.25).set_trans(Tween.TRANS_SINE)
+	
+	is_progress_visible = true
+	
+func hide_progress(instant: bool = false) -> void:
+	if instant:
+		progress_bar.modulate = Color(0, 1, 0, 0)
+		progress_bar.scale = Vector2(0, 0)
+		return
+
+	var tween = get_tree().create_tween()
+
+	tween.set_parallel(true)
+	tween.tween_property(progress_bar, "scale", Vector2.ZERO, 0.5).set_trans(Tween.TRANS_BACK)
+	tween.tween_property(progress_bar, "modulate", Color(0, 1, 0, 0), 0.45).set_trans(Tween.TRANS_SINE)
+	
+	is_progress_visible = false
+
 func on_stamina_full() -> void:
-	print("on_stamina_full")
+	hide_progress()
