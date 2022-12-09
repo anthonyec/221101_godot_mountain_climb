@@ -590,30 +590,30 @@ sides = 16
 [node name="Node3D" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4956, 7.65399, 14.3773)
 
-[node name="Rope" parent="." instance=ExtResource("9_trjaf")]
+[node name="Rope" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("9_trjaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.4956, 7.65399, 14.3773)
-root_attachment = NodePath("../Node3D")
+root_node = NodePath("../Node3D")
 
 [node name="Node3D2" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.6745, 8.52119, 13.434)
 
-[node name="Rope2" parent="." instance=ExtResource("9_trjaf")]
+[node name="Rope2" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("9_trjaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.6745, 8.52119, 13.434)
-root_attachment = NodePath("../Node3D2")
+root_node = NodePath("../Node3D2")
 
 [node name="Node3D3" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.614, 5.29399, 13.434)
 
-[node name="Rope3" parent="." instance=ExtResource("9_trjaf")]
+[node name="Rope3" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("9_trjaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.614, 5.29399, 13.434)
-root_attachment = NodePath("../Node3D3")
+root_node = NodePath("../Node3D3")
 
 [node name="Node3D4" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.6046, 8.52119, 13.434)
 
-[node name="Rope4" parent="." instance=ExtResource("9_trjaf")]
+[node name="Rope4" parent="." node_paths=PackedStringArray("root_node") instance=ExtResource("9_trjaf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.6046, 8.52119, 13.434)
-root_attachment = NodePath("../Node3D4")
+root_node = NodePath("../Node3D4")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Rope4")

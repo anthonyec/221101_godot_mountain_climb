@@ -1,9 +1,8 @@
 extends Control
 
-@export var player_path: NodePath
+@onready @export var player: Player
 
 @onready var progress_bar: ProgressBar = $ProgressBar
-@onready var player: Player = get_node(player_path)
 @onready var stamina: Stamina = player.get_node_or_null("Stamina")
 
 var is_progress_visible: bool = false

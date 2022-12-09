@@ -659,7 +659,7 @@ func start_hosting_abseil() -> void:
 	
 	abseil_instance.name = "Rope"
 	abseil_instance.global_rotation = global_rotation
-	abseil_instance.root_attachment = get_path()
+	abseil_instance.root_node = self
 	get_parent().add_child(abseil_instance)
 	
 	abseil_instance.global_transform.origin = global_transform.origin

@@ -30,13 +30,13 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="StaminaIndicator1" parent="UI" instance=ExtResource("1_r8c7u")]
+[node name="StaminaIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
 layout_mode = 1
-player_path = NodePath("../../Player1")
+player = NodePath("../../Player1")
 
-[node name="StaminaIndicator2" parent="UI" instance=ExtResource("1_r8c7u")]
+[node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
 layout_mode = 1
-player_path = NodePath("../../Player2")
+player = NodePath("../../Player2")
 
 [node name="Checkpoint" type="Node" parent="."]
 script = ExtResource("1_x8714")

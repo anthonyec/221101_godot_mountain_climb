@@ -14,7 +14,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7318, 0)
 
 [node name="Rope" parent="." instance=ExtResource("1_ym7rd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.7318, 0)
-root_attachment = NodePath("../Node3D")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="."]
 use_collision = true

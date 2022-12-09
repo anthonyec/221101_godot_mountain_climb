@@ -2,7 +2,8 @@ extends Camera3D
 
 signal select_into_world(position)
 
-@export var target_path: NodePath
+@onready @export var target_object: Node
+
 @export var orbit: bool
 @export var look_at: bool
 
@@ -14,7 +15,6 @@ var is_aiming: bool = false
 var mouse_relative_position: Vector2
 var mouse_sensitivity: float = 1
 
-var target_object: Node = null
 var target_distance: float = 5
 var target_position: Vector3 = Vector3.ZERO
 
@@ -49,8 +49,6 @@ func add_input_actions():
 func _ready():
 	load_camera()
 	add_input_actions()
-
-	target_object = get_node_or_null(target_path)
 	
 	if target_object != null and target_position != null:
 		target_position = target_object.global_transform.origin

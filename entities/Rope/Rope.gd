@@ -1,9 +1,10 @@
 extends Node3D
 
+@onready @export var root_node: Node3D
+@onready @export var leaf_node: Node3D
+
 @export var segment_count: int = 15
 @export var segment_length: float = 0.5
-@export var root_attachment: NodePath
-@export var leaf_attachment: NodePath
 @export var enable_blob: bool = false
 @export var blob_position: float = 0
  
@@ -44,9 +45,6 @@ func _ready() -> void:
 			add_child(pin_joint)
 
 func _physics_process(delta: float) -> void:
-	var root_node: Node3D = get_node_or_null(root_attachment)
-	var leaf_node: Node3D = get_node_or_null(leaf_attachment)
-	
 	if root_node:
 		segments[0].global_transform.origin = root_node.global_transform.origin
 		segments[0].freeze = true
