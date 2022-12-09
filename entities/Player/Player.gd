@@ -6,6 +6,7 @@ extends CharacterBody3D
 @export var jump_strength: float = 8
 @export var rotation_speed: float = 20
 @export var walk_speed: float = 5
+@export var sprint_speed: float = 8
 @export var climb_speed: float = 2
 @export var state: String = "move"
 @export var auto_grab_ledge: bool = false
@@ -46,6 +47,7 @@ func _process(delta: float) -> void:
 		"abseil_host": abseil_host_state(delta)
 		"abseil_climb_air": abseil_climb_air(delta)
 		"move": move_state(delta)
+		"sprint": sprint_state(delta)
 		"falling": falling_state(delta)
 		"jumping": jumping_state(delta)
 		"grab": grab_state(delta)
@@ -504,7 +506,52 @@ func pickup_state(_detla: float):
 	animation.playback_speed = 1
 	# TODO: Find out why I can't do null here.
 #	pickup_object = null
+
+var sprint_let_go_from_last_use: bool = true
+
+func sprint_state(delta: float):
+	stamina.use(75.0 * delta)
 	
+	sprint_let_go_from_last_use = false
+	time_last_on_ground = 0
+	coytee_enabled = true
+	
+	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	
+	movement.x = direction.x * sprint_speed
+	movement.z = direction.z * sprint_speed
+	movement.y -= gravity * delta
+	
+	animation.play("Run")
+	animation.playback_speed = 2
+	
+	face_towards(global_transform.origin + direction)
+	set_velocity(movement)
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	
+	var _move_and_slide = move_and_slide()
+	movement = velocity
+	
+	if stamina.is_depleted():
+		animation.playback_speed = 1
+		transition_to_state("move")
+		return
+	
+	if Input.is_action_just_pressed("jump_" + str(player_index)):
+		movement.y = jump_strength / 2
+		snap_vector = Vector3.ZERO
+		time_in_jump_state = 0
+		transition_to_state("jumping")
+		return
+	
+	if !Input.is_action_pressed("sprint_" + str(player_index)):
+		animation.playback_speed = 1
+		sprint_let_go_from_last_use = true
+		transition_to_state("move")
+		return
+		
+
 func move_state(delta: float):
 	stamina.can_recover = true
 	
@@ -532,6 +579,13 @@ func move_state(delta: float):
 	
 	if Raycast.debug and nearest_rope:
 		DebugDraw.draw_cube(nearest_rope.global_transform.origin, 1, Color.PURPLE)
+	
+	if !Input.is_action_pressed("sprint_" + str(player_index)):
+		sprint_let_go_from_last_use = true
+		
+	if Input.is_action_pressed("sprint_" + str(player_index)) and sprint_let_go_from_last_use:
+		transition_to_state("sprint")
+		return
 	
 	if nearest_rope and Input.is_action_just_pressed("grab_" + str(player_index)):
 		grabbed_rope = nearest_rope
