@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://d2y8lxx2r32r1"]
+
+[ext_resource type="Script" path="res://ui/controller_input/controller_input.gd" id="1_tyao4"]
+
+[node name="ControllerInput" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 200.0
+offset_bottom = 200.0
+script = ExtResource("1_tyao4")
