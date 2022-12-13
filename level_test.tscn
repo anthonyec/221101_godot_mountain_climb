@@ -86,7 +86,6 @@ debug = true
 distance = 5.0
 yaw = -90.0
 speed = 1.0
-only_focus_on = 1
 
 [node name="Player1" parent="." node_paths=PackedStringArray("other_player") instance=ExtResource("3_5uwct")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
