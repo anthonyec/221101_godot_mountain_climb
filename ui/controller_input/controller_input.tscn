@@ -5,6 +5,6 @@
 [node name="ControllerInput" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 200.0
-offset_bottom = 200.0
+offset_right = 81.0
+offset_bottom = 69.0
 script = ExtResource("1_tyao4")
