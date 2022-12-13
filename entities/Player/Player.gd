@@ -57,6 +57,8 @@ func _process(delta: float) -> void:
 		"grab": grab_state(delta)
 		"pickup": pickup_state(delta)
 		"camp": camp_state(delta)
+		"holding_player": holding_player_state(delta)
+		"being_held": being_held_state(delta)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
@@ -69,9 +71,11 @@ func _input(event: InputEvent) -> void:
 		start_hosting_abseil()
 		
 	if event.is_action_pressed("shout_" + str(player_index)):
-		var _sfx = SFX.play_attached_to_node("voice/woman_shout_{%n}", self, {
-			"volume_db": 12
-		})
+		pass
+		# Removed because I keep scaring Mao and myself
+#		var _sfx = SFX.play_attached_to_node("voice/woman_shout_{%n}", self, {
+#			"volume_db": 12
+#		})
 
 func transition_to_state(new_state: String):
 	time_in_current_state = 0
@@ -89,12 +93,56 @@ func debug_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(input)
 	
 	movement = Vector3.ZERO
-	translate(direction / 10)
+	translate(direction * 0.1)
 	
 	var debug_raycasting = (time_in_current_state / 1000) % 2 != 0
 	DebugDraw.set_text("Raycast debugging (wait 1 sec to change)", debug_raycasting)
 	Raycast.debug = debug_raycasting
 	collision_shape.disabled = false
+	
+func holding_player_state(delta: float):
+	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	
+	movement.x = direction.x * walk_speed
+	movement.z = direction.z * walk_speed
+	movement.y -= gravity * delta
+	
+	var current_facing_direction = global_transform.basis.z
+	var _angle_difference = current_facing_direction.signed_angle_to((direction * -1), Vector3.UP)
+	
+	if direction.length():
+		animation.play("Run")
+	else:
+		animation.play("Idle")
+		
+	face_towards(global_transform.origin + direction)
+	set_velocity(movement)
+	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	var _move_and_slide = move_and_slide()
+	movement = velocity
+	
+	if !Input.is_action_pressed("grab_" + str(player_index)):
+		other_player.collision_shape.disabled = false
+		other_player.global_transform.origin = global_transform.origin - (global_transform.basis.z * 0.1)
+		other_player.transition_to_state("move")
+		transition_to_state("move")
+
+func being_held_state(_delta: float):
+	collision_shape.disabled = true
+	global_transform.origin = other_player.global_transform.origin + (Vector3.UP * 1.5)
+	global_rotation = other_player.global_rotation
+	
+	# TODO: This should use input flushing
+	if time_in_current_state > 500 and Input.is_action_just_pressed("jump_" + str(player_index)):
+		# TODO: This should send an event, not force the other player into a state
+		other_player.transition_to_state("move")
+		collision_shape.disabled = false
+		movement.y = jump_strength / 2
+		snap_vector = Vector3.ZERO
+		time_in_jump_state = 0
+		transition_to_state("jumping")
 	
 func camp_state(_delta: float):
 	var main_camera = get_parent().get_node("GameplayCamera/Rig/Camera3D") as Camera3D
@@ -560,7 +608,7 @@ func move_state(delta: float):
 	stamina.can_recover = true
 	
 	# TODO: This is here just for debug purposes, to go around and look at ledges.
-	find_ledge_info()
+#	find_ledge_info()
 	
 	time_last_on_ground = 0
 	coytee_enabled = true
@@ -612,7 +660,15 @@ func move_state(delta: float):
 			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
 				pickup_object = area
 				transition_to_state("pickup")
-				break
+				return
+				
+	if Input.is_action_pressed("grab_" + str(player_index)) and Input.is_action_pressed("grab_" + str(other_player.player_index)) and global_transform.origin.distance_to(other_player.global_transform.origin) < 1 and other_player.state == "move":
+		DebugDraw.draw_line_3d(global_transform.origin, other_player.global_transform.origin, Color.CYAN)
+		
+		if Input.is_action_just_pressed("jump_" + str(player_index)):
+			other_player.transition_to_state("holding_player")
+			transition_to_state("being_held")
+			return
 				
 	if Input.is_action_just_pressed("camp_" + str(player_index)):
 		for area in pickup_collision.get_overlapping_areas():
