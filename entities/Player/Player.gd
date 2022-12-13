@@ -103,12 +103,14 @@ func debug_state(delta: float):
 func holding_player_state(delta: float):
 	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
 	
-	movement.x = direction.x * walk_speed
-	movement.z = direction.z * walk_speed
+	movement.x = direction.x * walk_speed / 2
+	movement.z = direction.z * walk_speed / 2
 	movement.y -= gravity * delta
 	
 	var current_facing_direction = global_transform.basis.z
 	var _angle_difference = current_facing_direction.signed_angle_to((direction * -1), Vector3.UP)
+	
+	animation.playback_speed = 0.5
 	
 	if direction.length():
 		animation.play("Run")
@@ -605,6 +607,7 @@ func sprint_state(delta: float):
 		
 
 func move_state(delta: float):
+	animation.playback_speed = 1
 	stamina.can_recover = true
 	
 	# TODO: This is here just for debug purposes, to go around and look at ledges.
