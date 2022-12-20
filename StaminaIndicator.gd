@@ -22,14 +22,8 @@ func _process(delta: float) -> void:
 		
 	if !is_progress_visible and !stamina.is_full():
 		show_progress()
-		
-	if stamina.amount < stamina.max_stamina * 0.15:
-		progress_bar.modulate = Color(1, 0, 0, 1)
-	else:
-		progress_bar.modulate = Color(0, 1, 0, 1)
-		
-	var screen_position = camera.unproject_position(player.global_transform.origin + player.global_transform.basis.y)
-	
+
+	var screen_position = camera.unproject_position(player.global_transform.origin + player.global_transform.basis.y)	
 	progress_bar.position = screen_position - (size / 2)
 	progress_bar.value = player.stamina.amount
 

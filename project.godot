@@ -9,6 +9,11 @@
 config_version=5
 
 _global_script_classes=[{
+"base": "Node",
+"class": &"Balance",
+"language": &"GDScript",
+"path": "res://entities/balance/balance.gd"
+}, {
 "base": "CharacterBody3D",
 "class": &"Player",
 "language": &"GDScript",
@@ -30,6 +35,7 @@ _global_script_classes=[{
 "path": "res://entities/StateMachine/StateMachine.gd"
 }]
 _global_script_class_icons={
+"Balance": "",
 "Player": "",
 "Stamina": "",
 "State": "",

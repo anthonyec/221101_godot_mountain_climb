@@ -9,6 +9,7 @@ extends CharacterBody3D
 @export var gravity: float = 20
 @export var jump_strength: float = 8
 @export var rotation_speed: float = 20
+@export var balance_speed: float = 3
 @export var walk_speed: float = 5
 @export var sprint_speed: float = 8
 @export var climb_speed: float = 2
@@ -25,6 +26,7 @@ extends CharacterBody3D
 @onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
 @onready var pickup_collision: Area3D = $PickupArea
 @onready var stamina: Stamina = $Stamina
+@onready var balance: Balance = $Balance
 
 var previous_state: String = state
 var time_in_current_state: int = 0
@@ -59,6 +61,7 @@ func _process(delta: float) -> void:
 		"camp": camp_state(delta)
 		"holding_player": holding_player_state(delta)
 		"being_held": being_held_state(delta)
+		"balancing": balancing_state(delta)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
@@ -604,8 +607,43 @@ func sprint_state(delta: float):
 		sprint_let_go_from_last_use = true
 		transition_to_state("move")
 		return
-		
 
+var balance_direction: Vector3 = Vector3.RIGHT
+
+func balancing_state(delta: float) -> void:
+	animation.playback_speed = 0.2
+	
+	var direction: Vector3 = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	var lean_direction = balance_direction.cross(-global_transform.basis.y)
+	
+	var movement_in_direction = direction.dot(balance_direction)
+	var lean_in_direction = direction.dot(lean_direction)
+	var general_direction = global_transform.basis.z.dot(balance_direction)
+	
+	movement = balance_direction * movement_in_direction * balance_speed * (1 - abs(balance.percent))
+	movement.y -= gravity * delta
+	
+	balance.lean(-1 * lean_in_direction * 1.5)
+	
+	if direction.length():
+		animation.play("Run")
+	else:
+		animation.play("Idle")
+
+	face_towards(global_transform.origin + balance_direction * movement_in_direction)
+	model.global_rotation.z = 0.5 * balance.percent * general_direction
+	set_velocity(movement)
+	set_up_direction(Vector3.UP)
+	set_floor_stop_on_slope_enabled(true)
+	
+	var _move_and_slide = move_and_slide()
+	movement = velocity
+	
+	if abs(balance.percent) > 0.95:
+		model.global_rotation.z = 0
+		global_transform.origin += lean_direction * general_direction
+		transition_to_state("move")
+	
 func move_state(delta: float):
 	animation.playback_speed = 1
 	stamina.can_recover = true

@@ -1,10 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=14 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="2_6epk5"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
 [ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_5uwct"]
+[ext_resource type="PackedScene" uid="uid://dsx4hh1w7vg08" path="res://ui/balance_indicator/balance_indicator.tscn" id="3_b02a7"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
@@ -38,6 +39,30 @@ player = NodePath("../../Player1")
 [node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
 layout_mode = 1
 player = NodePath("../../Player2")
+
+[node name="BalanceIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 491.0
+offset_top = 157.0
+offset_right = 571.0
+offset_bottom = 167.0
+player = NodePath("../../Player1")
+percent = 0.0
+
+[node name="BalanceIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
+layout_mode = 1
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 491.0
+offset_top = 157.0
+offset_right = 571.0
+offset_bottom = 167.0
+player = NodePath("../../Player2")
+percent = 0.0
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("2_6epk5")]
 layout_mode = 1
@@ -93,9 +118,15 @@ other_player = NodePath("../Player2")
 player_index = 1
 
 [node name="Player2" parent="." node_paths=PackedStringArray("other_player") instance=ExtResource("3_5uwct")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 1.56953)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.7456, 2.75212, 1.06562)
 other_player = NodePath("../Player1")
 player_index = 2
+
+[node name="CSGBox3D14" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.5898, 1.02264, 1.07778)
+material_override = ExtResource("7_jd6l7")
+use_collision = true
+size = Vector3(12.1102, 1.06702, 0.150249)
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 
