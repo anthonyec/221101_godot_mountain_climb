@@ -16,14 +16,14 @@ extends CharacterBody3D
 @export var state: String = "move"
 @export var auto_grab_ledge: bool = false
 @export var max_ledge_floor_angle: float = 40
-@export var ledge_hang_distance_from_wall: float = 0.42
+@export var ledge_hang_distance_from_wall: float = 0.3
 @export var ledge_grab_height: float = 1.2
 @export var ledge_search_distance: float = 1
 @export var sticks_collected: int = 0
 
 @onready var collision_shape: CollisionShape3D = $CollisionShape3D
 @onready var model: Node3D = $Model
-@onready var animation: AnimationPlayer = $Model/GodotRobot/AnimationPlayer
+@onready var animation: AnimationPlayer = $Model/godot_model/AnimationPlayer
 @onready var pickup_collision: Area3D = $PickupArea
 @onready var stamina: Stamina = $Stamina
 @onready var balance: Balance = $Balance
@@ -62,6 +62,7 @@ func _process(delta: float) -> void:
 		"holding_player": holding_player_state(delta)
 		"being_held": being_held_state(delta)
 		"balancing": balancing_state(delta)
+		"vault": vault_state(delta)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_" + str(player_index)):
@@ -250,11 +251,28 @@ func abseil_climb_air(delta: float):
 	global_transform.origin = position_on_rope
 	var _move_and_slide = move_and_slide()
 
+var climb_up_position: Vector3 = Vector3.ZERO
+
+func vault_state(_delta) -> void:
+	animation.playback_speed = 1
+	animation.play("Hang-vault_RobotArmature")
+	
+	if time_in_current_state > 1000: # TODO: Replace with end/exit, this will break!
+		animation.stop()
+		transition_to_state("move")
+		global_transform.origin = climb_up_position
+		collision_shape.disabled = false
+		
+
 func grab_state(delta):
-	animation.play("WallSlide")
 	collision_shape.disabled = true
 	
 	var direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	
+	if direction.length() != 0:
+		animation.play("Hang-shimmy_RobotArmature")
+	else:
+		animation.play("Hang-loop_RobotArmature") # TODO: Remove last bit of animation name
 	
 	stamina.use(2.0 * delta)
 	
@@ -316,7 +334,7 @@ func grab_state(delta):
 			break
 	Raycast.debug = debug_prev
 	
-	var climb_up_position = ledge_info.floor.position + (global_transform.basis.y)
+	climb_up_position = ledge_info.floor.position + (global_transform.basis.y)
 	
 	if hit.is_empty() and Raycast.debug:
 		DebugDraw.draw_line_3d(global_transform.origin, climb_up_position, Color.GREEN)
@@ -326,9 +344,7 @@ func grab_state(delta):
 		DebugDraw.draw_ray_3d(global_transform.origin, direction, 2, Color.GREEN)
 	
 	if climb_up_strength > 0.8 and hit.is_empty() and time_in_current_state > 200:
-		global_transform.origin = climb_up_position
-		collision_shape.disabled = false
-		transition_to_state("move")
+		transition_to_state("vault")
 		
 	if Input.is_action_just_pressed("jump_" + str(player_index)) and climb_up_strength < -0.4:
 		model.transform.origin.z = 0
@@ -397,7 +413,7 @@ func find_nearest_rope():
 	
 func find_ledge_info() -> Dictionary:
 	var wall_hit = Raycast.fan_out(
-		global_transform.origin + (global_transform.basis.y * 0.5),
+		global_transform.origin + (global_transform.basis.y * 0.25), # TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.
 		-global_transform.basis.z, 
 		ledge_search_distance,
 	)
@@ -461,7 +477,7 @@ func find_ledge_info() -> Dictionary:
 		DebugDraw.draw_cube(edge_hit.position, 0.2, Color.BLUE)
 		DebugDraw.draw_ray_3d(edge_hit.position - (edge_direction * 0.25), edge_direction, 0.5, Color.BLUE)
 	
-	var suggested_hang_position = edge_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.6) # TODO: Tidy up with var name for player_height / 2
+	var suggested_hang_position = edge_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.25) # TODO: Tidy up with var name for player_height / 2
 	
 	# TODO: Implement exlcuding self. The last argument does not work hehe.
 	# TODO: Find out why the cylinder sometimes in the same position of the ledge, which seems very wrong.
@@ -649,7 +665,7 @@ func move_state(delta: float):
 	stamina.can_recover = true
 	
 	# TODO: This is here just for debug purposes, to go around and look at ledges.
-#	find_ledge_info()
+	find_ledge_info()
 	
 	time_last_on_ground = 0
 	coytee_enabled = true

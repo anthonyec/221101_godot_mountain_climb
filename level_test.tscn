@@ -49,8 +49,9 @@ offset_left = 491.0
 offset_top = 157.0
 offset_right = 571.0
 offset_bottom = 167.0
+grow_horizontal = 1
+grow_vertical = 1
 player = NodePath("../../Player1")
-percent = 0.0
 
 [node name="BalanceIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
 layout_mode = 1
@@ -61,8 +62,9 @@ offset_left = 491.0
 offset_top = 157.0
 offset_right = 571.0
 offset_bottom = 167.0
+grow_horizontal = 1
+grow_vertical = 1
 player = NodePath("../../Player2")
-percent = 0.0
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("2_6epk5")]
 layout_mode = 1
@@ -118,15 +120,9 @@ other_player = NodePath("../Player2")
 player_index = 1
 
 [node name="Player2" parent="." node_paths=PackedStringArray("other_player") instance=ExtResource("3_5uwct")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.7456, 2.75212, 1.06562)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7065, 1.56456, 1.8673)
 other_player = NodePath("../Player1")
 player_index = 2
-
-[node name="CSGBox3D14" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -28.5898, 1.02264, 1.07778)
-material_override = ExtResource("7_jd6l7")
-use_collision = true
-size = Vector3(12.1102, 1.06702, 0.150249)
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 
