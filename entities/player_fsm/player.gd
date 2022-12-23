@@ -1,13 +1,13 @@
 class_name PlayerFSM
 extends CharacterBody3D
 
+@export_range(1, 2) var player_number: int = 1
+
 # TODO: Find out if I need @onready annotation. Seems to work without but maybe 
 # it's safer. I originally saw it in this video: https://youtu.be/8BgAeN4RRR4?t=150
-@onready @export var other_player: Node
+@onready @export var companion: Node
 
-@export var player_number: int = 1
-
-# Movement
+@export_group("Movement")
 @export var gravity: float = 20
 @export var jump_strength: float = 8
 @export var rotation_speed: float = 20
@@ -15,11 +15,11 @@ extends CharacterBody3D
 @export var sprint_speed: float = 8
 @export var climb_speed: float = 2
 
-# Ledge grabbing
-@export var max_ledge_floor_angle: float = 40
-@export var ledge_hang_distance_from_wall: float = 0.3
-@export var ledge_grab_height: float = 1.2
-@export var ledge_search_distance: float = 1
+@export_group("Ledge Grabbing")
+@export var max_floor_angle: float = 40
+@export var hang_distance_from_wall: float = 0.3
+@export var grab_height: float = 1.2
+@export var search_distance: float = 1
 
 @onready var collision: CollisionShape3D = $Collision
 @onready var model: Node3D = $Model
@@ -57,6 +57,7 @@ func transform_direction_to_camera_angle(direction: Vector3) -> Vector3:
 	return direction.rotated(Vector3.UP, camera_angle_y)
 
 # Like `look_at` but only on the Y axis.
+# TODO: Add `speed` argument here to lerp rotation over time?
 func face_towards(target: Vector3) -> void:
 	if global_transform.origin == target:
 		return
@@ -66,10 +67,11 @@ func face_towards(target: Vector3) -> void:
 	global_rotation.z = 0
 
 func find_ledge_info() -> Dictionary:
+	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.
 	var wall_hit = Raycast.fan_out(
 		global_transform.origin + (global_transform.basis.y * 0.25), # TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.
 		-global_transform.basis.z, 
-		ledge_search_distance,
+		search_distance,
 	)
 	
 	if wall_hit.is_empty():
@@ -85,7 +87,7 @@ func find_ledge_info() -> Dictionary:
 		return {}
 		
 	var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
-	var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * ledge_grab_height), Vector3.DOWN, ledge_grab_height)
+	var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * grab_height), Vector3.DOWN, grab_height)
 	
 	if floor_hit.is_empty():
 		return {}
@@ -93,13 +95,13 @@ func find_ledge_info() -> Dictionary:
 	var floor_normal: Vector3 = floor_hit.normal
 	var floor_angle = abs(floor_normal.angle_to(Vector3.UP))
 	
-	if (floor_angle > deg_to_rad(max_ledge_floor_angle)):
+	if (floor_angle > deg_to_rad(max_floor_angle)):
 		return {}
 
 	var edge_hit = {}
 	var edge_sweep_iterations = 15 # TODO: Move somewhere else
 	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal
-	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (wall_hit.normal * ledge_hang_distance_from_wall * 2)
+	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (wall_hit.normal * hang_distance_from_wall * 2)
 	
 	for index in edge_sweep_iterations:
 		var sweep_position = start_edge_sweep_position.lerp(end_edge_sweep_position, float(index) / float(edge_sweep_iterations))
@@ -119,19 +121,19 @@ func find_ledge_info() -> Dictionary:
 	var floor_left_bound = Raycast.cast_in_direction(
 		edge_hit.position + (Vector3.UP * 0.5) + (edge_direction * 0.25), # TODO: Replace with player width / 2 var.
 		Vector3.DOWN,
-		ledge_search_distance
+		search_distance
 	)
 	var floor_right_bound = Raycast.cast_in_direction(
 		edge_hit.position + (Vector3.UP * 0.5) - (edge_direction * 0.25), # TODO: Replace with player width / 2 var.
 		Vector3.DOWN,
-		ledge_search_distance
+		search_distance
 	)
 	
 	if Raycast.debug:
 		DebugDraw.draw_cube(edge_hit.position, 0.2, Color.BLUE)
 		DebugDraw.draw_ray_3d(edge_hit.position - (edge_direction * 0.25), edge_direction, 0.5, Color.BLUE)
 	
-	var suggested_hang_position = edge_hit.position + (wall_hit.normal * ledge_hang_distance_from_wall) + (Vector3.DOWN * 0.25) # TODO: Tidy up with var name for player_height / 2
+	var suggested_hang_position = edge_hit.position + (wall_hit.normal * hang_distance_from_wall) + (Vector3.DOWN * 0.25) # TODO: Tidy up with var name for player_height / 2
 	
 	# TODO: Implement exlcuding self. The last argument does not work hehe.
 	# TODO: Find out why the cylinder sometimes in the same position of the ledge, which seems very wrong.
@@ -147,8 +149,8 @@ func find_ledge_info() -> Dictionary:
 	if is_hang_position_blocked:
 		return {}
 		
-	var has_reached_left_bound = floor_left_bound.is_empty() or rad_to_deg(floor_left_bound.normal.angle_to(Vector3.UP)) > max_ledge_floor_angle
-	var has_reached_right_bound = floor_right_bound.is_empty() or rad_to_deg(floor_right_bound.normal.angle_to(Vector3.UP)) > max_ledge_floor_angle
+	var has_reached_left_bound = floor_left_bound.is_empty() or rad_to_deg(floor_left_bound.normal.angle_to(Vector3.UP)) > max_floor_angle
+	var has_reached_right_bound = floor_right_bound.is_empty() or rad_to_deg(floor_right_bound.normal.angle_to(Vector3.UP)) > max_floor_angle
 
 	return {
 		"hang_position": suggested_hang_position,

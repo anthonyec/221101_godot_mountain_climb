@@ -3,6 +3,14 @@ extends Node3D
 @export var debug = false
 @export var debug_color = Color.RED
 
+# TODO: Add a general "sweep" function that can sweep any kind of raycast or shape cast.
+# It could use the new lambda feature of GDScript 2. Something like:
+# Raycast.sweep(direction, iterations, (index, position) => {
+#   return Raycast.fan_out(position, fan_direction
+# })
+# Then there could be conditions based on if it's a hit or if it's the shortest hit.
+# Maybe params or other functions like `sweep_first_hit` or `sweep_shortest_hit`?
+
 func offset_by(radius: float, angle: float, distance: float):
 	return Vector2(cos(angle) * (radius + distance), sin(angle) * (radius + distance))
 
