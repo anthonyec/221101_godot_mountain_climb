@@ -36,6 +36,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.current_state.name)
+	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("coyote_time", (get_node("CoyoteTime") as Timer).time_left)
 	
 	input_direction = Input.get_vector(
@@ -65,6 +66,9 @@ func face_towards(target: Vector3) -> void:
 	look_at(target, Vector3.UP)
 	global_rotation.x = 0
 	global_rotation.z = 0
+	
+func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
+	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
 
 func find_ledge_info() -> Dictionary:
 	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.

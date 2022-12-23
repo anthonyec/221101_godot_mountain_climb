@@ -25,7 +25,7 @@ func update(_delta: float) -> void:
 	if state_machine.time_in_current_state > 5000:
 		push_warning("In FALL state longer than expected")
 		return state_machine.transition_to("Move", {
-			"global_origin": player.global_transform.origin + (Vector3.UP * 2)
+			"move_to": player.global_transform.origin + (Vector3.UP * 2)
 		})
 
 func physics_update(delta: float) -> void:

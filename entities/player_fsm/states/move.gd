@@ -7,9 +7,18 @@ func enter(params: Dictionary) -> void:
 	Raycast.debug = true
 	player.stamina.can_recover = true
 	
-	if params.has("global_origin"):
-		player.global_transform.origin = params.get("global_origin")
+	player.animation.play("Idle")
 	
+	# Seeking is a work around to avoid a 1 frame delay from playing an animation.
+	# Without this and when using changing the position, the player would move to 
+	# the `global_origin` position in the first frame, then change animation in the next frame,
+	# even though the animation says it's in the new animation!
+	# Solution found here: https://github.com/godotengine/godot/issues/29187#issuecomment-496078025
+	player.animation.seek(0, true)
+	
+	if params.has("move_to"):
+		player.global_transform.origin = params.get("move_to")
+
 func exit() -> void:
 	player.stamina.can_recover = false
 
