@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=15 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
+[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0hn72"]
 [ext_resource type="PackedScene" uid="uid://cmqnkwo2su52t" path="res://entities/WoodPickup/WoodPickup.tscn" id="9_ithm3"]
@@ -33,15 +34,12 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="StaminaIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
-layout_mode = 1
 player = NodePath("../../Player1")
 
 [node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
-layout_mode = 1
 player = NodePath("../../Player2")
 
 [node name="BalanceIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
-layout_mode = 1
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -54,7 +52,6 @@ grow_vertical = 1
 player = NodePath("../../Player1")
 
 [node name="BalanceIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
-layout_mode = 1
 anchors_preset = 0
 anchor_right = 0.0
 anchor_bottom = 0.0
@@ -67,7 +64,6 @@ grow_vertical = 1
 player = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("2_6epk5")]
-layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -81,7 +77,6 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="ControllerInput2" parent="UI" instance=ExtResource("2_6epk5")]
-layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -123,6 +118,9 @@ player_index = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7065, 1.56456, 1.8673)
 other_player = NodePath("../Player1")
 player_index = 2
+
+[node name="Player" parent="." instance=ExtResource("7_byubr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 4.85549)
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 

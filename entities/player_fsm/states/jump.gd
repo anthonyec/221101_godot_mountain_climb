@@ -1,0 +1,44 @@
+extends PlayerState
+
+var direction: Vector3 = Vector3.ZERO
+var movement: Vector3 = Vector3.ZERO
+var into_jump_movement: Vector3 = Vector3.ZERO
+
+func enter(params: Dictionary) -> void:
+	into_jump_movement = params.get("movement", Vector3.ZERO) * 1.2
+	player.animation.play("Jump")
+	movement.y = player.jump_strength / 2
+#	snap_vector = Vector3.ZERO
+
+func exit() -> void:
+	into_jump_movement = Vector3.ZERO
+
+func update(_delta: float) -> void:
+	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
+	
+	if state_machine.time_in_current_state > 5000:
+		push_warning("In JUMP state longer than expected")
+		return state_machine.transition_to("Move", {
+			"global_origin": player.global_transform.origin + (Vector3.UP * 2)
+		})
+	
+func physics_update(delta: float) -> void:
+	movement.x = into_jump_movement.x + direction.x
+	movement.z = into_jump_movement.z + direction.z
+	movement.y -= player.gravity * delta
+	
+	player.set_velocity(movement)
+	player.set_up_direction(Vector3.UP)
+	player.set_floor_stop_on_slope_enabled(true)
+
+	# TODO: Add correct warning ID to ignore unused vars.
+	# warning-ignore:warning-id
+	player.move_and_slide()
+	movement = player.velocity
+	
+	if player.is_on_floor():
+		return state_machine.transition_to("Move")
+		
+	if movement.y < 0:
+		return state_machine.transition_to("Fall", { "movement": movement })
+	

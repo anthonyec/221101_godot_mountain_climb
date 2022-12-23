@@ -1,0 +1,58 @@
+[gd_scene load_steps=7 format=3 uid="uid://dgttv7q7fi4vu"]
+
+[ext_resource type="Script" path="res://Checkpoint.gd" id="4_iabbd"]
+[ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="5_ey15e"]
+[ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="5_uttj6"]
+[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_p1d3f"]
+[ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="9_53jni"]
+
+[sub_resource type="Environment" id="Environment_q64ch"]
+background_mode = 1
+background_color = Color(0.631373, 0.913725, 1, 1)
+ssao_enabled = true
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.02
+volumetric_fog_albedo = Color(0.87451, 0.968627, 1, 1)
+volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
+
+[node name="Default" type="Node3D"]
+
+[node name="Checkpoint" type="Node" parent="."]
+script = ExtResource("4_iabbd")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_q64ch")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.875861, -0.228919, 0.424811, 0, 0.88032, 0.47438, -0.482564, -0.415491, 0.771038, 0, 8.40226, 0)
+light_color = Color(1, 0.992157, 0.937255, 1)
+light_energy = 1.5
+shadow_enabled = true
+
+[node name="GameplayCamera" parent="." instance=ExtResource("5_uttj6")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.23949, 4.30268)
+debug = true
+distance = 5.0
+yaw = -90.0
+speed = 1.0
+
+[node name="Player1" parent="." instance=ExtResource("7_p1d3f")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.65623, 0)
+player_number = 2
+
+[node name="Ground" type="CSGBox3D" parent="."]
+material_override = ExtResource("9_53jni")
+use_collision = true
+size = Vector3(100, 1, 100)
+
+[node name="CSGBox3D9" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.917255, -0.398301, 0, 0.398301, 0.917255, 0.808653, 0.330841, -3.28275)
+material_override = ExtResource("5_ey15e")
+use_collision = true
+size = Vector3(4, 2, 4)
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.756216, 1.03847, -6.68915)
+material_override = ExtResource("5_ey15e")
+use_collision = true
+size = Vector3(4, 2, 4)

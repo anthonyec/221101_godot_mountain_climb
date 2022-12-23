@@ -19,6 +19,16 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://entities/Player/Player.gd"
 }, {
+"base": "CharacterBody3D",
+"class": &"PlayerFSM",
+"language": &"GDScript",
+"path": "res://entities/player_fsm/player.gd"
+}, {
+"base": "State",
+"class": &"PlayerState",
+"language": &"GDScript",
+"path": "res://entities/player_fsm/player_state.gd"
+}, {
 "base": "Node",
 "class": &"Stamina",
 "language": &"GDScript",
@@ -37,6 +47,8 @@ _global_script_classes=[{
 _global_script_class_icons={
 "Balance": "",
 "Player": "",
+"PlayerFSM": "",
+"PlayerState": "",
 "Stamina": "",
 "State": "",
 "StateMachine": ""
