@@ -11,6 +11,7 @@ func enter(params: Dictionary) -> void:
 	movement.y = player.jump_strength / 2
 	
 	# Variable jump height thanks to the creator of Bounce.
+	# TODO: Credit jack as jump researcher.
 	original_gravity = player.gravity
 	player.gravity = original_gravity / 1.5
 #	snap_vector = Vector3.ZERO

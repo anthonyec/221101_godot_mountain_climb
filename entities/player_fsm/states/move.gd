@@ -20,6 +20,21 @@ func enter(params: Dictionary) -> void:
 	if params.has("move_to"):
 		player.global_transform.origin = params.get("move_to")
 
+	# Do a collision check when entering the state to ensure the player
+	# so that `is_on_floor()` does not return `false` on the first physics update.
+	# This fixes "vault" to "move" state causing it to breifly enter the "fall" state.
+	if params.get("snap_to_floor"):
+		var iterations: int = 0
+		
+		while iterations < 10:
+			player.move_and_slide()
+			
+			if player.is_on_floor():
+				break
+				
+			player.global_transform.origin += Vector3.DOWN * 0.01
+			iterations += 1
+
 func exit() -> void:
 	player.stamina.can_recover = false
 
