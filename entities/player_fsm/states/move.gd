@@ -62,3 +62,13 @@ func handle_input(event: InputEvent) -> void:
 		for area in player.pickup_collision.get_overlapping_areas():
 			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
 				return state_machine.transition_to("Pickup", { "item": area })
+				
+	if event.is_action_pressed(player.get_action_name("camp")):
+		for area in player.pickup_collision.get_overlapping_areas():
+			if area.get_parent().is_in_group("player"):
+				var total_sticks = player.inventory.get_item_count("wood") + player.companion.inventory.get_item_count("wood")
+				
+				if total_sticks >= 6:
+					player.companion.state_machine.transition_to("Camp")
+					return player.state_machine.transition_to("Camp")
+

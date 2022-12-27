@@ -17,3 +17,9 @@ func remove_item(item_name: String, amount: int = 1) -> void:
 	
 func clear_item(item_name: String) -> void:
 	items.erase(item_name)
+
+func get_item_count(item_name: String) -> int:
+	if items.has(item_name):
+		return items[item_name]
+	else:
+		return 0

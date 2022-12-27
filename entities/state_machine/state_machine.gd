@@ -15,9 +15,7 @@ func _ready() -> void:
 			continue
 			
 		child.state_machine = self
-			
-		if child.has_method("awake"):
-			child.awake()
+		child.awake()
 	
 	var initial_state: State = get_child(0)
 	transition_to(initial_state.name)

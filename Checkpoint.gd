@@ -1,3 +1,4 @@
+class_name Checkpoint
 extends Node
 
 var respawn_position: Vector3 = Vector3(-25, 2, 2)

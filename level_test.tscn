@@ -301,6 +301,15 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6987, 0.559259, 5.70567)
 [node name="WoodPickup8" parent="." instance=ExtResource("9_ithm3")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.1113, 0.559259, 5.70567)
 
+[node name="WoodPickup11" parent="." instance=ExtResource("9_ithm3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.337, 0.559259, 7.18968)
+
+[node name="WoodPickup12" parent="." instance=ExtResource("9_ithm3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -21.6987, 0.559259, 7.18968)
+
+[node name="WoodPickup13" parent="." instance=ExtResource("9_ithm3")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.1113, 0.559259, 7.18968)
+
 [node name="WoodPickup5" parent="." instance=ExtResource("9_ithm3")]
 transform = Transform3D(0.882521, 0, 0.470273, 0, 1, 0, -0.470273, 0, 0.882521, -21.8413, 0.559259, 0.971997)
 
