@@ -1,3 +1,4 @@
+# TODO: Rename this to `Player` once it replaces the old one.
 class_name PlayerFSM
 extends CharacterBody3D
 
@@ -5,7 +6,7 @@ extends CharacterBody3D
 
 # TODO: Find out if I need @onready annotation. Seems to work without but maybe 
 # it's safer. I originally saw it in this video: https://youtu.be/8BgAeN4RRR4?t=150
-@onready @export var companion: Node
+@onready @export var companion: PlayerFSM
 
 @export_group("Movement")
 @export var gravity: float = 20

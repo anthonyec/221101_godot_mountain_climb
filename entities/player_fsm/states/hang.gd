@@ -102,6 +102,8 @@ func update(delta: float) -> void:
 		player.face_towards(player.global_transform.origin + direction)
 		player.stamina.use(30.0)
 		return state_machine.transition_to("Jump", {
+			# TODO: If fall transitions to grab and then to this jump start, some downwards
+			# is kept which gives a very heavy feeling. Fix this!
 			"movement": direction
 		})
 		

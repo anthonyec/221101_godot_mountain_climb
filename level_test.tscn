@@ -1,11 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=13 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="2_6epk5"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
-[ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_5uwct"]
-[ext_resource type="PackedScene" uid="uid://dsx4hh1w7vg08" path="res://ui/balance_indicator/balance_indicator.tscn" id="3_b02a7"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
@@ -34,36 +32,15 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="StaminaIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
+layout_mode = 1
 player = NodePath("../../Player1")
 
 [node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
-player = NodePath("../../Player2")
-
-[node name="BalanceIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 491.0
-offset_top = 157.0
-offset_right = 571.0
-offset_bottom = 167.0
-grow_horizontal = 1
-grow_vertical = 1
-player = NodePath("../../Player1")
-
-[node name="BalanceIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("3_b02a7")]
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
-offset_left = 491.0
-offset_top = 157.0
-offset_right = 571.0
-offset_bottom = 167.0
-grow_horizontal = 1
-grow_vertical = 1
+layout_mode = 1
 player = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("2_6epk5")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -77,6 +54,7 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="ControllerInput2" parent="UI" instance=ExtResource("2_6epk5")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -109,18 +87,14 @@ distance = 5.0
 yaw = -90.0
 speed = 1.0
 
-[node name="Player1" parent="." node_paths=PackedStringArray("other_player") instance=ExtResource("3_5uwct")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
-other_player = NodePath("../Player2")
-player_index = 1
+[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
+companion = NodePath("../Player2")
 
-[node name="Player2" parent="." node_paths=PackedStringArray("other_player") instance=ExtResource("3_5uwct")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.7065, 1.56456, 1.8673)
-other_player = NodePath("../Player1")
-player_index = 2
-
-[node name="Player" parent="." instance=ExtResource("7_byubr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 4.85549)
+[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 2.8126)
+player_number = 2
+companion = NodePath("../Player1")
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 
