@@ -31,6 +31,15 @@ func update(_delta: float) -> void:
 func physics_update(delta: float) -> void:
 	if player.is_on_floor():
 		return state_machine.transition_to("Move")
+		
+	var ledge_info = player.find_ledge_info()
+	
+	if Input.is_action_pressed(player.get_action_name("grab")) and not ledge_info.is_empty() and not player.stamina.is_depleted():
+		player.global_transform.origin = ledge_info.hang_position
+		return state_machine.transition_to("Hang", {
+			"move_to": ledge_info.hang_position,
+			"face_towards": ledge_info.wall.position
+		})
 
 	movement.x = into_fall_movement.x + direction.x
 	movement.z = into_fall_movement.z + direction.z
