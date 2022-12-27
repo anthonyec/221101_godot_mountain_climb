@@ -54,5 +54,11 @@ func physics_update(delta: float) -> void:
 	movement = player.velocity
 	
 func handle_input(event: InputEvent) -> void:
+	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
 		return state_machine.transition_to("Jump", { "movement": movement })
+		
+	if event.is_action_pressed(player.get_action_name("grab")):
+		for area in player.pickup_collision.get_overlapping_areas():
+			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
+				return state_machine.transition_to("Pickup", { "item": area })

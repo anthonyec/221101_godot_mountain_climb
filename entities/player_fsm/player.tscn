@@ -1,8 +1,9 @@
-[gd_scene load_steps=15 format=3 uid="uid://degg1j0n1ioox"]
+[gd_scene load_steps=17 format=3 uid="uid://degg1j0n1ioox"]
 
 [ext_resource type="Script" path="res://entities/player_fsm/player.gd" id="1_s3pai"]
 [ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="2_txufy"]
 [ext_resource type="PackedScene" uid="uid://2cra11rol35o" path="res://entities/balance/balance.tscn" id="3_7gnxj"]
+[ext_resource type="PackedScene" uid="uid://hwump8tofads" path="res://entities/inventory/inventory.tscn" id="4_44tum"]
 [ext_resource type="PackedScene" uid="uid://cugjrmwt16ejf" path="res://entities/state_machine/state_machine.tscn" id="4_junko"]
 [ext_resource type="PackedScene" uid="uid://bt1l6u0dxhrsp" path="res://entities/state_machine/state.tscn" id="5_qivkb"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/move.gd" id="6_nuhh4"]
@@ -12,6 +13,7 @@
 [ext_resource type="Texture2D" uid="uid://dt44kscncfq3m" path="res://entities/Player/shadow_blob.png" id="9_mqrpw"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/hang.gd" id="9_ooy06"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/vault.gd" id="10_rnvwx"]
+[ext_resource type="Script" path="res://entities/player_fsm/states/pickup.gd" id="12_0hcjg"]
 
 [sub_resource type="CylinderShape3D" id="5"]
 height = 1.6
@@ -30,6 +32,8 @@ script = ExtResource("1_s3pai")
 [node name="Stamina" parent="." instance=ExtResource("2_txufy")]
 
 [node name="Balance" parent="." instance=ExtResource("3_7gnxj")]
+
+[node name="Inventory" parent="." instance=ExtResource("4_44tum")]
 
 [node name="CoyoteTime" type="Timer" parent="."]
 wait_time = 0.15
@@ -51,6 +55,9 @@ script = ExtResource("9_ooy06")
 
 [node name="Vault" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("10_rnvwx")
+
+[node name="Pickup" parent="StateMachine" instance=ExtResource("5_qivkb")]
+script = ExtResource("12_0hcjg")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)

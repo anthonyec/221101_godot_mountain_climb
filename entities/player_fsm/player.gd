@@ -28,6 +28,7 @@ extends CharacterBody3D
 @onready var pickup_collision: Area3D = $PickupArea
 @onready var stamina: Stamina = $Stamina as Stamina
 @onready var balance: Balance = $Balance as Balance
+@onready var inventory: Inventory = $Inventory
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
 
 var input_direction: Vector2 = Vector2.ZERO
@@ -38,7 +39,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.current_state.name)
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
-	DebugDraw.set_text("coyote_time", (get_node("CoyoteTime") as Timer).time_left)
+	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 	
 	input_direction = Input.get_vector(
 		get_action_name("move_left"),
