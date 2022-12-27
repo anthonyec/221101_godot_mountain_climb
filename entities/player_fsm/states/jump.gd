@@ -3,15 +3,21 @@ extends PlayerState
 var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var into_jump_movement: Vector3 = Vector3.ZERO
+var original_gravity: float = 0
 
 func enter(params: Dictionary) -> void:
 	into_jump_movement = params.get("movement", Vector3.ZERO) * 1.2
 	player.animation.play("Jump")
 	movement.y = player.jump_strength / 2
+	
+	# Variable jump height thanks to the creator of Bounce.
+	original_gravity = player.gravity
+	player.gravity = original_gravity / 1.5
 #	snap_vector = Vector3.ZERO
 
 func exit() -> void:
 	into_jump_movement = Vector3.ZERO
+	player.gravity = original_gravity
 
 func update(_delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
@@ -42,3 +48,6 @@ func physics_update(delta: float) -> void:
 	if movement.y < 0:
 		return state_machine.transition_to("Fall", { "movement": movement })
 	
+func handle_input(event: InputEvent) -> void:
+	if event.is_action_released(player.get_action_name("jump")):
+		player.gravity = original_gravity
