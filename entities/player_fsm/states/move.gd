@@ -2,6 +2,7 @@ extends PlayerState
 
 var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
+var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
 	Raycast.debug = true
@@ -53,7 +54,21 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 	movement = player.velocity
 	
+	var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
+	var companion_state = player.companion.state_machine.current_state.name
+	
+	if Input.is_action_pressed(player.get_action_name("grab")) and Input.is_action_pressed(player.companion.get_action_name("grab")):
+		if distance_to_companion < 1 and companion_state == "Move":
+			DebugDraw.draw_line_3d(player.global_transform.origin, player.companion.global_transform.origin, Color.GREEN)
+			is_ready_to_lift_companion = true
+	else:
+		is_ready_to_lift_companion = false
+	
 func handle_input(event: InputEvent) -> void:
+	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
+		player.companion.state_machine.transition_to("Lift")
+		return player.state_machine.transition_to("Held")
+
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
 		return state_machine.transition_to("Jump", { "movement": movement })
@@ -71,4 +86,6 @@ func handle_input(event: InputEvent) -> void:
 				if total_sticks >= 6:
 					player.companion.state_machine.transition_to("Camp")
 					return player.state_machine.transition_to("Camp")
+	
+
 
