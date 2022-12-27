@@ -7,8 +7,6 @@ func enter(_params: Dictionary) -> void:
 	player.animation.playback_speed = 0.5
 	
 func exit() -> void:
-	player.companion.global_transform.origin = player.global_transform.origin - (player.global_transform.basis.z * 0.1)
-	player.companion.state_machine.transition_to("Move")
 	player.animation.playback_speed = 1
 
 func update(_delta: float) -> void:
@@ -42,4 +40,7 @@ func physics_update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_released(player.get_action_name("grab")):
+		player.companion.state_machine.transition_to("Move", {
+			"move_to": player.get_offset_position(0.1)
+		})
 		return player.state_machine.transition_to("Move")
