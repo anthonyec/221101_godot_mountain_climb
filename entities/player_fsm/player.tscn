@@ -44,9 +44,6 @@ one_shot = true
 
 [node name="StateMachine" parent="." instance=ExtResource("4_junko")]
 
-[node name="Swing" parent="StateMachine" instance=ExtResource("5_qivkb")]
-script = ExtResource("7_tb2ro")
-
 [node name="Move" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("6_nuhh4")
 
@@ -73,6 +70,9 @@ script = ExtResource("14_o2l5l")
 
 [node name="Lift" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("15_ijiyv")
+
+[node name="Swing" parent="StateMachine" instance=ExtResource("5_qivkb")]
+script = ExtResource("7_tb2ro")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)

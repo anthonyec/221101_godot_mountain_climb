@@ -16,6 +16,9 @@ func enter(params: Dictionary) -> void:
 	player.gravity = original_gravity / 2
 #	snap_vector = Vector3.ZERO
 
+	if params.has("face_towards"):
+		player.face_towards(params.get("face_towards"))
+
 func exit() -> void:
 	into_jump_movement = Vector3.ZERO
 	player.gravity = original_gravity
@@ -50,5 +53,10 @@ func physics_update(delta: float) -> void:
 		return state_machine.transition_to("Fall", { "movement": movement })
 	
 func handle_input(event: InputEvent) -> void:
+	if event.is_action_pressed(player.get_action_name("debug")):
+		return state_machine.transition_to("Swing", {
+			"pivot_position": player.global_transform.origin + (Vector3.UP * 2)
+		})
+
 	if event.is_action_released(player.get_action_name("jump")):
 		player.gravity = original_gravity
