@@ -9,7 +9,7 @@ extends CharacterBody3D
 @onready @export var companion: PlayerFSM
 
 @export_group("Movement")
-@export var gravity: float = 20
+@export var gravity: float = 40
 @export var jump_strength: float = 8
 @export var rotation_speed: float = 20
 @export var walk_speed: float = 5

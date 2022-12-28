@@ -168,7 +168,8 @@ func scan_directory(path: String, fileNameEndsWith: String = ""):
 			results.append_array(recursive_results)
 		else:
 			if fileNameEndsWith == "":
-				var file_path = path + "/" + file_name
+				# TODO: Why is this `file_path` var not used?
+				var _file_path = path + "/" + file_name
 				results.append(path)
 			elif file_name.ends_with(fileNameEndsWith + ".import"):
 				# When the game is exported, assets no longer exists in their original file form and are instead

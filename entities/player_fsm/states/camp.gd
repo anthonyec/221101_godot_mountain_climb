@@ -15,7 +15,7 @@ func awake() -> void:
 	assert(camp_camera)
 	assert(checkpoint)
 
-func enter(params: Dictionary) -> void:
+func enter(_params: Dictionary) -> void:
 	# TODO: Change this to either the position between both players or nearest 
 	# checkpoint marker (would need to make this feature).
 	checkpoint.set_respawn_position(player.global_transform.origin)

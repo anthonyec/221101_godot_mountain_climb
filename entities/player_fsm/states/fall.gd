@@ -8,9 +8,14 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var into_fall_movement: Vector3 = Vector3.ZERO
 
-func enter(params: Dictionary) -> void:
+func enter(params: Dictionary) -> void:	
 	player.animation.play("Fall")
 	into_fall_movement = params.get("movement", Vector3.ZERO)
+	
+	print(" ")
+	print("-- fall --")
+	print("movement: ", movement)
+	print("into_fall_movement: ", into_fall_movement)
 	
 	if params.get("coyote_time_enabled", false):
 		coyote_time.start()
@@ -18,6 +23,9 @@ func enter(params: Dictionary) -> void:
 func exit() -> void:
 	into_fall_movement = Vector3.ZERO
 	coyote_time.stop()
+	
+	# TODO: I need to reset Y velocity for some reason otherwise it gets bigger after grabbing
+	movement.y = 0
 	
 func update(_delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))

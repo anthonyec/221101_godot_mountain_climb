@@ -7,6 +7,7 @@ func set_respawn_position(new_respawn_position: Vector3):
 	respawn_position = new_respawn_position
 
 func respawn():
+	print("respawn")
 	get_parent().get_node("Player1").global_transform.origin = respawn_position
 	get_parent().get_node("Player2").global_transform.origin = respawn_position + Vector3.RIGHT * 0.5
 

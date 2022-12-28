@@ -5,7 +5,6 @@ var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
-	Raycast.debug = true
 	player.stamina.can_recover = true
 	
 	player.animation.play("Idle")
@@ -38,7 +37,7 @@ func enter(params: Dictionary) -> void:
 func exit() -> void:
 	player.stamina.can_recover = false
 
-func update(delta: float) -> void:
+func update(_delta: float) -> void:
 	player.find_ledge_info()
 	
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))

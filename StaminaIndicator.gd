@@ -14,7 +14,7 @@ func _ready() -> void:
 	if stamina.is_full():
 		hide_progress(true)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var camera = get_viewport().get_camera_3d()
 	
 	if !camera or !player:

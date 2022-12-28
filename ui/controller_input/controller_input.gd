@@ -3,7 +3,7 @@ extends Control
 
 @export var device: int = 0
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
@@ -61,11 +61,11 @@ func draw_dpad_arrow(position: Vector2, angle: float, is_pressed: bool) -> void:
 		# Top right corner
 		Vector2.ZERO + Vector2(width, 0),
 		# Right edge
-		Vector2.ZERO + Vector2(width, height / 2),
+		Vector2.ZERO + Vector2(width, float(height) / 2),
 		# Arrow point
-		Vector2.ZERO + Vector2(width / 2, height),
+		Vector2.ZERO + Vector2(float(width) / 2, height),
 		# Left edge
-		Vector2.ZERO + Vector2(0, height / 2),
+		Vector2.ZERO + Vector2(0, float(height) / 2),
 		# Top left corner again
 		Vector2.ZERO,
 	]

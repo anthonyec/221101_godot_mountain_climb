@@ -3,15 +3,15 @@ extends Node
 
 signal fully_unbalanced(balance: float)
 
-@export var range: float = 50
+@export var balance_range: float = 50
 
-var min_balance: float = -range
-var max_balance: float = range
+var min_balance: float = -balance_range
+var max_balance: float = balance_range
 var previous_amount: float = 0
 var amount: float = 0
 var percent: float = 0
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var half_range = (max_balance - min_balance) / 2
 	
 	percent = amount / half_range
