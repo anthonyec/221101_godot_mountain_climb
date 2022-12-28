@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=14 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
+[ext_resource type="PackedScene" uid="uid://cnyg650ekdx8d" path="res://entities/swing_rope/swing_rope.tscn" id="6_felqj"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
 [ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
@@ -95,6 +96,9 @@ companion = NodePath("../Player2")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 2.8126)
 player_number = 2
 companion = NodePath("../Player1")
+
+[node name="SwingRope" parent="." instance=ExtResource("6_felqj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.351, 4.64157, 1.93547)
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 

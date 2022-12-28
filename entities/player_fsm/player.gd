@@ -33,9 +33,6 @@ extends CharacterBody3D
 
 var input_direction: Vector2 = Vector2.ZERO
 
-func _ready() -> void:
-	pass
-
 func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.current_state.name)
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)

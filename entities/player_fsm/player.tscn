@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://degg1j0n1ioox"]
+[gd_scene load_steps=21 format=3 uid="uid://degg1j0n1ioox"]
 
 [ext_resource type="Script" path="res://entities/player_fsm/player.gd" id="1_s3pai"]
 [ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="2_txufy"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://bt1l6u0dxhrsp" path="res://entities/state_machine/state.tscn" id="5_qivkb"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/move.gd" id="6_nuhh4"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/jump.gd" id="7_jsgtv"]
+[ext_resource type="Script" path="res://entities/player_fsm/states/swing.gd" id="7_tb2ro"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/fall.gd" id="8_cnpib"]
 [ext_resource type="PackedScene" uid="uid://di3wmxtdgt23q" path="res://entities/Player/godot_model.glb" id="8_nm5rb"]
 [ext_resource type="Texture2D" uid="uid://dt44kscncfq3m" path="res://entities/Player/shadow_blob.png" id="9_mqrpw"]
@@ -42,6 +43,9 @@ wait_time = 0.15
 one_shot = true
 
 [node name="StateMachine" parent="." instance=ExtResource("4_junko")]
+
+[node name="Swing" parent="StateMachine" instance=ExtResource("5_qivkb")]
+script = ExtResource("7_tb2ro")
 
 [node name="Move" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("6_nuhh4")
