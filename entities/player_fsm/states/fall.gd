@@ -12,11 +12,6 @@ func enter(params: Dictionary) -> void:
 	player.animation.play("Fall")
 	into_fall_movement = params.get("movement", Vector3.ZERO)
 	
-	print(" ")
-	print("-- fall --")
-	print("movement: ", movement)
-	print("into_fall_movement: ", into_fall_movement)
-	
 	if params.get("coyote_time_enabled", false):
 		coyote_time.start()
 
