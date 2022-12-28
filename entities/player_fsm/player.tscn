@@ -29,7 +29,6 @@ radius = 0.65
 [node name="Player" type="CharacterBody3D" groups=["player"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.982809, 0)
 collision_layer = 2
-collision_mask = 3
 script = ExtResource("1_s3pai")
 
 [node name="Stamina" parent="." instance=ExtResource("2_txufy")]

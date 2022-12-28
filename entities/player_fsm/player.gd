@@ -111,7 +111,7 @@ func find_ledge_info() -> Dictionary:
 	
 	for index in edge_sweep_iterations:
 		var sweep_position = start_edge_sweep_position.lerp(end_edge_sweep_position, float(index) / float(edge_sweep_iterations))
-		var sweep_hit = Raycast.cast_in_direction(sweep_position, -floor_hit.normal, 1.2, [self])
+		var sweep_hit = Raycast.cast_in_direction(sweep_position, -floor_hit.normal, 1.2, 1)
 		
 		if sweep_hit and sweep_hit.collider != self:
 			edge_hit = sweep_hit
@@ -143,7 +143,7 @@ func find_ledge_info() -> Dictionary:
 	
 	# TODO: Implement exlcuding self. The last argument does not work hehe.
 	# TODO: Find out why the cylinder sometimes in the same position of the ledge, which seems very wrong.
-	var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, [self])
+	var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, 1)
 
 	var is_hang_position_blocked = false
 	
