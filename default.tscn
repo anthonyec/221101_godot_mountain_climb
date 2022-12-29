@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=3 uid="uid://bdd60q3wm6joa"]
 
 [ext_resource type="Script" path="res://default.gd" id="1_dkhqu"]
-[ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="2_evhup"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="3"]
 [ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://wind_loop.wav" id="4"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="4_sqhbd"]
@@ -60,13 +60,14 @@ _data = {
 [node name="Default" type="Node3D"]
 script = ExtResource("1_dkhqu")
 
-[node name="Player1" parent="." instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.028, 1.93975, 10.0151)
-player_index = 1
+[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("2_evhup")]
+transform = Transform3D(1, 1.04116e-09, -3.70394e-09, -9.86619e-10, 1, 6.62831e-10, -3.30678e-09, -5.62809e-10, 1, -16.6851, 1.78531, 10.2716)
+companion = NodePath("../Player2")
 
-[node name="Player2" parent="." instance=ExtResource("2")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.288, 1.93975, 9.7215)
-player_index = 2
+[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("2_evhup")]
+transform = Transform3D(1, 1.04116e-09, -3.70394e-09, -9.86619e-10, 1, 6.62831e-10, -3.30678e-09, -5.62809e-10, 1, -18.3356, 1.78531, 10.2716)
+player_number = 2
+companion = NodePath("../Player1")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("1")

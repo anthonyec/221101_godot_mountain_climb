@@ -1,14 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://dqss127i8qu3r"]
+[gd_scene load_steps=11 format=3 uid="uid://dqss127i8qu3r"]
 
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_vck86"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_atslf"]
-[ext_resource type="PackedScene" uid="uid://fk6hx3k1xvub" path="res://entities/Player/Player.tscn" id="3_j2vqq"]
-[ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="4_6y5ft"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="6_uwidg"]
 [ext_resource type="Material" uid="uid://d4amufhssgpme" path="res://addons/kenney_prototypes/assets/colors/green/materials/material_009.tres" id="7_63ciu"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="8_bd8aj"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="9_5qjss"]
+[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="9_r0ske"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="10_5odj7"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
@@ -40,18 +39,6 @@ debug = true
 distance = 5.0
 yaw = -90.0
 speed = 1.0
-
-[node name="Player1" parent="." instance=ExtResource("3_j2vqq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 0)
-player_index = 1
-
-[node name="Stamina" parent="Player1" instance=ExtResource("4_6y5ft")]
-
-[node name="Player2" parent="." instance=ExtResource("3_j2vqq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0728, 1.7513, 1.56953)
-player_index = 2
-
-[node name="Stamina" parent="Player2" instance=ExtResource("4_6y5ft")]
 
 [node name="CampingScene" parent="." instance=ExtResource("6_uwidg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -48.3976, 18.9528, -34.8805)
@@ -820,3 +807,12 @@ yaw = -180.0
 transform = Transform3D(4.55723, 0, 0, 0, 2.89229, 0, 0, 0, 4.43797, 11.6203, 6.13363, 4.90299)
 gameplay_camera = NodePath("../../GameplayCamera")
 yaw = -270.0
+
+[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("9_r0ske")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.3937, 1.82875, 0.106122)
+companion = NodePath("../s")
+
+[node name="s" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("9_r0ske")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.3937, 1.82875, 2.14283)
+player_number = 2
+companion = NodePath("../Player1")

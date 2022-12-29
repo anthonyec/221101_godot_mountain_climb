@@ -10,12 +10,12 @@ func awake() -> void:
 	main_camera = player.get_parent().get_node_or_null("GameplayCamera/Rig/Camera3D") as Camera3D
 	camp_camera = player.get_parent().get_node_or_null("CampingScene/Camera3D") as Camera3D
 	checkpoint = player.get_parent().get_node_or_null("Checkpoint") as Checkpoint
-	
+
+func enter(_params: Dictionary) -> void:
 	assert(main_camera)
 	assert(camp_camera)
 	assert(checkpoint)
-
-func enter(_params: Dictionary) -> void:
+	
 	# TODO: Change this to either the position between both players or nearest 
 	# checkpoint marker (would need to make this feature).
 	checkpoint.set_respawn_position(player.global_transform.origin)

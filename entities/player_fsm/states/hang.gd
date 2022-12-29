@@ -23,7 +23,7 @@ func update(delta: float) -> void:
 	else:
 		player.animation.play("Hang-loop_RobotArmature") # TODO: Remove last bit of animation name
 	
-	player.stamina.use(2.0 * delta)
+	player.stamina.use(1.5 * delta)
 	
 	if player.stamina.is_depleted():
 		return state_machine.transition_to("Fall")
