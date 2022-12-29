@@ -14,6 +14,20 @@ func _ready() -> void:
 	joints.append(global_transform.origin)
 
 func _process(delta: float) -> void:
+	# Check the point between last third joint and target to see if it can be 
+	# discarded, esentially unwinding the rope.
+	if joints.size() > 1:
+		var first_joint = joints[joints.size() - 2]
+		var potentially_discardable_joint_index = joints.size() - 1
+		
+		DebugDraw.draw_cube(first_joint, 0.4, Color.YELLOW)
+		DebugDraw.draw_cube(joints[potentially_discardable_joint_index], 0.4, Color.RED)
+		
+		var hit_between_joints = Raycast.intersect_ray(first_joint, target.global_transform.origin, WORLD_COLLISION_MASK)
+		
+		if hit_between_joints.is_empty():
+			joints.remove_at(potentially_discardable_joint_index)
+		
 	# Debug draw rope
 	for index in joints.size():
 		DebugDraw.draw_cube(joints[index], 0.1, Color.PURPLE)
