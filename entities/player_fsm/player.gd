@@ -72,7 +72,9 @@ func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 func find_ledge_info() -> Dictionary:
 	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.
 	var wall_hit = Raycast.fan_out(
-		global_transform.origin + (global_transform.basis.y * 0.25), # TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.
+		# TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.
+		# TODO: I've just put 0.2 to avoid glitches when it probably should be 0.25. Fix this later hehe.
+		global_transform.origin + (global_transform.basis.y * 0.2),
 		-global_transform.basis.z, 
 		search_distance,
 	)

@@ -8,7 +8,7 @@ func enter(params: Dictionary) -> void:
 	# It's imporant to disable collision otherwise the player will be pushed 
 	# away from the wall slightly, and the `find_ledge_info` won't return a ledge.
 	# TODO: Without this, I need to check for collisions left and right of the player
-	player.collision.disabled = true
+#	player.collision.disabled = true
 	
 	# TODO: Should this be renamed to "hang_position"? At the moment it is 
 	# consistent with the `move` state.
@@ -95,7 +95,7 @@ func update(delta: float) -> void:
 	if Raycast.debug:
 		DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
 	
-	if climb_up_strength > 0.8 and state_machine.time_in_current_state > 200:
+	if climb_up_strength > 0.8 and state_machine.time_in_current_state > 200 and hit.is_empty():
 		return state_machine.transition_to("Vault")
 	
 	# TODO: Change time check input resetting.
