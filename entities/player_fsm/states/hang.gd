@@ -4,12 +4,7 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var climb_up_position: Vector3 = Vector3.ZERO
 
-func enter(params: Dictionary) -> void:
-	# It's imporant to disable collision otherwise the player will be pushed 
-	# away from the wall slightly, and the `find_ledge_info` won't return a ledge.
-	# TODO: Without this, I need to check for collisions left and right of the player
-#	player.collision.disabled = true
-	
+func enter(params: Dictionary) -> void:	
 	# TODO: Should this be renamed to "hang_position"? At the moment it is 
 	# consistent with the `move` state.
 	if params.has("move_to"):
@@ -19,9 +14,6 @@ func enter(params: Dictionary) -> void:
 		player.face_towards(params.get("face_towards"))
 	
 	player.animation.play("Hang-loop_RobotArmature")
-
-func exit() -> void:
-	player.collision.disabled = false
 
 func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
