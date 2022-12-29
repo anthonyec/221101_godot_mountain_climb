@@ -1,6 +1,8 @@
 class_name RaycastRope
 extends Node3D
 
+const WORLD_COLLISION_MASK: int = 1
+
 @onready @export var target: Node3D
 
 @export var margin: float = 0.1
@@ -21,34 +23,36 @@ func _process(delta: float) -> void:
 		
 	# TODO: I think I saw another method that returns the size minus one somewhere. Replace with that maybe.
 	var raycast_start_position = joints[joints.size() - 1]
-	var hit = Raycast.intersect_ray(raycast_start_position, target.global_transform.origin, 1)
 	
-	if hit.is_empty():
+	# TODO: Can this be done with one raycast? I saw in the docs about checking for back faces also.
+	var hit_torwards_target = Raycast.intersect_ray(raycast_start_position, target.global_transform.origin, WORLD_COLLISION_MASK)
+	var hit_torwards_origin = Raycast.intersect_ray(target.global_transform.origin, raycast_start_position, WORLD_COLLISION_MASK)
+	
+	if hit_torwards_target.is_empty() or hit_torwards_origin.is_empty():
 		return
-	
+
 	# Add a bit of a "skin" to the hit position so hovers a bit above the surface
-	hit.position = hit.position + (hit.normal * margin)
-	
-#	joints.append(hit.position)
-	DebugDraw.draw_cube(hit.position, 0.1, Color.WHITE)
-	
-	var normal_left = hit.normal.cross(Vector3.UP)
-	var normal_right = hit.normal.cross(Vector3.DOWN)
-	var normal_up = hit.normal.cross(normal_right)
-	var normal_down = hit.normal.cross(normal_left)
-	
-	DebugDraw.draw_ray_3d(hit.position, normal_left, 1, Color.WHITE)
-	DebugDraw.draw_ray_3d(hit.position, normal_right, 1, Color.BLACK)
-	DebugDraw.draw_ray_3d(hit.position, normal_up, 1, Color.DARK_GREEN)
-	DebugDraw.draw_ray_3d(hit.position, normal_down, 1, Color.DARK_GOLDENROD)
+	hit_torwards_target.position = hit_torwards_target.position + (hit_torwards_target.normal * margin)
+	hit_torwards_origin.position = hit_torwards_origin.position + (hit_torwards_origin.normal * margin)
 
+	DebugDraw.draw_cube(hit_torwards_target.position, 0.1, Color.WHITE)
+	DebugDraw.draw_cube(hit_torwards_origin.position, 0.1, Color.BLACK)
+	
+	DebugDraw.draw_ray_3d(hit_torwards_target.position, hit_torwards_target.normal, 1, Color.WHITE)
+	DebugDraw.draw_ray_3d(hit_torwards_origin.position, hit_torwards_origin.normal, 1, Color.BLACK)
+	
+	var edge_position: Vector3
+	
 	for index in range(10):
-		var potential_joint_position = hit.position + normal_right * 0.1 * index
-		var potential_joint_hit = Raycast.intersect_ray(potential_joint_position, target.global_transform.origin, 1)
-		
-		if potential_joint_hit.is_empty():
-			joints.append(potential_joint_position)
+		# TODO: Come up with a better name for the search line between these normal. 
+		# I don't like A and B, maybe in and out or something?
+		var position_a: Vector3 = hit_torwards_target.position + (hit_torwards_target.normal * index * 0.1)
+		var position_b: Vector3 = hit_torwards_origin.position + (hit_torwards_origin.normal * index * 0.1)
+		var hit_between_normals = Raycast.intersect_ray(position_a, position_b, WORLD_COLLISION_MASK)
+	
+		if hit_between_normals.is_empty():
+			edge_position = position_a.lerp(position_b, 0.5)
 			break
-		
-		DebugDraw.draw_cube(potential_joint_position, 0.1, Color.RED)
-
+	
+	if edge_position:
+		joints.append(edge_position)
