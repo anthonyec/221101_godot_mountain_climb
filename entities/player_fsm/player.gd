@@ -90,6 +90,11 @@ func find_ledge_info() -> Dictionary:
 	# Might need to be a seperate kind of grab.
 	if wall_angle < deg_to_rad(80) or wall_angle > deg_to_rad(120):
 		return {}
+	
+	var wall_angle_to_player_forward = wall_hit.normal.angle_to(global_transform.basis.z)
+	
+	if wall_angle_to_player_forward > deg_to_rad(60):
+		return {}
 		
 	var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
 	var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * grab_height), Vector3.DOWN, grab_height)
@@ -119,6 +124,12 @@ func find_ledge_info() -> Dictionary:
 			break
 	
 	if edge_hit.is_empty():
+		return {}
+	
+	# TODO: Make this better. Potentially a deep/long rectangle that is aligned to the floor normal.
+	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1)
+	
+	if not hand_hit.is_empty():
 		return {}
 		
 	var edge_direction = wall_hit.normal.cross(floor_hit.normal)
