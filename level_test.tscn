@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=15 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
@@ -8,6 +8,7 @@
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="PackedScene" uid="uid://cnyg650ekdx8d" path="res://entities/swing_rope/swing_rope.tscn" id="6_felqj"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
+[ext_resource type="PackedScene" uid="uid://2wnbteyj0lf2" path="res://entities/raycast_rope/raycast_rope.tscn" id="6_nmda8"]
 [ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0hn72"]
@@ -98,6 +99,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 2.8126)
 player_number = 2
 companion = NodePath("../Player1")
 
+[node name="RaycastRope" parent="." node_paths=PackedStringArray("target") instance=ExtResource("6_nmda8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.2305, 1.55077, 8.58809)
+target = NodePath("../Player2")
+
 [node name="SwingRope" parent="." instance=ExtResource("6_felqj")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.351, 4.64157, 1.93547)
 
@@ -132,8 +137,20 @@ material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)
 
+[node name="CSGBox3D7" type="CSGBox3D" parent="."]
+transform = Transform3D(-0.13761, 0.279532, 0.950224, 0.304073, 0.924948, -0.228061, -0.942657, 0.257554, -0.212281, -28.3981, 0.389589, 7.52516)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 2, 2)
+
 [node name="CSGBox3D4" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.4494, 2.07361, 2.97395)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="."]
+transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -23.4494, 1.56648, 12.1833)
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)
@@ -155,6 +172,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.33001, 3.12391, 8.968)
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(0.5, 0.5, 8)
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="."]
+transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -29.847, 1.13848, 11.363)
+use_collision = true
+radius = 1.3
+smooth_faces = false
 
 [node name="TwoPlayerLedgeAndRope" type="Node3D" parent="."]
 
