@@ -6,34 +6,36 @@ const WORLD_COLLISION_MASK: int = 1
 @onready @export var target: Node3D
 
 @export var margin: float = 0.1
+@export var edge_search_iterations: int = 10
+@export var edge_search_distance_step: float = 0.1
 
 var joints: Array[Vector3] = []
 
 func _ready() -> void:
-	Raycast.debug = true
 	joints.append(global_transform.origin)
 
 func _process(delta: float) -> void:
-	# Check the point between last third joint and target to see if it can be 
-	# discarded, esentially unwinding the rope.
-	if joints.size() > 1:
-		var first_joint = joints[joints.size() - 2]
-		var potentially_discardable_joint_index = joints.size() - 1
-		
-		DebugDraw.draw_cube(first_joint, 0.4, Color.YELLOW)
-		DebugDraw.draw_cube(joints[potentially_discardable_joint_index], 0.4, Color.RED)
-		
-		var hit_between_joints = Raycast.intersect_ray(first_joint, target.global_transform.origin, WORLD_COLLISION_MASK)
-		
-		if hit_between_joints.is_empty():
-			joints.remove_at(potentially_discardable_joint_index)
-		
 	# Debug draw rope
 	for index in joints.size():
 		DebugDraw.draw_cube(joints[index], 0.1, Color.PURPLE)
 		
 		if index > 0:
 			DebugDraw.draw_line_3d(joints[index - 1], joints[index], Color.PURPLE)
+			
+	DebugDraw.draw_line_3d(joints[joints.size() - 1], target.global_transform.origin, Color.PURPLE)
+	
+	# Check the point between last third joint and target to see if it can be 
+	# discarded, esentially unwinding the rope.
+	if joints.size() > 1:
+		var first_joint = joints[joints.size() - 2]
+		
+		# TODO: Maybe rename this stuff, Alex was right about my naming skills...
+		var potentially_discardable_joint_index = joints.size() - 1
+		
+		var hit_between_joints = Raycast.intersect_ray(first_joint, target.global_transform.origin, WORLD_COLLISION_MASK)
+		
+		if hit_between_joints.is_empty():
+			joints.remove_at(potentially_discardable_joint_index)
 		
 	# TODO: I think I saw another method that returns the size minus one somewhere. Replace with that maybe.
 	var raycast_start_position = joints[joints.size() - 1]
@@ -50,21 +52,13 @@ func _process(delta: float) -> void:
 	hit_torwards_origin.position = hit_torwards_origin.position + (hit_torwards_origin.normal * margin)
 	
 	var average_edge_normal = (hit_torwards_target.normal + hit_torwards_origin.normal) / 2
-
-	DebugDraw.draw_cube(hit_torwards_target.position, 0.1, Color.WHITE)
-	DebugDraw.draw_cube(hit_torwards_origin.position, 0.1, Color.BLACK)
-	
-	DebugDraw.draw_ray_3d(hit_torwards_target.position, hit_torwards_target.normal, 1, Color.WHITE)
-	DebugDraw.draw_ray_3d(hit_torwards_origin.position, hit_torwards_origin.normal, 1, Color.BLACK)
-	DebugDraw.draw_ray_3d(hit_torwards_target.position.lerp(hit_torwards_origin.position, 0.5), average_edge_normal, 2, Color.YELLOW)
-	
 	var edge_position: Vector3
 	
-	for index in range(10):
+	for index in range(edge_search_iterations):
 		# TODO: Come up with a better name for the search line between these normal. 
 		# I don't like A and B, maybe in and out or something?
-		var position_a: Vector3 = hit_torwards_target.position + (hit_torwards_target.normal * index * 0.1)
-		var position_b: Vector3 = hit_torwards_origin.position + (hit_torwards_origin.normal * index * 0.1)
+		var position_a: Vector3 = hit_torwards_target.position + (hit_torwards_target.normal * index * edge_search_distance_step)
+		var position_b: Vector3 = hit_torwards_origin.position + (hit_torwards_origin.normal * index * edge_search_distance_step)
 		var hit_between_normals = Raycast.intersect_ray(position_a, position_b, WORLD_COLLISION_MASK)
 	
 		if hit_between_normals.is_empty():
