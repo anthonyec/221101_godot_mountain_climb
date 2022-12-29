@@ -12,15 +12,24 @@ var current_angle: float = 0
 var angle_velocity: float = 0
 var angle_acceleration: float = 0
 
+var camera: GameplayCamera
+
 func awake() -> void:
 	super.awake()
 	pivot_position = player.get_offset_position(0.0, 2.5)
-	Raycast.debug = true
 	
 func enter(params: Dictionary) -> void:
 	player.animation.play("WallSlide")
-	pivot_position = params.get("pivot_position", Vector3.ZERO)
-	pivot_axis = params.get("pivot_axis", Vector3.LEFT)
+	pivot_position = params.get("pivot_position", Vector3.ZERO) as Vector3
+	pivot_axis = params.get("pivot_axis", Vector3.LEFT) as Vector3
+	
+	# TODO: This is a hacky hack to align the camera correctly.
+	camera = player.get_parent().get_node("GameplayCamera") as GameplayCamera
+	var yaw = rad_to_deg(pivot_axis.signed_angle_to(camera.global_transform.basis.z, Vector3.UP))
+	
+	camera.yaw = camera.yaw - yaw
+	camera.pitch = 45
+#	camera.distance = 5
 
 # Based of the coding train video on pendulums: https://www.youtube.com/watch?v=NBWMtlbbOag
 # TODO: Should some of this stuff move the physics process? It's a mess atm.
@@ -29,6 +38,7 @@ func update(delta: float) -> void:
 	
 	DebugDraw.draw_cube(pivot_position, 0.2, Color.RED)
 	DebugDraw.draw_line_3d(pivot_position, pivot_position + pivot_axis, Color.WHITE)
+	DebugDraw.draw_line_3d(pivot_position, pivot_position + -camera.global_transform.basis.z, Color.BLUE)
 	
 	var force: float = (gravity * delta) * sin(current_angle)  
 

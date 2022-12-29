@@ -81,7 +81,8 @@ func physics_update(delta: float) -> void:
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("debug")):
 		return state_machine.transition_to("Swing", {
-			"pivot_position": player.global_transform.origin + (Vector3.UP * 2)
+			"pivot_position": player.global_transform.origin + (Vector3.UP * 2),
+			"pivot_axis": player.global_transform.basis.z
 		})
 	
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:

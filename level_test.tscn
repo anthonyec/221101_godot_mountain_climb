@@ -84,6 +84,7 @@ shadow_enabled = true
 [node name="GameplayCamera" parent="." instance=ExtResource("2_v3hew")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
 debug = true
+exclude_players = [1]
 distance = 5.0
 yaw = -90.0
 speed = 1.0

@@ -7,8 +7,9 @@ var original_gravity: float = 0
 
 func enter(params: Dictionary) -> void:
 	into_jump_movement = params.get("movement", Vector3.ZERO) * 1.2
+	movement.y = params.get("jump_strength", player.jump_strength)
+	
 	player.animation.play("Jump")
-	movement.y = player.jump_strength
 	
 	# Variable jump height thanks to the creator of Bounce.
 	# TODO: Credit jack as jump researcher.

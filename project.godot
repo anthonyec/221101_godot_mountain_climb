@@ -19,6 +19,11 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://Checkpoint.gd"
 }, {
+"base": "Node3D",
+"class": &"GameplayCamera",
+"language": &"GDScript",
+"path": "res://entities/GameplayCamera/GameplayCamera.gd"
+}, {
 "base": "Node",
 "class": &"Inventory",
 "language": &"GDScript",
@@ -57,6 +62,7 @@ _global_script_classes=[{
 _global_script_class_icons={
 "Balance": "",
 "Checkpoint": "",
+"GameplayCamera": "",
 "Inventory": "",
 "Player": "",
 "PlayerFSM": "",

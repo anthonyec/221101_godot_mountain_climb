@@ -4,7 +4,12 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var climb_up_position: Vector3 = Vector3.ZERO
 
-func enter(params: Dictionary) -> void:	
+func enter(params: Dictionary) -> void:
+	# It's imporant to disable collision otherwise the player will be pushed 
+	# away from the wall slightly, and the `find_ledge_info` won't return a ledge.
+	# TODO: Without this, I need to check for collisions left and right of the player
+	player.collision.disabled = true
+	
 	# TODO: Should this be renamed to "hang_position"? At the moment it is 
 	# consistent with the `move` state.
 	if params.has("move_to"):
@@ -14,6 +19,9 @@ func enter(params: Dictionary) -> void:
 		player.face_towards(params.get("face_towards"))
 	
 	player.animation.play("Hang-loop_RobotArmature")
+
+func exit() -> void:
+	player.collision.disabled = false
 
 func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
@@ -87,17 +95,22 @@ func update(delta: float) -> void:
 	if Raycast.debug:
 		DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
 	
+	if climb_up_strength > 0.8 and state_machine.time_in_current_state > 200:
+		return state_machine.transition_to("Vault")
+	
 	# TODO: Change time check input resetting.
-	if (climb_up_strength > 0.8 or abs(climb_up_strength) == 0 and Input.is_action_just_pressed(player.get_action_name("jump"))) and hit.is_empty() and state_machine.time_in_current_state > 200:
+	if abs(climb_up_strength) == 0 and Input.is_action_just_pressed(player.get_action_name("jump")) and hit.is_empty():
 		return state_machine.transition_to("Vault")
 		
 	if Input.is_action_just_pressed(player.get_action_name("jump")) and climb_up_strength < -0.4:
 		player.face_towards(player.global_transform.origin + direction)
 		player.stamina.use(30.0)
+		
+		# TODO: This should probably transition to a specfic VaultJump state.
 		return state_machine.transition_to("Jump", {
-			# TODO: If fall transitions to grab and then to this jump start, some downwards
-			# is kept which gives a very heavy feeling. Fix this!
-			"movement": direction
+			# TODO: Don't use magic numbers here for jump strength
+			"movement": direction * 5,
+			"jump_strength": 5
 		})
 		
 	if !Input.is_action_pressed(player.get_action_name("grab")):

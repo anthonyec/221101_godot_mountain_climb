@@ -1,25 +1,29 @@
+class_name GameplayCamera
 extends Node3D
 
 @export var debug: bool = false
+@export var exclude_players: Array[int]
+
 @export var distance: float = 10
 @export var pitch: float = 0
 @export var yaw: float = 0
 @export var speed: float = 5
-@export var only_focus_on: int = -1
 
 @onready var rig: Node3D = $"%Rig"
 @onready var camera: Camera3D = $"%Camera3D"
 
-var targets: Array[Node3D]
+var targets = []
 
 func _ready() -> void:
 	var players = get_tree().get_nodes_in_group("player")
 	
 	for index in players.size():
-		var player = players[index]
+		var player = players[index] as PlayerFSM
 		
-		if only_focus_on == -1 or only_focus_on == index:
-			targets.append(player)
+		if exclude_players.has(player.player_number):
+			continue
+			
+		targets.append(player)
 
 func _process(delta: float) -> void:
 	# Get the average position of all targets.
