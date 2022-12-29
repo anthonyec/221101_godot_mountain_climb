@@ -14,3 +14,4 @@ func respawn():
 func _input(event):
 	if event.is_action_pressed("respawn_1") or event.is_action_pressed("respawn_2"):
 		respawn()
+	

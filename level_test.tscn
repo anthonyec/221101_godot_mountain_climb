@@ -1,6 +1,7 @@
-[gd_scene load_steps=15 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=16 format=3 uid="uid://loqth6l520ji"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
+[ext_resource type="Script" path="res://debug.gd" id="1_wqs18"]
 [ext_resource type="Script" path="res://Checkpoint.gd" id="1_x8714"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="2_6epk5"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
@@ -24,6 +25,9 @@ volumetric_fog_albedo = Color(0.87451, 0.968627, 1, 1)
 volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
 
 [node name="Default" type="Node3D"]
+
+[node name="Debug" type="Node" parent="."]
+script = ExtResource("1_wqs18")
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
@@ -154,6 +158,18 @@ transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -2
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D10" type="CSGBox3D" parent="."]
+transform = Transform3D(1, -3.48787e-16, 3.48787e-16, 3.48787e-16, 1, -3.48787e-16, -3.48787e-16, 3.48787e-16, 1, -20.3674, 1.47101, 10.7633)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(0.2, 2, 0.2)
+
+[node name="s" type="CSGBox3D" parent="."]
+transform = Transform3D(1, -3.48787e-16, 3.48787e-16, 3.48787e-16, 1, -3.48787e-16, -3.48787e-16, 3.48787e-16, 1, -18.2014, 1.47101, 10.7633)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(0.5, 2, 0.5)
 
 [node name="CSGBox3D3" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.3616, 1.48878, 2.00422)
