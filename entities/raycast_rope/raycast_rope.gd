@@ -34,12 +34,15 @@ func _process(delta: float) -> void:
 	# Add a bit of a "skin" to the hit position so hovers a bit above the surface
 	hit_torwards_target.position = hit_torwards_target.position + (hit_torwards_target.normal * margin)
 	hit_torwards_origin.position = hit_torwards_origin.position + (hit_torwards_origin.normal * margin)
+	
+	var average_edge_normal = (hit_torwards_target.normal + hit_torwards_origin.normal) / 2
 
 	DebugDraw.draw_cube(hit_torwards_target.position, 0.1, Color.WHITE)
 	DebugDraw.draw_cube(hit_torwards_origin.position, 0.1, Color.BLACK)
 	
 	DebugDraw.draw_ray_3d(hit_torwards_target.position, hit_torwards_target.normal, 1, Color.WHITE)
 	DebugDraw.draw_ray_3d(hit_torwards_origin.position, hit_torwards_origin.normal, 1, Color.BLACK)
+	DebugDraw.draw_ray_3d(hit_torwards_target.position.lerp(hit_torwards_origin.position, 0.5), average_edge_normal, 2, Color.YELLOW)
 	
 	var edge_position: Vector3
 	
@@ -51,8 +54,9 @@ func _process(delta: float) -> void:
 		var hit_between_normals = Raycast.intersect_ray(position_a, position_b, WORLD_COLLISION_MASK)
 	
 		if hit_between_normals.is_empty():
-			edge_position = position_a.lerp(position_b, 0.5)
+			edge_position = position_a.lerp(position_b, 0.5) + (average_edge_normal * margin)
 			break
 	
+	# TODO: Can there ever be no edge position? Might be a pointles check or could be a better check.
 	if edge_position:
 		joints.append(edge_position)
