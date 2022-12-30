@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dyktva7fldo6y"]
+[gd_scene load_steps=14 format=3 uid="uid://dyktva7fldo6y"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://debug.gd" id="1_wqs18"]
@@ -8,8 +8,7 @@
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
-[ext_resource type="PackedScene" uid="uid://2wnbteyj0lf2" path="res://entities/raycast_rope/raycast_rope.tscn" id="6_nmda8"]
-[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
+[ext_resource type="PackedScene" uid="uid://do8ehkei8khmb" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0hn72"]
 [ext_resource type="PackedScene" uid="uid://cmqnkwo2su52t" path="res://entities/WoodPickup/WoodPickup.tscn" id="9_ithm3"]
@@ -98,13 +97,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
 companion = NodePath("../Player2")
 
 [node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 2.8126)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2507, 7.60113, -10.4743)
 player_number = 2
 companion = NodePath("../Player1")
-
-[node name="RaycastRope" parent="." node_paths=PackedStringArray("target") instance=ExtResource("6_nmda8")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.2305, 1.55077, 8.58809)
-target = NodePath("../Player2")
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 
@@ -168,10 +163,40 @@ use_collision = true
 size = Vector3(2, 2, 2)
 
 [node name="CSGBox3D14" type="CSGBox3D" parent="."]
-transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -24.8473, 4.37911, -6.91677)
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -24.8473, 3.99594, -6.95802)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 1.28375, 2)
+
+[node name="CSGBox3D15" type="CSGBox3D" parent="."]
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -25.8631, 2.74453, -10.1189)
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D16" type="CSGBox3D" parent="."]
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -25.845, 5.05003, -10.1189)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D17" type="CSGBox3D" parent="."]
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -26.6413, 5.05003, -9.93574)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 0.571026, 0.45717)
+
+[node name="CSGBox3D18" type="CSGBox3D" parent="."]
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -25.9032, 6.37785, -10.1055)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(0.709055, 1.60754, 0.45717)
+
+[node name="CSGBox3D19" type="CSGBox3D" parent="."]
+transform = Transform3D(0.974554, 0, 0.224152, 0, 1, 0, -0.224152, 0, 0.974554, -24.8656, 4.62433, -6.85616)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(0.709055, 1.60754, 0.45717)
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="."]
 transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -23.4494, 1.56648, 12.1833)

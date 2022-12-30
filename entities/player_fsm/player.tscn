@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://degg1j0n1ioox"]
+[gd_scene load_steps=23 format=3 uid="uid://do8ehkei8khmb"]
 
 [ext_resource type="Script" path="res://entities/player_fsm/player.gd" id="1_s3pai"]
 [ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="2_txufy"]
@@ -19,6 +19,7 @@
 [ext_resource type="Script" path="res://entities/player_fsm/states/held.gd" id="14_o2l5l"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/lift.gd" id="15_ijiyv"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/belay.gd" id="16_trxpn"]
+[ext_resource type="Script" path="res://entities/player_fsm/states/abseil.gd" id="18_y8wa7"]
 
 [sub_resource type="CylinderShape3D" id="5"]
 height = 1.6
@@ -77,6 +78,9 @@ script = ExtResource("7_tb2ro")
 
 [node name="Belay" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("16_trxpn")
+
+[node name="Abseil" parent="StateMachine" instance=ExtResource("5_qivkb")]
+script = ExtResource("18_y8wa7")
 
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)

@@ -31,6 +31,7 @@ extends CharacterBody3D
 @onready var inventory: Inventory = $Inventory
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
 
+var rope: RaycastRope = null
 var input_direction: Vector2 = Vector2.ZERO
 
 func _process(_delta: float) -> void:

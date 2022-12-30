@@ -11,6 +11,7 @@ var gravity: float = 0.5
 var current_angle: float = 0
 var angle_velocity: float = 0
 var angle_acceleration: float = 0
+var use_rope: bool = false
 
 var camera: GameplayCamera
 
@@ -22,6 +23,14 @@ func enter(params: Dictionary) -> void:
 	player.animation.play("WallSlide")
 	pivot_position = params.get("pivot_position", Vector3.ZERO) as Vector3
 	pivot_axis = params.get("pivot_axis", Vector3.LEFT) as Vector3
+	length = params.get("length", length)
+	use_rope = params.get("use_rope", false)
+	
+	if use_rope:
+		var rope_normal = player.rope.get_last_edge_info()["normal"]
+		rope_normal.y = 0
+		rope_normal = rope_normal.normalized()
+		pivot_axis = rope_normal
 	
 	# TODO: This is a hacky hack to align the camera correctly.
 	camera = player.get_parent().get_node("GameplayCamera") as GameplayCamera
@@ -34,7 +43,14 @@ func enter(params: Dictionary) -> void:
 # Based of the coding train video on pendulums: https://www.youtube.com/watch?v=NBWMtlbbOag
 # TODO: Should some of this stuff move the physics process? It's a mess atm.
 func update(delta: float) -> void:
-	var ledge_info = player.find_ledge_info()
+	if use_rope:
+		if not player.rope.get_last_edge_info().is_empty():
+			var rope_position = player.rope.get_last_edge_info()["position"]
+
+			pivot_position = rope_position
+			length = player.global_transform.origin.distance_to(rope_position)
+		else:
+			state_machine.transition_to("Abseil")
 	
 	DebugDraw.draw_cube(pivot_position, 0.2, Color.RED)
 	DebugDraw.draw_line_3d(pivot_position, pivot_position + pivot_axis, Color.WHITE)
@@ -77,3 +93,6 @@ func update(delta: float) -> void:
 			"movement": jump_off_movement,
 			"face_towards": end_position + jump_off_movement
 		})
+		
+func physics_update(_delta: float) -> void:
+	var _collision = player.move_and_slide()

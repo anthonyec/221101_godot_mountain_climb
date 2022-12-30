@@ -86,7 +86,7 @@ func handle_input(event: InputEvent) -> void:
 		})
 	
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
-		return state_machine.transition_to("Belay")
+		return state_machine.transition_to("Abseil")
 		
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
 		player.companion.state_machine.transition_to("Lift")

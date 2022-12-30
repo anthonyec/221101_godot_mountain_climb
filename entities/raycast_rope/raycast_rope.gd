@@ -9,15 +9,22 @@ const WORLD_COLLISION_MASK: int = 1
 @export var margin: float = 0.1
 @export var edge_search_iterations: int = 20
 @export var edge_search_distance_step: float = 0.2
-@export var discard_joint_iterations: int = 10
+@export var discard_joint_iterations: int = 20
 
 var total_length: float = 0
 var joints: Array[Vector3] = []
+var edge_info: Array = []
 
 func _ready() -> void:
 	joints.append(global_transform.origin)
 
 func _process(delta: float) -> void:
+	var t = get_last_edge_info()
+	
+	if not t.is_empty():
+		DebugDraw.draw_cube(t.position, 0.3, Color.GREEN)
+		DebugDraw.draw_ray_3d(t.position, t.normal, 1, Color.GREEN)
+	
 	# Debug draw rope
 	for index in joints.size():
 		DebugDraw.draw_cube(joints[index], 0.1, Color.PURPLE)
@@ -28,7 +35,7 @@ func _process(delta: float) -> void:
 	DebugDraw.draw_line_3d(joints[joints.size() - 1], target.global_transform.origin, Color.PURPLE)
 	
 	# Check the point between last third joint and target to see if it can be 
-	# discarded, esentially unwinding the rope.
+	# discarded, essentially unwinding the rope.
 	if joints.size() > 1:
 		var first_joint = joints[joints.size() - 2]
 		
@@ -57,6 +64,7 @@ func _process(delta: float) -> void:
 			
 			if not is_something_between_rope:
 				joints.remove_at(potentially_discardable_joint_index)
+				edge_info.remove_at(potentially_discardable_joint_index - 1)
 	
 	# Calculate the total length of the rope
 	for index in joints.size():
@@ -113,5 +121,19 @@ func _process(delta: float) -> void:
 	# TODO: Improve this check.
 	if edge_position != Vector3.ZERO:
 		joints.append(edge_position)
+		
+		# TODO: Combine joints and edge info? It's a lot of data. 
+		# Is there a way to only keep the last one?
+		edge_info.append({
+			"position": edge_position,
+			"normal": average_edge_normal
+		})
 	else:
 		push_warning("Edge position was Vector3.ZERO")
+
+func get_last_edge_info() -> Dictionary:
+	if edge_info.is_empty():
+		return {}
+	
+	return edge_info[edge_info.size() - 1]
+	

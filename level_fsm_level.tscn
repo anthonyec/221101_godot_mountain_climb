@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://Checkpoint.gd" id="4_iabbd"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="5_ey15e"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="5_uttj6"]
-[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_p1d3f"]
+[ext_resource type="PackedScene" uid="uid://do8ehkei8khmb" path="res://entities/player_fsm/player.tscn" id="7_p1d3f"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="9_53jni"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
