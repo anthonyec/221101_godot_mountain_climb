@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://loqth6l520ji"]
+[gd_scene load_steps=15 format=3 uid="uid://dyktva7fldo6y"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://debug.gd" id="1_wqs18"]
@@ -7,7 +7,6 @@
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
-[ext_resource type="PackedScene" uid="uid://cnyg650ekdx8d" path="res://entities/swing_rope/swing_rope.tscn" id="6_felqj"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
 [ext_resource type="PackedScene" uid="uid://2wnbteyj0lf2" path="res://entities/raycast_rope/raycast_rope.tscn" id="6_nmda8"]
 [ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
@@ -106,9 +105,6 @@ companion = NodePath("../Player1")
 [node name="RaycastRope" parent="." node_paths=PackedStringArray("target") instance=ExtResource("6_nmda8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.2305, 1.55077, 8.58809)
 target = NodePath("../Player2")
-
-[node name="SwingRope" parent="." instance=ExtResource("6_felqj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24.351, 4.64157, 1.93547)
 
 [node name="CampingScene" parent="." instance=ExtResource("5_6dxrt")]
 

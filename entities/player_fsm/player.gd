@@ -69,6 +69,8 @@ func face_towards(target: Vector3) -> void:
 func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
 
+# TODO: When find_ledge_info fails, return an error and a reason why it failed. This is 
+# a somewhat chunky change though as I wont be able to check for is_empty when failed
 func find_ledge_info() -> Dictionary:
 	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.
 	var wall_hit = Raycast.fan_out(
