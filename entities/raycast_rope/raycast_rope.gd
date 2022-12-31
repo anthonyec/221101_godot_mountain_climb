@@ -137,3 +137,5 @@ func get_last_edge_info() -> Dictionary:
 	
 	return edge_info[edge_info.size() - 1]
 	
+func get_last_joint() -> Vector3:
+	return joints[joints.size() - 1]

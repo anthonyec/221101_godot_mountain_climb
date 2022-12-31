@@ -23,6 +23,7 @@ extends CharacterBody3D
 @export var search_distance: float = 1
 
 @onready var collision: CollisionShape3D = $Collision
+@onready var abseil_collision: CollisionShape3D = $AbseilCollision
 @onready var model: Node3D = $Model
 @onready var animation: AnimationPlayer = $Model/godot_model/AnimationPlayer
 @onready var pickup_collision: Area3D = $PickupArea
