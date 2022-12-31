@@ -8,7 +8,7 @@
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
-[ext_resource type="PackedScene" uid="uid://do8ehkei8khmb" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
+[ext_resource type="PackedScene" uid="uid://cuvjqol5hr5pg" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="7_jd6l7"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0hn72"]
 [ext_resource type="PackedScene" uid="uid://cmqnkwo2su52t" path="res://entities/WoodPickup/WoodPickup.tscn" id="9_ithm3"]

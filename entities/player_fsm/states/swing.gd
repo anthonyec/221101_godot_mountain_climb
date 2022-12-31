@@ -95,4 +95,5 @@ func update(delta: float) -> void:
 		})
 		
 func physics_update(_delta: float) -> void:
-	var _collision = player.move_and_slide()
+#	var _collision = player.move_and_slide()
+	pass
