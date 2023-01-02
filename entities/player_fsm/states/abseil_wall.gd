@@ -3,49 +3,57 @@ extends PlayerState
 const WORLD_COLLISION_MASK: int = 1
 
 var abseil_wall_speed: float = 2
-var gravity_towards_wall: float = 10
+var gravity_towards_wall: float = 20
+var jump_power: float = 5
 var movement: Vector3
 
 func enter(_params: Dictionary) -> void:
 	player.set_collision_mode("abseil")
-	player.animation.play("Idle")
+	player.animation.play("Rope-wall")
+	player.floor_stop_on_slope = true
+	player.up_direction = Vector3.UP
 	
 func exit() -> void:
 	player.set_collision_mode("default")
 	movement = Vector3.ZERO
 	
 func update(delta: float) -> void:
-	player.face_towards(player.rope.get_last_joint())
+	var last_edge_info = player.rope.get_last_edge_info()
+	
+	if last_edge_info.is_empty():
+		last_edge_info.normal = Vector3.ZERO
+		
+	player.face_towards(player.rope.get_last_joint() - last_edge_info.normal)
+	player.stamina.use(1.0 * delta)
 
 func physics_update(delta: float) -> void:
+	# TODO: Add check here to to see if joint is below the player. If it is, then transition
+	# to a state where we can fall while grabbed to the rope.
+	
 	if player.is_on_floor():
 		return state_machine.transition_to("AbseilGround")
 		
-	DebugDraw.set_text("is_on_wall", player.is_on_wall())
+	if player.is_on_wall():
+#		return state_machine.transition_to("AbseilAir")
+		pass
 	
-#	var wall_hit = Raycast.cast_in_direction(player.global_transform.origin, -player.global_transform.basis.z, 1, WORLD_COLLISION_MASK)
+	var direction_to_last_rope_joint = player.global_transform.origin.direction_to(player.rope.get_last_joint())
 	
-#	if not wall_hit.is_empty():
-#		player.face_towards(player.global_transform.origin - wall_hit.normal)
-#		player.global_transform.origin = wall_hit.position + wall_hit.normal * 0.35
+	# This adding velocity instead of setting directly makes everything smooth
+	# and the jump work correctly.
+	movement += direction_to_last_rope_joint * gravity_towards_wall * delta
 	
-	var direction_to_rope = player.global_transform.origin.direction_to(player.rope.get_last_joint())
+	# Dampen movement on wall to stop any swinging effect.
+	movement = movement * 0.98 
 	
-	direction_to_rope.y = 0
-	
-	movement = direction_to_rope * gravity_towards_wall
+	# Remove any vertical direction, this will instead be controlled by player input
 	movement.y = -player.input_direction.y * abseil_wall_speed
 	
-	if Input.is_action_just_pressed(player.get_action_name("jump")):
-		movement = (-player.global_transform.basis.z) * 20
-		
-	DebugDraw.draw_ray_3d(player.global_transform.origin, direction_to_rope, 1, Color.RED)
-	DebugDraw.draw_ray_3d(player.global_transform.origin, movement, 2, Color.GREEN)
-	
-	player.set_floor_stop_on_slope_enabled(true)
-	
-	player.set_up_direction(Vector3.UP)
-#	player.set_up_direction(direction_to_rope)
+	if player.is_on_wall() and Input.is_action_just_pressed(player.get_action_name("jump")):
+		movement += (player.global_transform.basis.z) * jump_power
+#		return state_machine.transition_to("AbseilWallJump")
 	
 	player.velocity = movement
 	player.move_and_slide()
+	
+	movement = player.velocity
