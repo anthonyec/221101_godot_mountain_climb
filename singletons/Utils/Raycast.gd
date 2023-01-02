@@ -36,15 +36,18 @@ func fan_out(start_position: Vector3, direction: Vector3, length: float = 1.0, a
 
 	return shortest_hit
 
-func intersect_ray(start_position: Vector3, end_position: Vector3, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = []):
+func intersect_ray(start_position: Vector3, end_position: Vector3, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = [], hit_back_faces: bool = false):
 	var space_state = get_world_3d().direct_space_state 
 	
 	if debug:
 		DebugDraw.draw_line_3d(start_position, end_position, debug_color)
+		
+	var query = PhysicsRayQueryParameters3D.create(start_position, end_position, collision_mask, exclude)
 	
-	return space_state.intersect_ray(
-		PhysicsRayQueryParameters3D.create(start_position, end_position, collision_mask, exclude)
-	)
+	# TODO: Change params to options dictionary!
+	query.hit_back_faces = hit_back_faces
+	
+	return space_state.intersect_ray(query)
 	
 # TODO: Fix return type. Should be Dictionary[] but couldn't get it working.
 func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 0.5, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = []) -> Array:
@@ -65,5 +68,5 @@ func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 
 	
 	return space_state.intersect_shape(params)
 
-func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = []) -> Dictionary:
-	return intersect_ray(start_position, start_position + (direction * length), collision_mask, exclude)
+func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = [], hit_back_faces: bool = false) -> Dictionary:
+	return intersect_ray(start_position, start_position + (direction * length), collision_mask, exclude, hit_back_faces)

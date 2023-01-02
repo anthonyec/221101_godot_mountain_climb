@@ -5,7 +5,8 @@ var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
-#	player.set_collision_mode("abseil")
+	player.up_direction = Vector3.UP
+	player.floor_stop_on_slope = true
 	player.stamina.can_recover = true
 	
 	player.animation.play("Idle")
@@ -51,15 +52,28 @@ func physics_update(delta: float) -> void:
 	movement = player_forward * direction.length() * player.walk_speed
 	movement.y -= player.gravity * delta
 	
-	player.face_towards(player.global_transform.origin + direction, 10.0, delta)
-	player.set_velocity(movement)
-	player.set_up_direction(Vector3.UP)
-	player.set_floor_stop_on_slope_enabled(true)
+	# TODO: Implement proper turning on spot.
+	if direction.length() > 0.3:
+		player.face_towards(player.global_transform.origin + direction, player.ground_turn_speed, delta)
+	else:
+		player.face_towards(player.global_transform.origin + direction)
+		
+	player.velocity = movement
 
 	# TODO: Add correct warning ID to ignore unused vars.
 	# warning-ignore:warning-id
 	player.move_and_slide()
 	movement = player.velocity
+	
+	# TODO: Clean this up. Maybe it could use a step up animation or state.
+	var curb_hit = Raycast.cast_in_direction(player.get_offset_position(0.0, -0.95), direction.normalized(), 0.35)
+	
+	if not curb_hit.is_empty() and curb_hit.normal.angle_to(Vector3.UP) > deg_to_rad(85):
+		var curb_floor_hit = Raycast.cast_in_direction(curb_hit.position - (curb_hit.normal * 0.1) + Vector3.UP * 0.5, Vector3.DOWN, 0.5)
+		
+		if not curb_floor_hit.is_empty():
+			DebugDraw.draw_cube(curb_floor_hit.position, 0.1, Color.RED)
+			player.stand_at_position(curb_floor_hit.position)
 	
 	var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
 	var companion_state = player.companion.state_machine.current_state.name

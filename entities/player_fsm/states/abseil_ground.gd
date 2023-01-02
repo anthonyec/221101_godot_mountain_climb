@@ -5,6 +5,7 @@ var direction: Vector3
 var movement: Vector3
 
 func enter(_params: Dictionary) -> void:
+	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
 	
 	var raycast_rope_scene = load("res://entities/raycast_rope/raycast_rope.tscn")

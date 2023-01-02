@@ -8,6 +8,7 @@ func enter(_params: Dictionary) -> void:
 	player.rope = null
 	player.stamina.can_recover = true
 	player.stamina.regain(player.stamina.max_stamina)
+	player.set_collision_mode("default")
 
 func physics_update(delta: float) -> void:
 	var direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))

@@ -12,6 +12,9 @@ func enter(params: Dictionary) -> void:
 	player.animation.play("Fall")
 	into_fall_movement = params.get("movement", Vector3.ZERO)
 	
+	player.up_direction = Vector3.UP
+	player.floor_stop_on_slope = true
+	
 	if params.get("coyote_time_enabled", false):
 		coyote_time.start()
 
@@ -44,15 +47,16 @@ func physics_update(delta: float) -> void:
 			"face_towards": ledge_info.wall.position
 		})
 		
-	player.face_towards(player.global_transform.origin + direction, 2.5, delta)
+	player.face_towards(player.global_transform.origin + direction, player.air_turn_speed, delta)
 
 	movement.x = into_fall_movement.x + direction.x
 	movement.z = into_fall_movement.z + direction.z
 	movement.y -= player.gravity * delta
 	
-	player.set_velocity(movement)
-	player.set_up_direction(Vector3.UP)
-	player.set_floor_stop_on_slope_enabled(true)
+	player.velocity = movement
+	
+	if player.velocity.length() >= 20.0:
+		player.velocity = player.velocity.normalized() * 20.0
 
 	# TODO: Add correct warning ID to ignore unused vars.
 	# warning-ignore:warning-id

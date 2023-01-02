@@ -8,6 +8,7 @@ var start_position: Vector3
 func enter(_params: Dictionary) -> void:
 	Raycast.debug = true
 	player.animation.play("Idle")
+	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
 	
 func exit() -> void:
@@ -33,12 +34,13 @@ func physics_update(delta: float) -> void:
 		0.8, 
 	WORLD_COLLISION_MASK)
 	
-	var distance_from_start: float = player.global_transform.origin.distance_to(start_position)
+	var distance_from_start: float = start_position.y - player.global_transform.origin.y
 	
-	if distance_from_start > 0.8 and (not middle_wall_hit.is_empty() or not bottom_wall_hit.is_empty()):
+	# TODO: Think of a better check.
+	if distance_from_start > 1.0 and player.rope.joints.size() > 1:
 		return state_machine.transition_to("AbseilWall")
 
-	movement.y -= 1.5 * delta
+	movement.y = -3
 	
 	player.set_velocity(movement)
 	player.set_up_direction(Vector3.UP)

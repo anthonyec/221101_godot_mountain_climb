@@ -132,7 +132,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
 companion = NodePath("../Player2")
 
 [node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.2507, 31.7846, -46.165)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9144, 1.65743, 1.65355)
 player_number = 2
 companion = NodePath("../Player1")
 
@@ -166,6 +166,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -18.9863, 1.48878, 6.02279)
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.999999, 0, 0, 0, 1, 0, 0, 0, 1, -31.4369, 1.28666, -3.74714)
+use_collision = true
+radius = 1.523
+sides = 16
 
 [node name="CSGBox3D7" type="CSGBox3D" parent="."]
 transform = Transform3D(-0.13761, 0.279532, 0.950224, 0.304073, 0.924948, -0.228061, -0.942657, 0.257554, -0.212281, -28.3981, 0.389589, 7.52516)
@@ -325,6 +331,12 @@ size = Vector3(0.709055, 1.60754, 0.45717)
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="."]
 transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -23.4494, 1.56648, 12.1833)
+material_override = ExtResource("6_nd14j")
+use_collision = true
+size = Vector3(2, 2, 2)
+
+[node name="CSGBox3D35" type="CSGBox3D" parent="."]
+transform = Transform3D(0.77332, 0, 0.634015, 0, 1, 0, -0.634015, 0, 0.77332, -30.3098, -0.0114471, 1.25708)
 material_override = ExtResource("6_nd14j")
 use_collision = true
 size = Vector3(2, 2, 2)

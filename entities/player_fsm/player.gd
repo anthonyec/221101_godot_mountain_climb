@@ -15,6 +15,8 @@ extends CharacterBody3D
 @export var walk_speed: float = 5
 @export var sprint_speed: float = 8
 @export var climb_speed: float = 2
+@export var ground_turn_speed: float = 10.0
+@export var air_turn_speed: float = 2.5
 
 @export_group("Ledge Grabbing")
 @export var max_floor_angle: float = 40
@@ -36,6 +38,7 @@ var rope: RaycastRope = null
 var input_direction: Vector2 = Vector2.ZERO
 
 func _process(_delta: float) -> void:
+	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.current_state.name)
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
@@ -91,6 +94,9 @@ func snap_to_floor() -> void:
 			
 		global_transform.origin += Vector3.DOWN * 0.01
 		iterations += 1
+
+func stand_at_position(stand_position: Vector3) -> void:
+	global_transform.origin = stand_position + (Vector3.UP * 0.95)
 
 func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
