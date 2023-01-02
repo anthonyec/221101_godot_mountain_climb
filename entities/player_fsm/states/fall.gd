@@ -57,11 +57,6 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 	movement = player.velocity
 
-func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed(player.get_action_name("debug")):
-		return state_machine.transition_to("Swing", {
-			"pivot_position": player.global_transform.origin + (Vector3.UP * 2)
-		})
-		
+func handle_input(event: InputEvent) -> void:		
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
 		return state_machine.transition_to("Jump", { "movement": movement })

@@ -54,10 +54,5 @@ func physics_update(delta: float) -> void:
 		return state_machine.transition_to("Fall", { "movement": movement })
 	
 func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed(player.get_action_name("debug")):
-		return state_machine.transition_to("Swing", {
-			"pivot_position": player.global_transform.origin + (Vector3.UP * 2)
-		})
-
 	if event.is_action_released(player.get_action_name("jump")):
 		player.gravity = original_gravity

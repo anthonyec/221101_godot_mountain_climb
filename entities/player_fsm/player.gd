@@ -46,6 +46,12 @@ func _process(_delta: float) -> void:
 		get_action_name("move_forward"),
 		get_action_name("move_backward")
 	)
+	
+	if Input.is_action_just_pressed(get_action_name("debug")):
+		if state_machine.current_state.name != "Debug":
+			return state_machine.transition_to("Debug")
+		else:
+			return state_machine.transition_to("Move")
 
 # Get the action name with player number suffix.
 func get_action_name(action_name: String) -> String:
@@ -181,3 +187,12 @@ func find_ledge_info() -> Dictionary:
 		"has_reached_left_bound": has_reached_left_bound,
 		"has_reached_right_bound": has_reached_right_bound
 	}
+
+func set_collision_mode(mode: String) -> void:
+	if mode == "abseil":
+		collision.disabled = true
+		abseil_collision.disabled = false
+		
+	if mode == "default":
+		collision.disabled = false
+		abseil_collision.disabled = true

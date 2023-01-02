@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://cuvjqol5hr5pg"]
+[gd_scene load_steps=29 format=3 uid="uid://cuvjqol5hr5pg"]
 
 [ext_resource type="Script" path="res://entities/player_fsm/player.gd" id="1_s3pai"]
 [ext_resource type="PackedScene" uid="uid://bvvwv2g7vbr40" path="res://entities/Stamina/Stamina.tscn" id="2_txufy"]
@@ -24,10 +24,11 @@
 [ext_resource type="Script" path="res://entities/player_fsm/states/abseil_start_up.gd" id="20_crmxd"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/abseil_wall.gd" id="21_n8xx8"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/abseil_air.gd" id="22_c28ya"]
+[ext_resource type="Script" path="res://entities/player_fsm/states/debug.gd" id="23_ud6fb"]
 
-[sub_resource type="CylinderShape3D" id="5"]
-height = 1.6
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
 radius = 0.25
+height = 1.6
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_c3m2q"]
 radius = 0.6
@@ -104,9 +105,12 @@ script = ExtResource("21_n8xx8")
 [node name="AbseilAir" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("22_c28ya")
 
+[node name="Debug" parent="StateMachine" instance=ExtResource("5_qivkb")]
+script = ExtResource("23_ud6fb")
+
 [node name="Collision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)
-shape = SubResource("5")
+shape = SubResource("CapsuleShape3D_d63ma")
 
 [node name="AbseilCollision" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)

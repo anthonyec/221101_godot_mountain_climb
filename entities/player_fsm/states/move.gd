@@ -5,6 +5,7 @@ var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
+#	player.set_collision_mode("abseil")
 	player.stamina.can_recover = true
 	
 	player.animation.play("Idle")
@@ -79,12 +80,6 @@ func physics_update(delta: float) -> void:
 		is_ready_to_lift_companion = false
 	
 func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed(player.get_action_name("debug")):
-		return state_machine.transition_to("Swing", {
-			"pivot_position": player.global_transform.origin + (Vector3.UP * 2),
-			"pivot_axis": player.global_transform.basis.z
-		})
-	
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
 		return state_machine.transition_to("AbseilGround")
 		
