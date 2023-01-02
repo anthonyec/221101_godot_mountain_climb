@@ -66,13 +66,19 @@ func transform_direction_to_camera_angle(direction: Vector3) -> Vector3:
 
 # Like `look_at` but only on the Y axis.
 # TODO: Add `speed` argument here to lerp rotation over time?
-func face_towards(target: Vector3) -> void:
+func face_towards(target: Vector3, speed: float = 0.0, delta: float = 0.0) -> void:
 	if global_transform.origin == target:
 		return
-
-	look_at(target, Vector3.UP)
-	global_rotation.x = 0
-	global_rotation.z = 0
+		
+	if speed == 0:
+		look_at(target, Vector3.UP)
+		global_rotation.x = 0
+		global_rotation.z = 0
+	else:
+		# From: https://github.com/JohnnyRouddro/3d_rotate_direct_constant_smooth/blob/master/rotate.gd
+		var direction = global_transform.origin.direction_to(target)
+		global_rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), speed * delta)
+		
 	
 func snap_to_floor() -> void:
 	var iterations: int = 0

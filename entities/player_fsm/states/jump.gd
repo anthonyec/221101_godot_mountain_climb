@@ -33,7 +33,9 @@ func update(_delta: float) -> void:
 			"global_origin": player.global_transform.origin + (Vector3.UP * 2)
 		})
 	
-func physics_update(delta: float) -> void:
+func physics_update(delta: float) -> void:	
+	player.face_towards(player.global_transform.origin + direction, 2.5, delta)
+	
 	movement.x = into_jump_movement.x + direction.x
 	movement.z = into_jump_movement.z + direction.z
 	movement.y -= player.gravity * delta

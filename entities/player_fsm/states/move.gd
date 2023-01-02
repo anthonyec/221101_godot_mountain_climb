@@ -46,11 +46,12 @@ func physics_update(delta: float) -> void:
 			"coyote_time_enabled": true,
 		})
 	
-	movement.x = direction.x * player.walk_speed
-	movement.z = direction.z * player.walk_speed
+	var player_forward = -player.global_transform.basis.z
+	
+	movement = player_forward * direction.length() * player.walk_speed
 	movement.y -= player.gravity * delta
 	
-	player.face_towards(player.global_transform.origin + direction)
+	player.face_towards(player.global_transform.origin + direction, 10.0, delta)
 	player.set_velocity(movement)
 	player.set_up_direction(Vector3.UP)
 	player.set_floor_stop_on_slope_enabled(true)

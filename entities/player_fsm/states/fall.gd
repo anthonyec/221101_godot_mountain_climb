@@ -43,6 +43,8 @@ func physics_update(delta: float) -> void:
 			"move_to": ledge_info.hang_position,
 			"face_towards": ledge_info.wall.position
 		})
+		
+	player.face_towards(player.global_transform.origin + direction, 2.5, delta)
 
 	movement.x = into_fall_movement.x + direction.x
 	movement.z = into_fall_movement.z + direction.z
