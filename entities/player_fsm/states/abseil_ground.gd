@@ -26,12 +26,6 @@ func update(_delta: float) -> void:
 		player.animation.play("Idle")
 	
 func physics_update(delta: float) -> void:
-#	if not player.is_on_floor() and player.rope.joints.size() > 1:
-#		return state_machine.transition_to("Swing", {
-#			"use_rope": true,
-#			"length": 1
-#		})
-
 	if not player.is_on_floor():
 		return state_machine.transition_to("AbseilStartDown")
 		

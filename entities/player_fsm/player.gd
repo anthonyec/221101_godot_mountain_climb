@@ -74,6 +74,18 @@ func face_towards(target: Vector3) -> void:
 	global_rotation.x = 0
 	global_rotation.z = 0
 	
+func snap_to_floor() -> void:
+	var iterations: int = 0
+	
+	while iterations < 10:
+		move_and_slide()
+		
+		if is_on_floor():
+			break
+			
+		global_transform.origin += Vector3.DOWN * 0.01
+		iterations += 1
+
 func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
 

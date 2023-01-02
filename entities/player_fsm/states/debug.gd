@@ -4,6 +4,10 @@ var speed: float = 5
 
 func enter(_params: Dictionary) -> void:
 	player.animation.play("T-pose")
+	player.get_parent().remove_child(player.rope)
+	player.rope = null
+	player.stamina.can_recover = true
+	player.stamina.regain(player.stamina.max_stamina)
 
 func physics_update(delta: float) -> void:
 	var direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
