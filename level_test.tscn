@@ -132,7 +132,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
 companion = NodePath("../Player2")
 
 [node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.9144, 1.65743, 1.65355)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -35.5961, 30.4862, -43.5632)
 player_number = 2
 companion = NodePath("../Player1")
 

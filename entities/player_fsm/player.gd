@@ -22,7 +22,7 @@ extends CharacterBody3D
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
 @export var grab_height: float = 1.2
-@export var search_distance: float = 1
+@export var search_distance: float = 0.7
 
 @onready var collision: CollisionShape3D = $Collision
 @onready var abseil_collision: CollisionShape3D = $AbseilCollision

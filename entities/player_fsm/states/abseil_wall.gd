@@ -70,3 +70,8 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 	
 	movement = player.velocity
+	
+	if !Input.is_action_pressed(player.get_action_name("grab")):
+		player.get_parent().remove_child(player.rope)
+		player.rope = null
+		return state_machine.transition_to("Move")

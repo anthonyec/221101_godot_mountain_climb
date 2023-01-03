@@ -8,7 +8,7 @@ func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
 	player.stamina.can_recover = true
-	
+	player.set_collision_mode("default")
 	player.animation.play("Idle")
 	
 	# Seeking is a work around to avoid a 1 frame delay from playing an animation.
