@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://dyktva7fldo6y"]
+[gd_scene load_steps=18 format=3 uid="uid://dyktva7fldo6y"]
 
 [ext_resource type="PackedScene" uid="uid://cptqxokp10tol" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="1_r8c7u"]
 [ext_resource type="Script" path="res://debug.gd" id="1_wqs18"]
@@ -6,7 +6,6 @@
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="2_6epk5"]
 [ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="2_v3hew"]
 [ext_resource type="PackedScene" path="res://entities/CampingScene/CampingScene.tscn" id="5_6dxrt"]
-[ext_resource type="PackedScene" uid="uid://dshvj4njga043" path="res://entities/climbable_rope/climbable_rope.tscn" id="6_b1rpk"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="6_ckqdv"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="6_nd14j"]
 [ext_resource type="PackedScene" uid="uid://cuvjqol5hr5pg" path="res://entities/player_fsm/player.tscn" id="7_byubr"]
@@ -127,10 +126,6 @@ exclude_players = [1]
 distance = 5.0
 yaw = -90.0
 speed = 1.0
-
-[node name="ClimbableRope" parent="." instance=ExtResource("6_b1rpk")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.6376, 2.32936, -0.515315)
-max_length = 10.0
 
 [node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
