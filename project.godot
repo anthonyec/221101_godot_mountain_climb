@@ -19,7 +19,7 @@ _global_script_classes=[{
 "language": &"GDScript",
 "path": "res://Checkpoint.gd"
 }, {
-"base": "Node",
+"base": "Node3D",
 "class": &"ClimbableRope",
 "language": &"GDScript",
 "path": "res://entities/climbable_rope/climbable_rope.gd"
@@ -87,7 +87,7 @@ _global_script_class_icons={
 [application]
 
 config/name="221101_godot_mountain_climb"
-run/main_scene="res://default.tscn"
+run/main_scene="res://level_test.tscn"
 config/features=PackedStringArray("4.0")
 boot_splash/show_image=false
 config/icon="res://icon.png"

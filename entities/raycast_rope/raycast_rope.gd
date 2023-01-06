@@ -66,6 +66,8 @@ func _process(delta: float) -> void:
 				joints.remove_at(potentially_discardable_joint_index)
 				edge_info.remove_at(potentially_discardable_joint_index - 1)
 	
+	total_length = 0
+	
 	# Calculate the total length of the rope
 	for index in joints.size():
 		if index == 0:
