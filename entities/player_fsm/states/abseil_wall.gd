@@ -53,6 +53,10 @@ func physics_update(delta: float) -> void:
 	# Remove any vertical direction, this will instead be controlled by player input
 	movement.y = -player.input_direction.y * abseil_wall_speed
 	
+	if player.rope.total_length > player.rope.max_length:
+		movement.y = 0
+		player.global_transform.origin = player.rope.target_position
+	
 	if player.is_on_wall() and Input.is_action_just_pressed(player.get_action_name("jump")):
 		movement += (player.global_transform.basis.z) * jump_power
 #		return state_machine.transition_to("AbseilWallJump")
