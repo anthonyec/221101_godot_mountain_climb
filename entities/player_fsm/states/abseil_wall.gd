@@ -55,6 +55,8 @@ func physics_update(delta: float) -> void:
 	
 	if player.rope.total_length > player.rope.max_length:
 		movement.y = 0
+		
+		# TODO: Fix jittering by smoothing out the movement somehow.
 		player.global_transform.origin = player.rope.target_position
 	
 	if player.is_on_wall() and Input.is_action_just_pressed(player.get_action_name("jump")):

@@ -58,16 +58,18 @@ func physics_update(delta: float) -> void:
 		
 	movement.x = direction.x * player.walk_speed
 	movement.z = direction.z * player.walk_speed
-	movement.y -= player.gravity * delta
+	
 	
 	if player.rope.total_length > player.rope.max_length:
 		var direction_to_end = player.global_transform.origin.direction_to(player.rope.target_position)
 		var distance_to_end = player.global_transform.origin.distance_to(player.rope.target_position)
 		
-		# TODO: Adding velocity/setting the position to end of the rope alone 
-		# can cause glitch-ness if the position is higher. Lifting the player 
-		# off the ground. Find a way to fix this
 		movement += direction_to_end * distance_to_end * 5
+		movement.y = 0
+		
+	# Gravity added after Y movement is zero-ed out so that there's no 
+	# jittering between states.
+	movement.y -= player.gravity * delta
 	
 	player.face_towards(start_position)
 	player.set_velocity(movement)
