@@ -52,6 +52,10 @@ script = ExtResource("1_s3pai")
 wait_time = 0.15
 one_shot = true
 
+[node name="StandStillTime" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
 [node name="StateMachine" parent="." instance=ExtResource("4_junko")]
 
 [node name="Move" parent="StateMachine" instance=ExtResource("5_qivkb")]
@@ -86,9 +90,6 @@ script = ExtResource("7_tb2ro")
 
 [node name="Belay" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("16_trxpn")
-
-[node name="Abseil" parent="StateMachine" instance=ExtResource("5_qivkb")]
-script = ExtResource("18_jyws2")
 
 [node name="AbseilGround" parent="StateMachine" instance=ExtResource("5_qivkb")]
 script = ExtResource("18_jyws2")

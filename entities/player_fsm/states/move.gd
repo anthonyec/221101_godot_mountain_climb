@@ -87,7 +87,7 @@ func physics_update(delta: float) -> void:
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
-		return state_machine.transition_to("AbseilGround")
+		return state_machine.transition_to("Belay")
 		
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
 		player.companion.state_machine.transition_to("Lift")
