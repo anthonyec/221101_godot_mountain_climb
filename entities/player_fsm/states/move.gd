@@ -84,6 +84,18 @@ func physics_update(delta: float) -> void:
 			is_ready_to_lift_companion = true
 	else:
 		is_ready_to_lift_companion = false
+		
+	if player.companion.rope:
+		var nearest_position = player.companion.rope.get_nearest_position_to(player.global_transform.origin)
+		var distance_nearest_position = player.global_transform.origin.distance_to(nearest_position)
+		
+		if distance_nearest_position < 1.5:
+			DebugDraw.draw_cube(nearest_position, 0.25, Color.YELLOW)
+		
+		if distance_nearest_position < 1.5 and Input.is_action_pressed(player.get_action_name("grab")):
+			return state_machine.transition_to("AbseilGround", {
+				"rope": player.companion.rope,
+			})
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):

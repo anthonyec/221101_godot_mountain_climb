@@ -4,7 +4,10 @@ var start_position: Vector3
 var direction: Vector3
 var movement: Vector3
 
-func enter(_params: Dictionary) -> void:
+func enter(params: Dictionary) -> void:
+	if params.has("rope"):
+		player.rope = params.get("rope")
+	
 	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
 	

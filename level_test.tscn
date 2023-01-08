@@ -71,12 +71,15 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="StaminaIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
+layout_mode = 1
 player = NodePath("../../Player1")
 
 [node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("1_r8c7u")]
+layout_mode = 1
 player = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("2_6epk5")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -90,6 +93,7 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="ControllerInput2" parent="UI" instance=ExtResource("2_6epk5")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -128,7 +132,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
 companion = NodePath("../Player2")
 
 [node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("7_byubr")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.0658, 30.6049, -44.4529)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.7082, 8.50623, -3.1493)
 player_number = 2
 companion = NodePath("../Player1")
 
