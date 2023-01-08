@@ -1,7 +1,7 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=29 format=3 uid="uid://c5krlfdws73lx"]
 
 [ext_resource type="Script" path="res://entities/player_fsm/player.gd" id="1_s3pai"]
-[ext_resource type="PackedScene" path="res://entities/stamina/stamina.tscn" id="2_txufy"]
+[ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_txufy"]
 [ext_resource type="PackedScene" uid="uid://2cra11rol35o" path="res://entities/balance/balance.tscn" id="3_7gnxj"]
 [ext_resource type="PackedScene" uid="uid://hwump8tofads" path="res://entities/inventory/inventory.tscn" id="4_44tum"]
 [ext_resource type="PackedScene" uid="uid://cugjrmwt16ejf" path="res://entities/state_machine/state_machine.tscn" id="4_junko"]
@@ -10,7 +10,6 @@
 [ext_resource type="Script" path="res://entities/player_fsm/states/jump.gd" id="7_jsgtv"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/swing.gd" id="7_tb2ro"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/fall.gd" id="8_cnpib"]
-[ext_resource type="PackedScene" uid="uid://6sn26egfbwhu" path="res://entities/player_fsm/godot_model.glb" id="8_nm5rb"]
 [ext_resource type="Texture2D" uid="uid://cjt5utav5vamg" path="res://entities/player_fsm/shadow_blob.png" id="9_mqrpw"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/hang.gd" id="9_ooy06"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/vault.gd" id="10_rnvwx"]
@@ -25,6 +24,7 @@
 [ext_resource type="Script" path="res://entities/player_fsm/states/abseil_wall.gd" id="21_n8xx8"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/abseil_air.gd" id="22_c28ya"]
 [ext_resource type="Script" path="res://entities/player_fsm/states/debug.gd" id="23_ud6fb"]
+[ext_resource type="PackedScene" uid="uid://syi5xfros8t1" path="res://entities/player_fsm/player_model.glb" id="24_wwq05"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
 radius = 0.25
@@ -120,7 +120,7 @@ disabled = true
 
 [node name="Model" type="Node3D" parent="."]
 
-[node name="godot_model" parent="Model" instance=ExtResource("8_nm5rb")]
+[node name="player_model" parent="Model" instance=ExtResource("24_wwq05")]
 transform = Transform3D(-1, 3.48787e-16, -8.74228e-08, 3.48787e-16, 1, -3.48787e-16, 8.74228e-08, -3.48787e-16, -1, 2.08165e-12, -1, 2.08165e-12)
 
 [node name="Decal" type="Decal" parent="Model"]
