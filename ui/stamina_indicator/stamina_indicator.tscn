@@ -1,6 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cptqxokp10tol"]
+[gd_scene load_steps=3 format=3 uid="uid://frfc23bak04b"]
 
-[ext_resource type="Script" path="res://StaminaIndicator.gd" id="1_qtnvw"]
+[ext_resource type="Script" path="res://ui/stamina_indicator/stamina_indicator.gd" id="1_wnsy2"]
 [ext_resource type="Script" path="res://ui/stamina_indicator/stamina_progress_bar.gd" id="2_cgqwv"]
 
 [node name="StaminaIndicator" type="Control"]
@@ -8,9 +8,10 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 5.0
-script = ExtResource("1_qtnvw")
+script = ExtResource("1_wnsy2")
 
 [node name="ProgressBar" type="ProgressBar" parent="."]
+layout_mode = 0
 offset_right = 40.0
 offset_bottom = 10.0
 pivot_offset = Vector2(20, 2.5)

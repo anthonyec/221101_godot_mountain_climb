@@ -1,6 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://cmqnkwo2su52t"]
+[gd_scene load_steps=5 format=3]
 
-[ext_resource type="Script" path="res://entities/WoodPickup/WoodPickup.gd" id="1_bbxth"]
+[ext_resource type="Script" path="res://entities/wood_pickup/wood_pickup.gd" id="1_bbxth"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_eb4s1"]
 albedo_color = Color(0.803922, 0.396078, 0.352941, 1)

@@ -3,13 +3,13 @@
 importer="scene"
 importer_version=1
 type="PackedScene"
-uid="uid://mjd8et8k4x7r"
-path="res://.godot/imported/3DGodotRobot.glb-6e6efab69682a85bdc9cf560a1f30472.scn"
+uid="uid://3hqjwrhqxvw4"
+path="res://.godot/imported/godot_model.glb-48e024301661f0e190672ae141b29667.scn"
 
 [deps]
 
-source_file="res://entities/Player/3DGodotRobot.glb"
-dest_files=["res://.godot/imported/3DGodotRobot.glb-6e6efab69682a85bdc9cf560a1f30472.scn"]
+source_file="res://entities/godot_model.glb"
+dest_files=["res://.godot/imported/godot_model.glb-48e024301661f0e190672ae141b29667.scn"]
 
 [params]
 
@@ -25,5 +25,6 @@ meshes/lightmap_texel_size=0.2
 skins/use_named_skins=true
 animation/import=true
 animation/fps=30
+animation/trimming=false
 import_script/path=""
 _subresources={}

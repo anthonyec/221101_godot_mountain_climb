@@ -1,9 +1,9 @@
-[gd_scene load_steps=2 format=3 uid="uid://bvvwv2g7vbr40"]
+[gd_scene load_steps=2 format=3 uid="uid://bieqc1wwcclta"]
 
-[ext_resource type="Script" path="res://entities/Stamina/Stamina.gd" id="1_cked3"]
+[ext_resource type="Script" path="res://entities/stamina/stamina.gd" id="1_hpvos"]
 
 [node name="Stamina" type="Node"]
-script = ExtResource("1_cked3")
+script = ExtResource("1_hpvos")
 
 [node name="RegainTimer" type="Timer" parent="."]
 

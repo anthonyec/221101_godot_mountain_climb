@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://8np2424vwgku"
-path="res://.godot/imported/woman_shout_1.wav-248c85696df6e4a311981b0a307672cc.sample"
+path="res://.godot/imported/woman_shout_1.wav-de4aac0af125b331bbfde38f3775de4b.sample"
 
 [deps]
 
-source_file="res://singletons/SFX/audio/voice/woman_shout_1.wav"
-dest_files=["res://.godot/imported/woman_shout_1.wav-248c85696df6e4a311981b0a307672cc.sample"]
+source_file="res://singletons/sfx/audio/voice/woman_shout_1.wav"
+dest_files=["res://.godot/imported/woman_shout_1.wav-de4aac0af125b331bbfde38f3775de4b.sample"]
 
 [params]
 

@@ -7,7 +7,7 @@ var sounds: Dictionary = {}
 
 func _ready():
 	var current_directory_path = self.get_script().get_path()
-	var base_directory_path = str(current_directory_path).replace("/SFX.gd", "/audio")
+	var base_directory_path = str(current_directory_path).replace("/sfx.gd", "/audio")
 	var results = scan_directory(base_directory_path, ".wav")
 	
 	if results.is_empty():

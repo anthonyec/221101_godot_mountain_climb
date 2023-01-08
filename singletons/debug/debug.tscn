@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://c4u6ovgdoc7wt"]
+
+[ext_resource type="Script" path="res://singletons/debug/debug.gd" id="1_u4sau"]
+
+[node name="Debug" type="Node"]
+script = ExtResource("1_u4sau")

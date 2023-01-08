@@ -1,8 +1,7 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=9 format=3]
 
-[ext_resource type="Script" path="res://entities/CampingScene/CampingScene.gd" id="1_4mmn6"]
-[ext_resource type="PackedScene" uid="uid://mjd8et8k4x7r" path="res://entities/Player/3DGodotRobot.glb" id="2_6m0x6"]
-[ext_resource type="PackedScene" uid="uid://cmqnkwo2su52t" path="res://entities/WoodPickup/WoodPickup.tscn" id="3_02jt7"]
+[ext_resource type="Script" path="res://entities/camping_scene/camping_scene.gd" id="1_4mmn6"]
+[ext_resource type="PackedScene" path="res://entities/wood_pickup/wood_pickup.tscn" id="3_02jt7"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_009.tres" id="4_sw3xn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pvw57"]
@@ -25,12 +24,6 @@ point_count = 2
 [node name="CampingScene" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.437, 18.9528, -4.80982)
 script = ExtResource("1_4mmn6")
-
-[node name="Player1" parent="." instance=ExtResource("2_6m0x6")]
-transform = Transform3D(-0.876307, 0.480424, 0.0357691, 1.6657e-08, 0.0742477, -0.99724, -0.481754, -0.873888, -0.0650638, -1.10807, -0.201169, -0.116871)
-
-[node name="Player2" parent="." instance=ExtResource("2_6m0x6")]
-transform = Transform3D(-0.93898, 0, -0.343971, 0, 1, 0, 0.343971, 0, -0.93898, 1.34396, -0.718657, -0.472563)
 
 [node name="WoodPickup" parent="." instance=ExtResource("3_02jt7")]
 transform = Transform3D(0.617022, 0, -0.786946, 0, 1, 0, 0.786946, 0, 0.617022, -0.0612297, -0.300755, -2.14281)

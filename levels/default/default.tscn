@@ -1,14 +1,14 @@
-[gd_scene load_steps=14 format=3 uid="uid://bdd60q3wm6joa"]
+[gd_scene load_steps=14 format=3]
 
-[ext_resource type="Script" path="res://default.gd" id="1_dkhqu"]
-[ext_resource type="PackedScene" uid="uid://degg1j0n1ioox" path="res://entities/player_fsm/player.tscn" id="2_evhup"]
-[ext_resource type="PackedScene" uid="uid://b6fuib3557cls" path="res://entities/GameplayCamera/GameplayCamera.tscn" id="3"]
-[ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://wind_loop.wav" id="4"]
+[ext_resource type="Script" path="res://levels/default/default.gd" id="1_dkhqu"]
+[ext_resource type="PackedScene" path="res://entities/player_fsm/player.tscn" id="2_evhup"]
+[ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="3"]
+[ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://singletons/sfx/audio/enviroment/wind_loop.wav" id="4"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="4_sqhbd"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="5_ccnoe"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="6_e5o6w"]
-[ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/CameraHint/CameraHint.tscn" id="8_0ripk"]
-[ext_resource type="PackedScene" uid="uid://uut3d6ch7nv4" path="res://entities/Rope/Rope.tscn" id="9_trjaf"]
+[ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/camera_hint/camera_hint.tscn" id="8_0ripk"]
+[ext_resource type="PackedScene" path="res://entities/Rope/Rope.tscn" id="9_trjaf"]
 
 [sub_resource type="Environment" id="1"]
 background_mode = 1
