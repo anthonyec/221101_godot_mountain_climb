@@ -102,7 +102,7 @@ func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 
 # TODO: When find_ledge_info fails, return an error and a reason why it failed. This is 
 # a somewhat chunky change though as I wont be able to check for is_empty when failed
-func find_ledge_info() -> Dictionary:
+func find_ledge_info() -> Dictionary:	
 	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.
 	var wall_hit = Raycast.fan_out(
 		# TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.
@@ -141,24 +141,17 @@ func find_ledge_info() -> Dictionary:
 	if (floor_angle > deg_to_rad(max_floor_angle)):
 		return {}
 
-	var edge_hit = {}
-	var edge_sweep_iterations = 15 # TODO: Move somewhere else
 	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal
 	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (wall_hit.normal * hang_distance_from_wall * 2)
-	
-	for index in edge_sweep_iterations:
-		var sweep_position = start_edge_sweep_position.lerp(end_edge_sweep_position, float(index) / float(edge_sweep_iterations))
-		var sweep_hit = Raycast.cast_in_direction(sweep_position, -floor_hit.normal, 1.2, 1)
-		
-		if sweep_hit and sweep_hit.collider != self:
-			edge_hit = sweep_hit
-		
-		if sweep_hit.is_empty():
-			break
-	
+#
+	var edge_hit = Raycast.sweep_find_edge(start_edge_sweep_position, end_edge_sweep_position, -floor_hit.normal, 1.2, {
+		"exclude": [self],
+		"collision_mask": 1
+	})
+
 	if edge_hit.is_empty():
 		return {}
-	
+
 	# TODO: Make this better. Potentially a deep/long rectangle that is aligned to the floor normal.
 	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1)
 	

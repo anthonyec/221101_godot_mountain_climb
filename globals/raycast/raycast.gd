@@ -70,3 +70,24 @@ func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 
 
 func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = [], hit_back_faces: bool = false) -> Dictionary:
 	return intersect_ray(start_position, start_position + (direction * length), collision_mask, exclude, hit_back_faces)
+
+# Sweep a raycast in a direction until it no longer intersects with anything, 
+# then return the last intersection.
+func sweep_find_edge(start_position: Vector3, end_position: Vector3, direction: Vector3, length: float = 1.0, options: Dictionary = {}) -> Dictionary:
+	var iterations = options.get("iterations", 15)
+	var exclude = options.get("exclude", [])
+	var collision_mask = options.get("collision_mask", DEFAULT_COLLISION_MASK)
+	
+	var edge_hit = {}
+	
+	for index in iterations:
+		var percent = float(index) / float(iterations)
+		var check_position = start_position.lerp(end_position, percent)
+		var hit = cast_in_direction(check_position, direction, length, collision_mask, exclude)
+		
+		if hit.is_empty():
+			break
+		
+		edge_hit = hit
+			
+	return edge_hit
