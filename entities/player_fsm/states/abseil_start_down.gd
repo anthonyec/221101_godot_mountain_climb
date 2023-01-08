@@ -18,21 +18,9 @@ func exit() -> void:
 func update(_delta: float) -> void:
 	player.face_towards(player.rope.global_transform.origin)
 
-func physics_update(delta: float) -> void:
+func physics_update(_delta: float) -> void:
 	if player.is_on_floor():
 		return state_machine.transition_to("AbseilGround")
-		
-	var middle_wall_hit = Raycast.cast_in_direction(
-		player.global_transform.origin, 
-		-player.global_transform.basis.z, 
-		0.8, 
-	WORLD_COLLISION_MASK)
-	
-	var bottom_wall_hit = Raycast.cast_in_direction(
-		player.get_offset_position(0, -1), 
-		-player.global_transform.basis.z, 
-		0.8, 
-	WORLD_COLLISION_MASK)
 	
 	var distance_from_start: float = start_position.y - player.global_transform.origin.y
 	

@@ -4,7 +4,7 @@ extends Node
 var state_machine: StateMachine = null
 
 # TODO: Add ignore for unused variable
-func enter(params: Dictionary) -> void:
+func enter(_params: Dictionary) -> void:
 	pass
 	
 func exit() -> void:
@@ -14,13 +14,13 @@ func awake() -> void:
 	pass
 
 # TODO: Add ignore for unused variable
-func update(delta: float) -> void:
+func update(_delta: float) -> void:
 	pass
 
 # TODO: Add ignore for unused variable
-func physics_update(delta: float) -> void:
+func physics_update(_delta: float) -> void:
 	pass
 	
 # TODO: Add ignore for unused variable
-func handle_input(event: InputEvent) -> void:
+func handle_input(_event: InputEvent) -> void:
 	pass

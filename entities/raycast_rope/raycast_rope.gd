@@ -21,7 +21,7 @@ func _ready() -> void:
 	target_position = target.global_transform.origin
 	joints.append(global_transform.origin)
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	target_position = target.global_transform.origin
 	total_length = 0
 	
@@ -181,7 +181,6 @@ func get_position_on_rope(length: float) -> Vector3:
 		totalled_length += segment_length
 		
 		if totalled_length >= clamped_length:
-			var previous_index = index - 1
 			var difference_in_length = totalled_length - clamped_length
 			var direction_a_to_b = joint_a.direction_to(joint_b)
 			

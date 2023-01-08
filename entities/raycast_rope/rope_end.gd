@@ -8,7 +8,7 @@ func _ready() -> void:
 	
 	connect("body_entered", on_body_entered)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	apply_central_impulse(global_transform.origin.direction_to(rope.get_last_joint()) * 0.05)
 	
 	if rope.total_length > rope.max_length:
@@ -17,5 +17,5 @@ func _physics_process(delta: float) -> void:
 
 		apply_central_impulse(direction_to_end * distance_to_end)
 
-func on_body_entered(body: Node) -> void:
+func on_body_entered(_body: Node) -> void:
 	pass
