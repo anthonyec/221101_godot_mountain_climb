@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=14 format=3 uid="uid://be35a6dwusiii"]
 
 [ext_resource type="Script" path="res://entities/camping_scene/camping_scene.gd" id="1_4mmn6"]
 [ext_resource type="PackedScene" path="res://entities/wood_pickup/wood_pickup.tscn" id="3_02jt7"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="4_rtmbk"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_009.tres" id="4_sw3xn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pvw57"]
@@ -15,27 +16,38 @@ _data = [Vector2(0, 0.883743), 0.0, -0.210825, 0, 0, Vector2(1, 0.111689), -1.93
 point_count = 2
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dd0bh"]
-albedo_color = Color(0.105882, 0.105882, 0.105882, 1)
+albedo_color = Color(0, 0, 0, 1)
 
 [sub_resource type="Curve" id="Curve_uirju"]
 _data = [Vector2(0, 0), 0.0, 0.595436, 0, 0, Vector2(1, 1), 2.31376, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_belka"]
+shading_mode = 0
+albedo_color = Color(0.00784314, 0, 0.470588, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dskj4"]
+flip_faces = true
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4unlp"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_eaxjn"]
 
 [node name="CampingScene" type="Node3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.437, 18.9528, -4.80982)
 script = ExtResource("1_4mmn6")
 
 [node name="WoodPickup" parent="." instance=ExtResource("3_02jt7")]
-transform = Transform3D(0.617022, 0, -0.786946, 0, 1, 0, 0.786946, 0, 0.617022, -0.0612297, -0.300755, -2.14281)
+transform = Transform3D(0.617022, 0, -0.786946, 0, 1, 0, 0.786946, 0, 0.617022, 0.229773, -0.300755, -2.14281)
 
 [node name="WoodPickup2" parent="." instance=ExtResource("3_02jt7")]
-transform = Transform3D(0.72855, 0.11923, 0.674536, -5.89312e-09, 0.984735, -0.174061, -0.684992, 0.126812, 0.717429, -0.0427494, -0.220621, -2.12315)
+transform = Transform3D(0.72855, 0.11923, 0.674536, -5.89312e-09, 0.984735, -0.174061, -0.684992, 0.126812, 0.717429, 0.248253, -0.220621, -2.12315)
 
 [node name="WoodPickup3" parent="." instance=ExtResource("3_02jt7")]
-transform = Transform3D(0.963078, 0.114102, -0.24385, -0.188969, 0.931635, -0.310399, 0.191761, 0.345018, 0.918798, -0.0487022, -0.14846, -2.12387)
+transform = Transform3D(0.963078, 0.114102, -0.24385, -0.188969, 0.931635, -0.310399, 0.191761, 0.345018, 0.918798, 0.2423, -0.14846, -2.12387)
 
 [node name="WoodPickup4" parent="." instance=ExtResource("3_02jt7")]
-transform = Transform3D(-0.93634, -0.202869, -0.286552, -0.202816, 0.978751, -0.0301996, 0.286589, 0.0298401, -0.957589, -0.0796738, -0.323374, -2.12387)
+transform = Transform3D(-0.93634, -0.202869, -0.286552, -0.202816, 0.978751, -0.0301996, 0.286589, 0.0298401, -0.957589, 0.211329, -0.323374, -2.12387)
 
 [node name="CampGround" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.423359, -0.864936, -1.55744)
@@ -43,11 +55,11 @@ material_override = ExtResource("4_sw3xn")
 size = Vector3(8.1356, 1, 4.86318)
 
 [node name="Camera3D" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.925838, -0.377922, 0, 0.377922, 0.925838, 0.413433, -0.173427, 0.828253)
+transform = Transform3D(1, 0, 0, 0, 0.925838, -0.377922, 0, 0.377922, 0.925838, 0.397074, -0.173428, 0.828253)
 fov = 61.2
 
 [node name="FireParticles" type="CPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.528546, -2.1237)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.291002, -0.528545, -2.1237)
 material_override = SubResource("StandardMaterial3D_pvw57")
 cast_shadow = 0
 mesh = SubResource("QuadMesh_5650f")
@@ -56,7 +68,7 @@ scale_amount_min = 0.5
 scale_amount_curve = SubResource("Curve_y4owt")
 
 [node name="SmokeParticles" type="CPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.206927, -2.56189)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.291002, 0.206926, -2.56189)
 material_override = SubResource("StandardMaterial3D_dd0bh")
 cast_shadow = 0
 amount = 16
@@ -68,8 +80,24 @@ scale_amount_max = 2.0
 scale_amount_curve = SubResource("Curve_uirju")
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0636482, 0.368943, -1.44022)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35465, 0.0489883, -1.44022)
 light_color = Color(0.623529, 0.380392, 0, 1)
 light_energy = 5.0
 shadow_enabled = true
 omni_range = 3.21116
+
+[node name="Player1" parent="." instance=ExtResource("4_rtmbk")]
+transform = Transform3D(0.938287, 0.345849, -0.00222735, 0.043759, -0.112325, 0.992707, 0.343077, -0.931543, -0.120527, -0.421656, -0.304028, -0.867085)
+
+[node name="Player2" parent="." instance=ExtResource("4_rtmbk")]
+transform = Transform3D(0.963327, 0, 0.268331, 0, 1, 0, -0.268331, 0, 0.963327, 1.44473, 0.277317, -0.211186)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(9.55871, 0, 0, 0, 9.55871, 0, 0, 0, 9.55871, 0, 0, -2.23906)
+material_override = SubResource("StandardMaterial3D_belka")
+mesh = SubResource("BoxMesh_dskj4")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+transform = Transform3D(9.71311, 0, 0, 0, 9.71311, 0, 0, 0, 9.71311, 0, 0, -2.23906)
+material_override = SubResource("StandardMaterial3D_4unlp")
+mesh = SubResource("BoxMesh_eaxjn")

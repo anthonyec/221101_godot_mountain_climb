@@ -21,6 +21,8 @@ func enter(_params: Dictionary) -> void:
 	checkpoint.set_respawn_position(player.global_transform.origin)
 	camp_camera.make_current()
 	
+	# TODO: This should probably not clear the wood, but instead subtract the right
+	# amount. Maybe burning extra wood though gets benefits?
 	player.companion.inventory.clear_item("wood")
 	player.inventory.clear_item("wood")
 

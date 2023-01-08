@@ -1,20 +1,18 @@
-@tool
 extends Node3D
 
-#@onready var player_1: Node3D = $Player1
-#@onready var player_2: Node3D = $Player2
+@onready var player_1: Player = $Player1 as Player
+@onready var player_2: Player = $Player2 as Player
 
 func _ready():
-	return
-#	var anim_1: AnimationPlayer = player_1.get_node("AnimationPlayer") as AnimationPlayer
-#	var anim_2: AnimationPlayer = player_2.get_node("AnimationPlayer") as AnimationPlayer
-#
-#	anim_1.playback_speed = 0
-#	anim_2.playback_speed = 0
-#
-#	anim_1.play("Fall2")
-#	anim_2.play("Dive")
-#
-#	anim_1.seek(0.4)
+	player_1.state_machine.transition_to("Debug")
+	player_2.state_machine.transition_to("Debug")
+	
+	player_1.animation.playback_speed = 0 
+	player_2.animation.playback_speed = 0 
+
+	player_1.animation.play("Fall2")
+	player_2.animation.play("Dive")
+
+	player_1.animation.seek(0.4)
 
 
