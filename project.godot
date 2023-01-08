@@ -87,14 +87,14 @@ boot_splash/show_image=false
 
 [audio]
 
-buses/default_bus_layout="res://singletons/sfx/buses/default_bus_layout.tres"
+buses/default_bus_layout="res://globals/sfx/buses/default_bus_layout.tres"
 
 [autoload]
 
 DebugDraw="*res://addons/zylann.debug_draw/debug_draw.gd"
-Raycast="*res://singletons/raycast/raycast.gd"
-Debug="res://singletons/debug/debug.tscn"
-SFX="*res://singletons/sfx/sfx.gd"
+Raycast="*res://globals/raycast/raycast.gd"
+Debug="res://globals/debug/debug.tscn"
+SFX="*res://globals/sfx/sfx.gd"
 
 [debug]
 
