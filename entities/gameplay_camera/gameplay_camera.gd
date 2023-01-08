@@ -18,7 +18,7 @@ func _ready() -> void:
 	var players = get_tree().get_nodes_in_group("player")
 	
 	for index in players.size():
-		var player = players[index] as PlayerFSM
+		var player = players[index] as Player
 		
 		if exclude_players.has(player.player_number):
 			continue

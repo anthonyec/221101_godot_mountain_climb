@@ -1,8 +1,8 @@
 class_name PlayerState
 extends State
 
-var player: PlayerFSM
+var player: Player
 
 func awake() -> void:
-	player = owner as PlayerFSM
+	player = owner as Player
 	assert(player != null)

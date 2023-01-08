@@ -1,7 +1,7 @@
 [gd_scene load_steps=14 format=3]
 
 [ext_resource type="Script" path="res://levels/default/default.gd" id="1_dkhqu"]
-[ext_resource type="PackedScene" path="res://entities/player_fsm/player.tscn" id="2_evhup"]
+[ext_resource type="PackedScene" uid="uid://c5krlfdws73lx" path="res://entities/player/player.tscn" id="2_evhup"]
 [ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="3"]
 [ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://globals/sfx/audio/enviroment/wind_loop.wav" id="4"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="4_sqhbd"]

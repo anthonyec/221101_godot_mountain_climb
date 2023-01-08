@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="3_d1yn6"]
 [ext_resource type="Script" path="res://entities/checkpoint/checkpoint.gd" id="4_x5uc8"]
 [ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="5_5ov6s"]
-[ext_resource type="PackedScene" uid="uid://c5krlfdws73lx" path="res://entities/player_fsm/player.tscn" id="6_15rra"]
+[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="6_nww3r"]
 [ext_resource type="PackedScene" path="res://entities/camping_scene/camping_scene.tscn" id="7_c7mac"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="8_tj570"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="9_xnnf2"]
@@ -67,12 +67,15 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="StaminaIndicator1" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("2_bjssy")]
+layout_mode = 1
 player = NodePath("../../Player1")
 
 [node name="StaminaIndicator2" parent="UI" node_paths=PackedStringArray("player") instance=ExtResource("2_bjssy")]
+layout_mode = 1
 player = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("3_d1yn6")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -86,6 +89,7 @@ grow_horizontal = 0
 grow_vertical = 0
 
 [node name="ControllerInput2" parent="UI" instance=ExtResource("3_d1yn6")]
+layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -119,16 +123,16 @@ distance = 5.0
 yaw = -90.0
 speed = 1.0
 
-[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_15rra")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0692, 1.66177, 0.465968)
+[node name="CampingScene" parent="." instance=ExtResource("7_c7mac")]
+
+[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_nww3r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.8843, 1.55206, -1.64775)
 companion = NodePath("../Player2")
 
-[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_15rra")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.698, 1.34659, -1.5429)
+[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_nww3r")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.9459, 1.55206, -0.0503522)
 player_number = 2
 companion = NodePath("../Player1")
-
-[node name="CampingScene" parent="." instance=ExtResource("7_c7mac")]
 
 [node name="Ground" type="CSGBox3D" parent="."]
 material_override = ExtResource("8_tj570")

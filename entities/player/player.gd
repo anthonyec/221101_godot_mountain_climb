@@ -1,12 +1,11 @@
-# TODO: Rename this to `Player` once it replaces the old one.
-class_name PlayerFSM
+class_name Player
 extends CharacterBody3D
 
 @export_range(1, 2) var player_number: int = 1
 
 # TODO: Find out if I need @onready annotation. Seems to work without but maybe 
 # it's safer. I originally saw it in this video: https://youtu.be/8BgAeN4RRR4?t=150
-@onready @export var companion: PlayerFSM
+@onready @export var companion: Player
 
 @export_group("Movement")
 @export var gravity: float = 40

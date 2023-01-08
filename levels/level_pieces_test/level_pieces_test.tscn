@@ -7,7 +7,7 @@
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="8_bd8aj"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/camera_hint/camera_hint.tscn" id="9_5qjss"]
-[ext_resource type="PackedScene" path="res://entities/player_fsm/player.tscn" id="9_r0ske"]
+[ext_resource type="PackedScene" uid="uid://c5krlfdws73lx" path="res://entities/player/player.tscn" id="9_r0ske"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="10_5odj7"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]

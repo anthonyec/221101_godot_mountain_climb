@@ -30,14 +30,14 @@ _global_script_classes=[{
 "path": "res://entities/inventory/inventory.gd"
 }, {
 "base": "CharacterBody3D",
-"class": &"PlayerFSM",
+"class": &"Player",
 "language": &"GDScript",
-"path": "res://entities/player_fsm/player.gd"
+"path": "res://entities/player/player.gd"
 }, {
 "base": "State",
 "class": &"PlayerState",
 "language": &"GDScript",
-"path": "res://entities/player_fsm/player_state.gd"
+"path": "res://entities/player/player_state.gd"
 }, {
 "base": "Node3D",
 "class": &"RaycastRope",
@@ -69,7 +69,7 @@ _global_script_class_icons={
 "Checkpoint": "",
 "GameplayCamera": "",
 "Inventory": "",
-"PlayerFSM": "",
+"Player": "",
 "PlayerState": "",
 "RaycastRope": "",
 "RopeEnd": "",

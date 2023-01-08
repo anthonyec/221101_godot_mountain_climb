@@ -1,0 +1,137 @@
+[gd_scene load_steps=29 format=3]
+
+[ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
+[ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
+[ext_resource type="PackedScene" uid="uid://2cra11rol35o" path="res://entities/balance/balance.tscn" id="3_f4g76"]
+[ext_resource type="PackedScene" uid="uid://hwump8tofads" path="res://entities/inventory/inventory.tscn" id="4_eh8ng"]
+[ext_resource type="PackedScene" uid="uid://cugjrmwt16ejf" path="res://entities/state_machine/state_machine.tscn" id="5_34cx1"]
+[ext_resource type="PackedScene" uid="uid://bt1l6u0dxhrsp" path="res://entities/state_machine/state.tscn" id="6_jtsi6"]
+[ext_resource type="Script" path="res://entities/player/states/move.gd" id="7_5lt8n"]
+[ext_resource type="Script" path="res://entities/player/states/jump.gd" id="8_ruy6m"]
+[ext_resource type="Script" path="res://entities/player/states/fall.gd" id="9_b20a8"]
+[ext_resource type="Script" path="res://entities/player/states/hang.gd" id="10_pvcqn"]
+[ext_resource type="Script" path="res://entities/player/states/vault.gd" id="11_avnck"]
+[ext_resource type="Script" path="res://entities/player/states/pickup.gd" id="12_lvry5"]
+[ext_resource type="Script" path="res://entities/player/states/camp.gd" id="13_yrp36"]
+[ext_resource type="Script" path="res://entities/player/states/held.gd" id="14_73klr"]
+[ext_resource type="Script" path="res://entities/player/states/lift.gd" id="15_7bnln"]
+[ext_resource type="Script" path="res://entities/player/states/swing.gd" id="16_mc18k"]
+[ext_resource type="Script" path="res://entities/player/states/belay.gd" id="17_fi37k"]
+[ext_resource type="Script" path="res://entities/player/states/abseil_ground.gd" id="18_3qkst"]
+[ext_resource type="Script" path="res://entities/player/states/abseil_start_down.gd" id="19_7a04u"]
+[ext_resource type="Script" path="res://entities/player/states/abseil_start_up.gd" id="20_3evs7"]
+[ext_resource type="Script" path="res://entities/player/states/abseil_wall.gd" id="21_0nsk0"]
+[ext_resource type="Script" path="res://entities/player/states/abseil_air.gd" id="22_qo22h"]
+[ext_resource type="Script" path="res://entities/player/states/debug.gd" id="23_rff44"]
+[ext_resource type="PackedScene" uid="uid://syi5xfros8t1" path="res://entities/player/player_model.glb" id="24_ymvsn"]
+[ext_resource type="Texture2D" uid="uid://cjt5utav5vamg" path="res://entities/player/shadow_blob.png" id="25_twfhs"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
+radius = 0.25
+height = 1.6
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_c3m2q"]
+radius = 0.6
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_nu83u"]
+height = 1.0
+radius = 0.65
+
+[node name="Player" type="CharacterBody3D" groups=["player"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.982809, 0)
+collision_layer = 2
+script = ExtResource("1_os0ed")
+
+[node name="Stamina" parent="." instance=ExtResource("2_pxhhj")]
+
+[node name="Balance" parent="." instance=ExtResource("3_f4g76")]
+
+[node name="Inventory" parent="." instance=ExtResource("4_eh8ng")]
+
+[node name="CoyoteTime" type="Timer" parent="."]
+wait_time = 0.15
+one_shot = true
+
+[node name="StandStillTime" type="Timer" parent="."]
+wait_time = 0.1
+one_shot = true
+
+[node name="StateMachine" parent="." instance=ExtResource("5_34cx1")]
+
+[node name="Move" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("7_5lt8n")
+
+[node name="Jump" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("8_ruy6m")
+
+[node name="Fall" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("9_b20a8")
+
+[node name="Hang" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("10_pvcqn")
+
+[node name="Vault" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("11_avnck")
+
+[node name="Pickup" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("12_lvry5")
+
+[node name="Camp" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("13_yrp36")
+
+[node name="Held" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("14_73klr")
+
+[node name="Lift" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("15_7bnln")
+
+[node name="Swing" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("16_mc18k")
+
+[node name="Belay" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("17_fi37k")
+
+[node name="AbseilGround" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("18_3qkst")
+
+[node name="AbseilStartDown" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("19_7a04u")
+
+[node name="AbseilStartUp" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("20_3evs7")
+
+[node name="AbseilWall" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("21_0nsk0")
+
+[node name="AbseilAir" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("22_qo22h")
+
+[node name="Debug" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("23_rff44")
+
+[node name="Collision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)
+shape = SubResource("CapsuleShape3D_d63ma")
+
+[node name="AbseilCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)
+shape = SubResource("SphereShape3D_c3m2q")
+disabled = true
+
+[node name="Model" type="Node3D" parent="."]
+
+[node name="player_model" parent="Model" instance=ExtResource("24_ymvsn")]
+transform = Transform3D(-1, 3.48787e-16, -8.74228e-08, 3.48787e-16, 1, -3.48787e-16, 8.74228e-08, -3.48787e-16, -1, 2.08165e-12, -1, 2.08165e-12)
+
+[node name="Decal" type="Decal" parent="Model"]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, -5.95234, 0)
+extents = Vector3(0.3, 5, 0.3)
+texture_albedo = ExtResource("25_twfhs")
+albedo_mix = 0.5
+upper_fade = 1e-05
+
+[node name="PickupArea" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.481408, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
+shape = SubResource("CylinderShape3D_nu83u")
