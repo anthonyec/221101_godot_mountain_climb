@@ -4,7 +4,7 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var climb_up_position: Vector3 = Vector3.ZERO
 
-func enter(params: Dictionary) -> void:	
+func enter(params: Dictionary) -> void:
 	# TODO: Should this be renamed to "hang_position"? At the moment it is 
 	# consistent with the `move` state.
 	if params.has("move_to"):
@@ -37,8 +37,8 @@ func update(delta: float) -> void:
 	
 	var ledge_info = player.find_ledge_info()
 	
-	if ledge_info.is_empty():
-		push_warning("Failed to find ledge info in grab state")
+	if ledge_info.is_empty() or ledge_info.has("error"):
+		push_warning("Failed to find ledge info in grab state: " + ledge_info.get("error", "unknown_error"))
 		return state_machine.transition_to("Move")
 	
 	var shimmy_direction = ledge_info.edge_direction
@@ -71,7 +71,7 @@ func update(delta: float) -> void:
 	for index in range(0, iterations):
 		var percent = float(index) / float(iterations)
 		var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
-		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25)
+		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25, 1, [self])
 		
 		if shape_hit:
 			hit = shape_hit

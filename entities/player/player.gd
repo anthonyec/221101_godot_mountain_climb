@@ -113,7 +113,7 @@ func find_ledge_info() -> Dictionary:
 	)
 	
 	if wall_hit.is_empty():
-		return {}
+		return { "error": "no_wall_hit" }
 		
 	var wall_angle = wall_hit.normal.angle_to(Vector3.UP)
 	
@@ -122,29 +122,28 @@ func find_ledge_info() -> Dictionary:
 	# TODO: This has problems with walls that slope outwards at the bottom.
 	# Might need to be a seperate kind of grab.
 	if wall_angle < deg_to_rad(80) or wall_angle > deg_to_rad(120):
-		return {}
+		return { "error": "bad_wall_angle" }
 	
 	var wall_angle_to_player_forward = wall_hit.normal.angle_to(global_transform.basis.z)
 	
 	if wall_angle_to_player_forward > deg_to_rad(60):
-		return {}
+		return { "error": "bad_wall_angle_relation_to_player" }
 		
 	var direction_to_player = global_transform.origin.direction_to(Vector3(wall_hit.position.x, 0, wall_hit.position.z))
 	var floor_hit = Raycast.cast_in_direction(wall_hit.position + (direction_to_player * 0.1) + (Vector3.UP * grab_height), Vector3.DOWN, grab_height)
 	
 	if floor_hit.is_empty():
-		return {}
+		return { "error": "no_floor_hit" }
 	
 	var floor_normal: Vector3 = floor_hit.normal
 	var floor_angle = abs(floor_normal.angle_to(Vector3.UP))
 	
 	if (floor_angle > deg_to_rad(max_floor_angle)):
-		return {}
+		return { "error": "bad_floor_angle" }
 
 	# Edge normal is the wall normal with the Y component flattened to zero.
 	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z)
 	
-	Raycast.debug = true
 	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal - (edge_normal * 0.1)
 	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (edge_normal * hang_distance_from_wall * 2)
 #
@@ -154,13 +153,13 @@ func find_ledge_info() -> Dictionary:
 	})
 
 	if edge_hit.is_empty():
-		return {}
+		return { "error": "no_edge_hit" }
 
 	# TODO: Make this better. Potentially a deep/long rectangle that is aligned to the floor normal.
-	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1, [self])
+	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1)
 	
 	if not hand_hit.is_empty():
-		return {}
+		return { "error": "no_space_for_hand" }
 		
 	var edge_direction = edge_normal.cross(floor_hit.normal)
 	
