@@ -141,8 +141,12 @@ func find_ledge_info() -> Dictionary:
 	if (floor_angle > deg_to_rad(max_floor_angle)):
 		return {}
 
-	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal
-	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (wall_hit.normal * hang_distance_from_wall * 2)
+	# Edge normal is the wall normal with the Y component flattened to zero.
+	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z)
+	
+	Raycast.debug = true
+	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal - (edge_normal * 0.1)
+	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (edge_normal * hang_distance_from_wall * 2)
 #
 	var edge_hit = Raycast.sweep_find_edge(start_edge_sweep_position, end_edge_sweep_position, -floor_hit.normal, 1.2, {
 		"exclude": [self],
@@ -153,12 +157,12 @@ func find_ledge_info() -> Dictionary:
 		return {}
 
 	# TODO: Make this better. Potentially a deep/long rectangle that is aligned to the floor normal.
-	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1)
+	var hand_hit = Raycast.intersect_cylinder(edge_hit.position + edge_hit.normal * 0.1, 0.1, 0.2, 1, [self])
 	
 	if not hand_hit.is_empty():
 		return {}
 		
-	var edge_direction = wall_hit.normal.cross(floor_hit.normal)
+	var edge_direction = edge_normal.cross(floor_hit.normal)
 	
 	var floor_left_bound = Raycast.cast_in_direction(
 		edge_hit.position + (Vector3.UP * 0.5) + (edge_direction * 0.25), # TODO: Replace with player width / 2 var.
@@ -175,11 +179,11 @@ func find_ledge_info() -> Dictionary:
 		DebugDraw.draw_cube(edge_hit.position, 0.2, Color.BLUE)
 		DebugDraw.draw_ray_3d(edge_hit.position - (edge_direction * 0.25), edge_direction, 0.5, Color.BLUE)
 	
-	var suggested_hang_position = edge_hit.position + (wall_hit.normal * hang_distance_from_wall) + (Vector3.DOWN * 0.25) # TODO: Tidy up with var name for player_height / 2
+	var suggested_hang_position = edge_hit.position + (edge_normal * hang_distance_from_wall) + (Vector3.DOWN * 0.25) # TODO: Tidy up with var name for player_height / 2
 	
 	# TODO: Implement exlcuding self. The last argument does not work hehe.
 	# TODO: Find out why the cylinder sometimes in the same position of the ledge, which seems very wrong.
-	var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, 1)
+	var hang_position_hit = Raycast.intersect_cylinder(suggested_hang_position, 1.5, 0.25, 1, [self])
 
 	var is_hang_position_blocked = false
 	
