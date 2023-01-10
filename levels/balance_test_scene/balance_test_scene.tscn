@@ -1,4 +1,0 @@
-[gd_scene load_steps=3 format=3]
-
-[ext_resource type="Script" path="res://levels/balance_test_scene/balance_test_scene.gd" id="1_ltjyi"]
-[ext_resource type="PackedScene" uid="uid://2cra11rol35o" path="res://entities/balance.tscn" id="1_x1pl0"]
