@@ -203,6 +203,7 @@ func find_ledge_info() -> Dictionary:
 		"wall": wall_hit,
 		"edge": edge_hit,
 		"edge_direction": edge_direction,
+		"edge_normal": edge_normal,
 		"has_reached_left_bound": has_reached_left_bound,
 		"has_reached_right_bound": has_reached_right_bound
 	}
