@@ -126,12 +126,14 @@ speed = 1.0
 [node name="CampingScene" parent="." instance=ExtResource("7_c7mac")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.1103, 2.91536, -4.81426)
 
-[node name="Player1" parent="." instance=ExtResource("6_nww3r")]
+[node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_nww3r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.8843, 1.55206, -1.64775)
+companion = NodePath("../Player2")
 
-[node name="Player2" parent="." instance=ExtResource("6_nww3r")]
+[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_nww3r")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.9459, 1.55206, -0.0503522)
 player_number = 2
+companion = NodePath("../Player1")
 
 [node name="Ground" type="CSGBox3D" parent="."]
 material_override = ExtResource("8_tj570")
