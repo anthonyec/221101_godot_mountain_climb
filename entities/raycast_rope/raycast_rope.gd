@@ -17,11 +17,16 @@ var total_length: float = 0
 var joints: Array[Vector3] = []
 var edge_info: Array = []
 
-func _ready() -> void:
-	target_position = target.global_transform.origin
+func _ready() -> void:	
+	if target:
+		target_position = target.global_transform.origin
+		
 	joints.append(global_transform.origin)
 
 func _process(_delta: float) -> void:
+	if not target:
+		return
+	
 	target_position = target.global_transform.origin
 	total_length = 0
 	
@@ -65,11 +70,12 @@ func _process(_delta: float) -> void:
 	# Debug draw rope
 	for index in joints.size():
 		DebugDraw.draw_cube(joints[index], 0.1, Color.PURPLE)
-		
+
 		if index > 0:
 			DebugDraw.draw_line_3d(joints[index - 1], joints[index], Color.PURPLE)
-			
+
 	DebugDraw.draw_line_3d(joints[joints.size() - 1], target_position, Color.PURPLE)
+	
 	
 	# Check the point between last third joint and target to see if it can be 
 	# discarded, essentially unwinding the rope.
@@ -128,7 +134,6 @@ func _process(_delta: float) -> void:
 		DebugDraw.draw_ray_3d(hit_torwards_origin.position, hit_torwards_origin.normal, 1, Color.BLACK)
 		DebugDraw.draw_ray_3d(hit_torwards_target.position.lerp(hit_torwards_origin.position, 0.5), average_edge_normal, 2, Color.YELLOW)
 	
-	
 	for index in range(edge_search_iterations):
 		# TODO: Come up with a better name for the search line between these normal. 
 		# I don't like A and B, maybe in and out or something?
@@ -163,6 +168,9 @@ func get_last_edge_info() -> Dictionary:
 	
 func get_last_joint() -> Vector3:
 	return joints[joints.size() - 1]
+	
+func has_joints() -> bool:
+	return joints.size() != 0
 	
 func get_position_on_rope(length: float) -> Vector3:
 	var clamped_length = clamp(length, 0, total_length)

@@ -85,19 +85,6 @@ func physics_update(delta: float) -> void:
 			is_ready_to_lift_companion = true
 	else:
 		is_ready_to_lift_companion = false
-		
-	if player.companion.rope:
-		var nearest_position = player.companion.rope.get_nearest_position_to(player.global_transform.origin)
-		var distance_nearest_position = player.global_transform.origin.distance_to(nearest_position)
-		
-		if distance_nearest_position < 1.5:
-			DebugDraw.draw_cube(nearest_position, 0.25, Color.YELLOW)
-		
-		if distance_nearest_position < 1.5 and Input.is_action_pressed(player.get_action_name("grab")):
-			state_machine.transition_to("AbseilGround", {
-				"rope": player.companion.rope,
-			})
-			return
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
@@ -118,6 +105,23 @@ func handle_input(event: InputEvent) -> void:
 		for area in player.pickup_collision.get_overlapping_areas():
 			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
 				state_machine.transition_to("Pickup", { "item": area })
+				return
+				
+	if event.is_action_pressed(player.get_action_name("grab")):
+		var abseil_ropes = get_tree().get_nodes_in_group("abseil_rope")
+		
+		if abseil_ropes.is_empty():
+			return
+		
+		for abseil_rope in abseil_ropes:
+			# TODO: Abstract get nearest stuff away into AbseilRope.
+			var rope = abseil_rope.rope as RaycastRope
+			var nearest_position = rope.get_nearest_position_to(player.global_transform.origin)
+			
+			if nearest_position.distance_to(player.global_transform.origin) < 1.5:
+				state_machine.transition_to("AbseilGround", {
+					"rope": rope,
+				})
 				return
 				
 	if event.is_action_pressed(player.get_action_name("camp")):

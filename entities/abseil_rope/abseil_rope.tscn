@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=3 uid="uid://bnd4fpdgs6bh3"]
+
+[ext_resource type="Script" path="res://entities/abseil_rope/abseil_rope.gd" id="1_4mdgv"]
+[ext_resource type="PackedScene" uid="uid://2wnbteyj0lf2" path="res://entities/raycast_rope/raycast_rope.tscn" id="2_cnxji"]
+[ext_resource type="PackedScene" uid="uid://dippwndlh7eva" path="res://entities/raycast_rope/rope_end.tscn" id="3_548w7"]
+
+[node name="AbseilRope" type="Node3D" groups=["abseil_rope"]]
+script = ExtResource("1_4mdgv")
+
+[node name="RaycastRope" parent="." instance=ExtResource("2_cnxji")]
+
+[node name="RopeEnd" parent="." instance=ExtResource("3_548w7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 2.08165e-12, 2.08165e-12)

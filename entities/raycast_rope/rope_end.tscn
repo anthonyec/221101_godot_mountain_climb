@@ -10,7 +10,6 @@ radius = 0.2
 height = 0.4
 
 [node name="RopeEnd" type="RigidBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.1529, 3.74024, -0.837251)
 collision_layer = 8
 max_contacts_reported = 1
 contact_monitor = true
