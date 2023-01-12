@@ -8,7 +8,6 @@ func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
 	player.stamina.can_recover = true
-	player.set_collision_mode("default")
 	player.animation.play("Idle")
 	
 	# Seeking is a work around to avoid a 1 frame delay from playing an animation.
@@ -119,9 +118,7 @@ func handle_input(event: InputEvent) -> void:
 			var nearest_position = rope.get_nearest_position_to(player.global_transform.origin)
 			
 			if nearest_position.distance_to(player.global_transform.origin) < 1.5:
-				state_machine.transition_to("AbseilGround", {
-					"rope": rope,
-				})
+				state_machine.transition_to("Abseil", { "rope": rope })
 				return
 				
 	if event.is_action_pressed(player.get_action_name("camp")):

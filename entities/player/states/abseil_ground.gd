@@ -1,30 +1,20 @@
 extends PlayerState
 
-var rope: RaycastRope
 var start_position: Vector3
 var direction: Vector3
 var movement: Vector3
 
 func enter(params: Dictionary) -> void:
-	if params.has("rope"):
-		rope = params.get("rope")
-		
-	assert(rope, "Abseil states need rope")
+	assert(parent_state.rope, "Abseil states need rope")
 	
-	# TODO: Set a way to reset the target. Also, need to change RaycastRope to AbseilRope.
-	rope.target = player
-	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
-	
-func exit() -> void:
-	rope = null
 
 func update(_delta: float) -> void:
 	var last_joint_above_player: Vector3
 	
-	for index in range(rope.joints.size()):
-		var backwards_index = (rope.joints.size() - 1) - index
-		var joint_position = rope.joints[backwards_index]
+	for index in range(parent_state.rope.joints.size()):
+		var backwards_index = (parent_state.rope.joints.size() - 1) - index
+		var joint_position = parent_state.rope.joints[backwards_index]
 		
 		if joint_position.y > player.global_transform.origin.y + 2:
 			last_joint_above_player = joint_position
@@ -42,7 +32,7 @@ func update(_delta: float) -> void:
 		# TODO: Change o abseil start up state.
 		player.global_transform.origin = player.get_offset_position(0.0, 1.0)
 		player.move_and_slide()
-		state_machine.transition_to("AbseilWall", { "rope": rope })
+		state_machine.transition_to("Abseil/AbseilWall")
 		return
 	
 	DebugDraw.draw_cube(last_joint_above_player, 1, Color.BLUE)
@@ -56,16 +46,16 @@ func update(_delta: float) -> void:
 	
 func physics_update(delta: float) -> void:
 	if not player.is_on_floor():
-		state_machine.transition_to("AbseilStartDown", { "rope": rope })
+		state_machine.transition_to("Abseil/AbseilStartDown")
 		return
 		
 	movement.x = direction.x * player.walk_speed
 	movement.z = direction.z * player.walk_speed
 	
 	
-	if rope.total_length > rope.max_length:
-		var direction_to_end = player.global_transform.origin.direction_to(rope.target_position)
-		var distance_to_end = player.global_transform.origin.distance_to(rope.target_position)
+	if parent_state.rope.total_length > parent_state.rope.max_length:
+		var direction_to_end = player.global_transform.origin.direction_to(parent_state.rope.target_position)
+		var distance_to_end = player.global_transform.origin.distance_to(parent_state.rope.target_position)
 		
 		movement += direction_to_end * distance_to_end * 5
 		movement.y = 0

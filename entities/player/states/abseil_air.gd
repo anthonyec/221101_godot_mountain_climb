@@ -1,5 +1,11 @@
 extends PlayerState
 
+func enter(_params: Dictionary) -> void:
+	print("Enter sub state")
+	
+func exit() -> void:
+	print("Exit sub state")
+
 func update(_delta: float) -> void:
 	player.face_towards(player.companion.global_transform.origin)
 

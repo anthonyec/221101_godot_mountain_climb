@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3]
+[gd_scene load_steps=30 format=3 uid="uid://dtbuppuuekm28"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
 [ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://entities/player/states/lift.gd" id="15_7bnln"]
 [ext_resource type="Script" path="res://entities/player/states/swing.gd" id="16_mc18k"]
 [ext_resource type="Script" path="res://entities/player/states/belay.gd" id="17_fi37k"]
+[ext_resource type="Script" path="res://entities/player/states/abseil.gd" id="18_3bgl8"]
 [ext_resource type="Script" path="res://entities/player/states/abseil_ground.gd" id="18_3qkst"]
 [ext_resource type="Script" path="res://entities/player/states/abseil_start_down.gd" id="19_7a04u"]
 [ext_resource type="Script" path="res://entities/player/states/abseil_start_up.gd" id="20_3evs7"]
@@ -91,19 +92,22 @@ script = ExtResource("16_mc18k")
 [node name="Belay" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("17_fi37k")
 
-[node name="AbseilGround" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="Abseil" type="Node" parent="StateMachine"]
+script = ExtResource("18_3bgl8")
+
+[node name="AbseilGround" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("18_3qkst")
 
-[node name="AbseilStartDown" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="AbseilStartDown" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("19_7a04u")
 
-[node name="AbseilStartUp" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="AbseilStartUp" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("20_3evs7")
 
-[node name="AbseilWall" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="AbseilWall" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("21_0nsk0")
 
-[node name="AbseilAir" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="AbseilAir" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("22_qo22h")
 
 [node name="Debug" parent="StateMachine" instance=ExtResource("6_jtsi6")]
