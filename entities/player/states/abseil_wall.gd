@@ -56,11 +56,11 @@ func physics_update(delta: float) -> void:
 	# Remove any vertical direction, this will instead be controlled by player input
 	movement.y = -player.input_direction.y * abseil_wall_speed
 	
-	if parent_state.rope.total_length > parent_state.rope.max_length:
+	if parent_state.rope.get_total_length() > parent_state.rope.get_max_length():
 		movement.y = 0
 		
 		# TODO: Fix jittering by smoothing out the movement somehow.
-		player.global_transform.origin = parent_state.rope.target_position
+		player.global_transform.origin = parent_state.rope.get_target_position()
 	
 	if player.is_on_wall() and Input.is_action_just_pressed(player.get_action_name("jump")):
 		movement += (player.global_transform.basis.z) * jump_power

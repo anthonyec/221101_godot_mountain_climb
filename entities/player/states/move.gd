@@ -114,7 +114,7 @@ func handle_input(event: InputEvent) -> void:
 		
 		for abseil_rope in abseil_ropes:
 			# TODO: Abstract get nearest stuff away into AbseilRope.
-			var rope = abseil_rope.rope as RaycastRope
+			var rope = abseil_rope as AbseilRope
 			var nearest_position = rope.get_nearest_position_to(player.global_transform.origin)
 			
 			if nearest_position.distance_to(player.global_transform.origin) < 1.5:

@@ -4,8 +4,8 @@ extends Node3D
 @onready var player_2: Player = $Player2 as Player
 
 func _ready():
-	player_1.state_machine.transition_to("Debug")
-	player_2.state_machine.transition_to("Debug")
+	player_1.state_machine.transition_to("Debug", { "disabled": true })
+	player_2.state_machine.transition_to("Debug", { "disabled": true })
 	
 	player_1.animation.playback_speed = 0 
 	player_2.animation.playback_speed = 0 

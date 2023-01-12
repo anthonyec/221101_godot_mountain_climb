@@ -27,7 +27,7 @@ func physics_update(_delta: float) -> void:
 	var distance_from_start: float = start_position.y - player.global_transform.origin.y
 	
 	# TODO: Think of a better check.
-	if distance_from_start > 1.0 and parent_state.rope.joints.size() > 1:
+	if distance_from_start > 1.0 and parent_state.rope.get_joint_count() > 1:
 		state_machine.transition_to("Abseil/AbseilWall")
 		return
 

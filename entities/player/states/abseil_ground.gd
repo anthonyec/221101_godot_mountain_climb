@@ -12,9 +12,9 @@ func enter(params: Dictionary) -> void:
 func update(_delta: float) -> void:
 	var last_joint_above_player: Vector3
 	
-	for index in range(parent_state.rope.joints.size()):
-		var backwards_index = (parent_state.rope.joints.size() - 1) - index
-		var joint_position = parent_state.rope.joints[backwards_index]
+	for index in range(parent_state.rope.get_joint_count()):
+		var backwards_index = (parent_state.rope.get_joint_count() - 1) - index
+		var joint_position = parent_state.rope.get_joints()[backwards_index]
 		
 		if joint_position.y > player.global_transform.origin.y + 2:
 			last_joint_above_player = joint_position
@@ -52,10 +52,9 @@ func physics_update(delta: float) -> void:
 	movement.x = direction.x * player.walk_speed
 	movement.z = direction.z * player.walk_speed
 	
-	
-	if parent_state.rope.total_length > parent_state.rope.max_length:
-		var direction_to_end = player.global_transform.origin.direction_to(parent_state.rope.target_position)
-		var distance_to_end = player.global_transform.origin.distance_to(parent_state.rope.target_position)
+	if parent_state.rope.get_total_length() > parent_state.rope.get_max_length():
+		var direction_to_end = player.global_transform.origin.direction_to(parent_state.rope.get_target_position())
+		var distance_to_end = player.global_transform.origin.distance_to(parent_state.rope.get_target_position())
 		
 		movement += direction_to_end * distance_to_end * 5
 		movement.y = 0

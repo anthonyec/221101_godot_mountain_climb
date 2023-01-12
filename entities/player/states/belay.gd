@@ -9,7 +9,7 @@ func enter(_params: Dictionary) -> void:
 	
 	abseil_rope = abseil_rope_scene.instantiate() as AbseilRope
 	
-	abseil_rope.host_player = player
+	abseil_rope.host = player
 	abseil_rope.global_transform.origin = player.global_transform.origin
 	
 	player.get_parent().add_child(abseil_rope)
