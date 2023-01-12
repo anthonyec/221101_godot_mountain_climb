@@ -4,8 +4,6 @@ var speed: float = 5
 
 func enter(_params: Dictionary) -> void:
 	player.animation.play("T-pose")
-	player.get_parent().remove_child(player.rope)
-	player.rope = null
 	player.stamina.can_recover = true
 	player.stamina.regain(player.stamina.max_stamina)
 	player.set_collision_mode("default")
@@ -21,3 +19,4 @@ func physics_update(delta: float) -> void:
 		direction = direction * 5
 	
 	player.global_transform.origin += direction * speed * delta
+ 

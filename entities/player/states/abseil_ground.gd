@@ -1,32 +1,28 @@
 extends PlayerState
 
+var rope: RaycastRope
 var start_position: Vector3
 var direction: Vector3
 var movement: Vector3
 
 func enter(params: Dictionary) -> void:
 	if params.has("rope"):
-		player.rope = params.get("rope")
+		rope = params.get("rope")
+		
+	assert(rope, "Abseil states need rope")
 	
 	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
 	
-	var raycast_rope_scene = load("res://entities/raycast_rope/raycast_rope.tscn")
-	
-	if not player.rope:
-		var raycast_rope = raycast_rope_scene.instantiate() as RaycastRope
-		raycast_rope.global_transform.origin = start_position
-		raycast_rope.target = player
-		
-		player.rope = raycast_rope
-		player.get_parent().add_child(raycast_rope)
+func exit() -> void:
+	rope = null
 
 func update(_delta: float) -> void:
 	var last_joint_above_player: Vector3
 	
-	for index in range(player.rope.joints.size()):
-		var backwards_index = (player.rope.joints.size() - 1) - index
-		var joint_position = player.rope.joints[backwards_index]
+	for index in range(rope.joints.size()):
+		var backwards_index = (rope.joints.size() - 1) - index
+		var joint_position = rope.joints[backwards_index]
 		
 		if joint_position.y > player.global_transform.origin.y + 2:
 			last_joint_above_player = joint_position
@@ -44,7 +40,7 @@ func update(_delta: float) -> void:
 		# TODO: Change o abseil start up state.
 		player.global_transform.origin = player.get_offset_position(0.0, 1.0)
 		player.move_and_slide()
-		state_machine.transition_to("AbseilWall")
+		state_machine.transition_to("AbseilWall", { "rope": rope })
 		return
 	
 	DebugDraw.draw_cube(last_joint_above_player, 1, Color.BLUE)
@@ -58,16 +54,16 @@ func update(_delta: float) -> void:
 	
 func physics_update(delta: float) -> void:
 	if not player.is_on_floor():
-		state_machine.transition_to("AbseilStartDown")
+		state_machine.transition_to("AbseilStartDown", { "rope": rope })
 		return
 		
 	movement.x = direction.x * player.walk_speed
 	movement.z = direction.z * player.walk_speed
 	
 	
-	if player.rope.total_length > player.rope.max_length:
-		var direction_to_end = player.global_transform.origin.direction_to(player.rope.target_position)
-		var distance_to_end = player.global_transform.origin.distance_to(player.rope.target_position)
+	if rope.total_length > rope.max_length:
+		var direction_to_end = player.global_transform.origin.direction_to(rope.target_position)
+		var distance_to_end = player.global_transform.origin.distance_to(rope.target_position)
 		
 		movement += direction_to_end * distance_to_end * 5
 		movement.y = 0
@@ -87,16 +83,10 @@ func physics_update(delta: float) -> void:
 	movement = player.velocity
 	
 	if !Input.is_action_pressed(player.get_action_name("grab")):
-		player.get_parent().remove_child(player.rope)
-		player.rope = null
 		state_machine.transition_to("Move")
 		return
 
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
-		# TODO: Move this clean up in exit and check for next state is move. I guess 
-		# this is where substates come in handy.
-		player.get_parent().remove_child(player.rope)
-		player.rope = null
 		state_machine.transition_to("Move")
 		return
