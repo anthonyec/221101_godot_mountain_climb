@@ -10,12 +10,14 @@ func enter(params: Dictionary) -> void:
 		var item = params.get("item")
 		
 		if not item.has_method("pick_up"):
-			return push_warning("Item pick does not have `pick_up` method")
+			push_warning("Item pick does not have `pick_up` method")
+			return
 
 		item.pick_up()
 		player.inventory.add_item("wood")
 		
-	return state_machine.transition_to("Move")
+	state_machine.transition_to("Move")
+	return
 
 func exit() -> void:
 	player.animation.playback_speed = 1

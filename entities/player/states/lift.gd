@@ -14,10 +14,11 @@ func update(_delta: float) -> void:
 
 func physics_update(delta: float) -> void:
 	if not player.is_on_floor():
-		return state_machine.transition_to("Fall", {
+		state_machine.transition_to("Fall", {
 			"movement": movement,
 			"coyote_time_enabled": true,
 		})
+		return 
 		
 	movement.x = direction.x * player.walk_speed / 2
 	movement.z = direction.z * player.walk_speed / 2
@@ -43,4 +44,5 @@ func handle_input(event: InputEvent) -> void:
 		player.companion.state_machine.transition_to("Move", {
 			"move_to": player.get_offset_position(0.1)
 		})
-		return player.state_machine.transition_to("Move")
+		player.state_machine.transition_to("Move")
+		return

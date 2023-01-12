@@ -20,6 +20,7 @@ func handle_input(event: InputEvent) -> void:
 		# TODO: This should send an event, not force the other player into a state
 		player.companion.state_machine.transition_to("Move")
 		
-		return state_machine.transition_to("Jump", {
+		state_machine.transition_to("Jump", {
 			"movement": direction
 		})
+		return

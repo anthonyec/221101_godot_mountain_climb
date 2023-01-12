@@ -29,9 +29,10 @@ func update(_delta: float) -> void:
 	
 	if state_machine.time_in_current_state > 5000:
 		push_warning("In JUMP state longer than expected")
-		return state_machine.transition_to("Move", {
+		state_machine.transition_to("Move", {
 			"global_origin": player.global_transform.origin + (Vector3.UP * 2)
 		})
+		return
 	
 func physics_update(delta: float) -> void:	
 	player.face_towards(player.global_transform.origin + direction, player.air_turn_speed, delta)
@@ -50,10 +51,12 @@ func physics_update(delta: float) -> void:
 	movement = player.velocity
 	
 	if player.is_on_floor():
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return 
 		
 	if movement.y < 0:
-		return state_machine.transition_to("Fall", { "movement": movement })
+		state_machine.transition_to("Fall", { "movement": movement })
+		return 
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_released(player.get_action_name("jump")):

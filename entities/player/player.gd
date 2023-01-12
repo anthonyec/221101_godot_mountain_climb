@@ -51,9 +51,11 @@ func _process(_delta: float) -> void:
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":
-			return state_machine.transition_to("Debug")
+			state_machine.transition_to("Debug")
+			return
 		else:
-			return state_machine.transition_to("Move")
+			state_machine.transition_to("Move")
+			return
 
 # Get the action name with player number suffix.
 func get_action_name(action_name: String) -> String:

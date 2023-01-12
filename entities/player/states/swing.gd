@@ -89,10 +89,11 @@ func update(delta: float) -> void:
 	DebugDraw.draw_line_3d(end_position, end_position + jump_off_movement, Color.CYAN)
 	
 	if Input.is_action_pressed(player.get_action_name("jump")):
-		return state_machine.transition_to("Jump", {
+		state_machine.transition_to("Jump", {
 			"movement": jump_off_movement,
 			"face_towards": end_position + jump_off_movement
 		})
+		return
 		
 func physics_update(_delta: float) -> void:
 #	var _collision = player.move_and_slide()

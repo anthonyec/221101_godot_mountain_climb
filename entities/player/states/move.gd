@@ -42,10 +42,11 @@ func update(_delta: float) -> void:
 
 func physics_update(delta: float) -> void:
 	if not player.is_on_floor():
-		return state_machine.transition_to("Fall", {
+		state_machine.transition_to("Fall", {
 			"movement": movement,
 			"coyote_time_enabled": true,
 		})
+		return
 	
 	var player_forward = -player.global_transform.basis.z
 	
@@ -93,26 +94,31 @@ func physics_update(delta: float) -> void:
 			DebugDraw.draw_cube(nearest_position, 0.25, Color.YELLOW)
 		
 		if distance_nearest_position < 1.5 and Input.is_action_pressed(player.get_action_name("grab")):
-			return state_machine.transition_to("AbseilGround", {
+			state_machine.transition_to("AbseilGround", {
 				"rope": player.companion.rope,
 			})
+			return
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
-		return state_machine.transition_to("Belay")
+		state_machine.transition_to("Belay")
+		return
 		
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
 		player.companion.state_machine.transition_to("Lift")
-		return player.state_machine.transition_to("Held")
+		player.state_machine.transition_to("Held")
+		return
 
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
-		return state_machine.transition_to("Jump", { "movement": movement })
+		state_machine.transition_to("Jump", { "movement": movement })
+		return
 		
 	if event.is_action_pressed(player.get_action_name("grab")):
 		for area in player.pickup_collision.get_overlapping_areas():
 			if area.is_in_group("wood_pickup") and area.has_method("pick_up"):
-				return state_machine.transition_to("Pickup", { "item": area })
+				state_machine.transition_to("Pickup", { "item": area })
+				return
 				
 	if event.is_action_pressed(player.get_action_name("camp")):
 		for area in player.pickup_collision.get_overlapping_areas():
@@ -121,7 +127,8 @@ func handle_input(event: InputEvent) -> void:
 				
 				if total_sticks >= 6:
 					player.companion.state_machine.transition_to("Camp")
-					return player.state_machine.transition_to("Camp")
+					player.state_machine.transition_to("Camp")
+					return
 	
 
 

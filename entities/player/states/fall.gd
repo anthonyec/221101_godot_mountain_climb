@@ -30,21 +30,24 @@ func update(_delta: float) -> void:
 	
 	if state_machine.time_in_current_state > 5000:
 		push_warning("In FALL state longer than expected")
-		return state_machine.transition_to("Move", {
+		state_machine.transition_to("Move", {
 			"move_to": player.global_transform.origin + (Vector3.UP * 2)
 		})
+		return
 
 func physics_update(delta: float) -> void:
 	if player.is_on_floor():
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return
 		
 	var ledge_info = player.find_ledge_info()	
 	
 	if Input.is_action_pressed(player.get_action_name("grab")) and not ledge_info.is_empty() and not ledge_info.has("error") and not player.stamina.is_depleted():		
-		return state_machine.transition_to("Hang", {
+		state_machine.transition_to("Hang", {
 			"move_to": ledge_info.hang_position,
 			"face_towards": ledge_info.wall.position
 		})
+		return
 		
 	player.face_towards(player.global_transform.origin + direction, player.air_turn_speed, delta)
 
@@ -64,4 +67,5 @@ func physics_update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:		
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
-		return state_machine.transition_to("Jump", { "movement": movement })
+		state_machine.transition_to("Jump", { "movement": movement })
+		return

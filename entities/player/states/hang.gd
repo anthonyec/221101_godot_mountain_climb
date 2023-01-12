@@ -26,7 +26,8 @@ func update(delta: float) -> void:
 	player.stamina.use(1.5 * delta)
 	
 	if player.stamina.is_depleted():
-		return state_machine.transition_to("Fall")
+		state_machine.transition_to("Fall")
+		return 
 
 	player.set_velocity(movement)
 	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
@@ -39,7 +40,8 @@ func update(delta: float) -> void:
 	
 	if ledge_info.is_empty() or ledge_info.has("error"):
 		push_warning("Failed to find ledge info in grab state: " + ledge_info.get("error", "unknown_error"))
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return
 	
 	var shimmy_direction = ledge_info.edge_direction
 	var shimmy_strength = -player.global_transform.basis.x.dot(direction)
@@ -88,25 +90,29 @@ func update(delta: float) -> void:
 		DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
 	
 	if climb_up_strength > 0.8 and state_machine.time_in_current_state > 200 and hit.is_empty():
-		return state_machine.transition_to("Vault")
+		state_machine.transition_to("Vault")
+		return
 	
 	# TODO: Change time check input resetting.
 	if abs(climb_up_strength) == 0 and Input.is_action_just_pressed(player.get_action_name("jump")) and hit.is_empty():
-		return state_machine.transition_to("Vault")
+		state_machine.transition_to("Vault")
+		return
 		
 	if Input.is_action_just_pressed(player.get_action_name("jump")) and climb_up_strength < -0.4:
 		player.face_towards(player.global_transform.origin + direction)
 		player.stamina.use(30.0)
 		
 		# TODO: This should probably transition to a specfic VaultJump state.
-		return state_machine.transition_to("Jump", {
+		state_machine.transition_to("Jump", {
 			# TODO: Don't use magic numbers here for jump strength
 			"movement": direction * 5,
 			"jump_strength": 5
 		})
+		return
 		
 	if !Input.is_action_pressed(player.get_action_name("grab")):
-		return state_machine.transition_to("Fall")
+		state_machine.transition_to("Fall")
+		return
 	
 	
 	

@@ -35,10 +35,12 @@ func physics_update(delta: float) -> void:
 	# to a state where we can fall while grabbed to the rope.
 
 	if player.is_on_floor():
-		return state_machine.transition_to("AbseilGround")
+		state_machine.transition_to("AbseilGround")
+		return
 		
 	if not player.is_on_wall():
-#		return state_machine.transition_to("AbseilAir")
+#		state_machine.transition_to("AbseilAir")
+#		return
 		pass
 	
 	var direction_to_last_rope_joint = player.global_transform.origin.direction_to(player.rope.get_last_joint())
@@ -61,7 +63,8 @@ func physics_update(delta: float) -> void:
 	
 	if player.is_on_wall() and Input.is_action_just_pressed(player.get_action_name("jump")):
 		movement += (player.global_transform.basis.z) * jump_power
-#		return state_machine.transition_to("AbseilWallJump")
+#		state_machine.transition_to("AbseilWallJump")
+#		return
 	
 	var last_edge_info = player.rope.get_last_edge_info()
 	
@@ -80,4 +83,5 @@ func physics_update(delta: float) -> void:
 	if !Input.is_action_pressed(player.get_action_name("grab")):
 		player.get_parent().remove_child(player.rope)
 		player.rope = null
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return

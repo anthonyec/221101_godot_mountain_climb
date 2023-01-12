@@ -20,13 +20,15 @@ func update(_delta: float) -> void:
 
 func physics_update(_delta: float) -> void:
 	if player.is_on_floor():
-		return state_machine.transition_to("AbseilGround")
+		state_machine.transition_to("AbseilGround")
+		return
 	
 	var distance_from_start: float = start_position.y - player.global_transform.origin.y
 	
 	# TODO: Think of a better check.
 	if distance_from_start > 1.0 and player.rope.joints.size() > 1:
-		return state_machine.transition_to("AbseilWall")
+		state_machine.transition_to("AbseilWall")
+		return
 
 	movement.y = -3
 	

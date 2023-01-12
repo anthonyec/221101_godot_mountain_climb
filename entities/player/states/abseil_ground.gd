@@ -44,7 +44,8 @@ func update(_delta: float) -> void:
 		# TODO: Change o abseil start up state.
 		player.global_transform.origin = player.get_offset_position(0.0, 1.0)
 		player.move_and_slide()
-		return state_machine.transition_to("AbseilWall")
+		state_machine.transition_to("AbseilWall")
+		return
 	
 	DebugDraw.draw_cube(last_joint_above_player, 1, Color.BLUE)
 		
@@ -57,7 +58,8 @@ func update(_delta: float) -> void:
 	
 func physics_update(delta: float) -> void:
 	if not player.is_on_floor():
-		return state_machine.transition_to("AbseilStartDown")
+		state_machine.transition_to("AbseilStartDown")
+		return
 		
 	movement.x = direction.x * player.walk_speed
 	movement.z = direction.z * player.walk_speed
@@ -87,7 +89,8 @@ func physics_update(delta: float) -> void:
 	if !Input.is_action_pressed(player.get_action_name("grab")):
 		player.get_parent().remove_child(player.rope)
 		player.rope = null
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return
 
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
@@ -95,4 +98,5 @@ func handle_input(event: InputEvent) -> void:
 		# this is where substates come in handy.
 		player.get_parent().remove_child(player.rope)
 		player.rope = null
-		return state_machine.transition_to("Move")
+		state_machine.transition_to("Move")
+		return
