@@ -2,6 +2,7 @@ class_name State
 extends Node
 
 var state_machine: StateMachine = null
+var parent_state: State = null
 
 # TODO: Add ignore for unused variable
 func enter(_params: Dictionary) -> void:

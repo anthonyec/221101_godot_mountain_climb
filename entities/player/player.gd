@@ -37,7 +37,7 @@ var input_direction: Vector2 = Vector2.ZERO
 
 func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
-	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.current_state.name)
+	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 	
