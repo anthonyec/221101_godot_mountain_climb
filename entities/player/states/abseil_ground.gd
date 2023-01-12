@@ -11,6 +11,8 @@ func enter(params: Dictionary) -> void:
 		
 	assert(rope, "Abseil states need rope")
 	
+	# TODO: Set a way to reset the target. Also, need to change RaycastRope to AbseilRope.
+	rope.target = player
 	player.set_collision_mode("abseil")
 	start_position = player.global_transform.origin
 	
