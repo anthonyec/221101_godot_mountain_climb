@@ -14,7 +14,6 @@ func enter(params: Dictionary) -> void:
 	
 func exit() -> void:
 	movement = Vector3.ZERO
-	Raycast.debug = false
 
 func update(_delta: float) -> void:
 	player.face_towards(parent_state.rope.global_transform.origin)

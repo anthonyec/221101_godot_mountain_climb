@@ -7,6 +7,10 @@ var movement: Vector3
 func enter(params: Dictionary) -> void:
 	assert(parent_state.rope, "Abseil states need rope")
 	
+	if params.has("move_to"):
+		player.global_transform.origin = params.get("move_to")
+		player.move_and_slide()
+	
 	start_position = player.global_transform.origin
 
 func update(_delta: float) -> void:

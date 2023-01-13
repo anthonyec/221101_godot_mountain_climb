@@ -34,11 +34,18 @@ func update(delta: float) -> void:
 func physics_update(delta: float) -> void:
 	# TODO: Add check here to to see if joint is below the player. If it is, then transition
 	# to a state where we can fall while grabbed to the rope.
-
+	
+	if is_able_to_climb_up() and player.velocity.y > 0:
+		var floot_hit = Raycast.cast_in_direction(player.get_offset_position(1, 0), Vector3.DOWN, 2, 1)
+		
+		if not floot_hit.is_empty():
+			state_machine.transition_to("Abseil/AbseilGround", { "move_to": floot_hit.position + Vector3.UP })
+			return
+		
 	if player.is_on_floor():
 		state_machine.transition_to("Abseil/AbseilGround")
 		return
-		
+
 	if not player.is_on_wall():
 #		state_machine.transition_to("AbseilAir")
 #		return
@@ -84,3 +91,24 @@ func physics_update(delta: float) -> void:
 	if !Input.is_action_pressed(player.get_action_name("grab")):
 		state_machine.transition_to("Move")
 		return
+
+func is_able_to_climb_up() -> bool:
+	var wall_hit = Raycast.cast_in_direction(player.global_transform.origin, -player.global_transform.basis.z, 1, 1, [self])
+	
+	if not wall_hit.is_empty():
+		return false
+		
+	var floot_hit = Raycast.cast_in_direction(player.get_offset_position(1, 0), Vector3.DOWN, 2, 1)
+	
+	if floot_hit.is_empty():
+		return false
+		
+	if (floot_hit.normal as Vector3).angle_to(Vector3.UP) > deg_to_rad(30):
+		return false
+		
+	var cylinder_hit = Raycast.intersect_cylinder(floot_hit.position + Vector3.UP, 1, 0.5, 1, [self])
+	
+	if not cylinder_hit.is_empty():
+		return false
+		
+	return true
