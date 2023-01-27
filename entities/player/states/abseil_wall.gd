@@ -9,7 +9,7 @@ var dampening = 0.98
 
 var movement: Vector3
 
-func enter(params: Dictionary) -> void:
+func enter(_params: Dictionary) -> void:
 	assert(parent_state.rope, "Abseil states need rope")
 	
 	player.animation.play("T-pose")

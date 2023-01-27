@@ -5,7 +5,7 @@ const WORLD_COLLISION_MASK: int = 1
 var movement: Vector3
 var start_position: Vector3
 
-func enter(params: Dictionary) -> void:
+func enter(_params: Dictionary) -> void:
 	assert(parent_state.rope, "Abseil states need rope")
 	
 	Raycast.debug = true
