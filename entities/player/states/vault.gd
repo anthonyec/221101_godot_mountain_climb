@@ -1,7 +1,7 @@
 extends PlayerState
 
 func enter(params: Dictionary) -> void:
-	player.animation.playback_speed = 2
+	player.animation.speed_scale = 2
 	player.animation.play("Hang-vault_RobotArmature")
 	
 	await player.animation.animation_finished
@@ -13,4 +13,4 @@ func enter(params: Dictionary) -> void:
 	return
 
 func exit() -> void:
-	player.animation.playback_speed = 1
+	player.animation.speed_scale = 1

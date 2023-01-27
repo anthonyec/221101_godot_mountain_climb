@@ -7,8 +7,11 @@ func _ready():
 	player_1.state_machine.transition_to("Debug", { "disabled": true })
 	player_2.state_machine.transition_to("Debug", { "disabled": true })
 	
-	player_1.animation.playback_speed = 0 
-	player_2.animation.playback_speed = 0 
+	player_1.remove_from_group("player")
+	player_2.remove_from_group("player")
+	
+	player_1.animation.speed_scale = 0 
+	player_2.animation.speed_scale = 0 
 
 	player_1.animation.play("Fall2")
 	player_2.animation.play("Dive")

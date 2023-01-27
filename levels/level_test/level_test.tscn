@@ -17,8 +17,11 @@
 background_mode = 1
 background_color = Color(0.631373, 0.913725, 1, 1)
 ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 1.5
+ssao_power = 2.0
 volumetric_fog_enabled = true
-volumetric_fog_density = 0.02
+volumetric_fog_density = 0.03
 volumetric_fog_albedo = Color(0.87451, 0.968627, 1, 1)
 volumetric_fog_emission = Color(0.698039, 0.929412, 1, 1)
 

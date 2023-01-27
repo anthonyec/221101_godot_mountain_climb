@@ -139,3 +139,13 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.481408, 0)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
 shape = SubResource("CylinderShape3D_nu83u")
+
+[node name="s" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.363691, 0)
+light_energy = 0.25
+light_indirect_energy = 0.0
+light_volumetric_fog_energy = 0.0
+light_negative = true
+light_specular = 0.0
+omni_range = 2.5
+omni_attenuation = 0.35

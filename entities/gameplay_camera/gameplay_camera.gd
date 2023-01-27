@@ -14,18 +14,9 @@ extends Node3D
 
 var targets = []
 
-func _ready() -> void:
-	var players = get_tree().get_nodes_in_group("player")
-	
-	for index in players.size():
-		var player = players[index] as Player
-		
-		if exclude_players.has(player.player_number):
-			continue
-			
-		targets.append(player)
-
 func _process(delta: float) -> void:
+	targets = get_tree().get_nodes_in_group("player")
+	
 	# Get the average position of all targets.
 	var average_target_position: Vector3 = Vector3.ZERO
 	

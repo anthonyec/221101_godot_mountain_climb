@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://entities/camping_scene/camping_scene.gd" id="1_4mmn6"]
 [ext_resource type="PackedScene" path="res://entities/wood_pickup/wood_pickup.tscn" id="3_02jt7"]
-[ext_resource type="PackedScene" path="res://entities/player/player.tscn" id="4_rtmbk"]
+[ext_resource type="PackedScene" uid="uid://nxrkrpymwik1" path="res://entities/player/player.tscn" id="4_rtmbk"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_009.tres" id="4_sw3xn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pvw57"]

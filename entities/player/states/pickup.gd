@@ -1,7 +1,7 @@
 extends PlayerState
 
 func enter(params: Dictionary) -> void:
-	player.animation.playback_speed = 5
+	player.animation.speed_scale = 5
 	player.animation.play("Emote2")
 	
 	await player.animation.animation_finished
@@ -20,4 +20,4 @@ func enter(params: Dictionary) -> void:
 	return
 
 func exit() -> void:
-	player.animation.playback_speed = 1
+	player.animation.speed_scale = 1

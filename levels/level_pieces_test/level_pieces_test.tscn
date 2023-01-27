@@ -1,13 +1,13 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=11 format=3 uid="uid://dtnavhbp1k2om"]
 
 [ext_resource type="Script" path="res://entities/checkpoint/checkpoint.gd" id="1_vck86"]
 [ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="2_atslf"]
-[ext_resource type="PackedScene" path="res://entities/camping_scene/camping_scene.tscn" id="6_uwidg"]
+[ext_resource type="PackedScene" uid="uid://be35a6dwusiii" path="res://entities/camping_scene/camping_scene.tscn" id="6_uwidg"]
 [ext_resource type="Material" uid="uid://d4amufhssgpme" path="res://addons/kenney_prototypes/assets/colors/green/materials/material_009.tres" id="7_63ciu"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="8_bd8aj"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/camera_hint/camera_hint.tscn" id="9_5qjss"]
-[ext_resource type="PackedScene" uid="uid://c5krlfdws73lx" path="res://entities/player/player.tscn" id="9_r0ske"]
+[ext_resource type="PackedScene" uid="uid://nxrkrpymwik1" path="res://entities/player/player.tscn" id="9_r0ske"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="10_5odj7"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
@@ -810,9 +810,9 @@ yaw = -270.0
 
 [node name="Player1" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("9_r0ske")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.3937, 1.82875, 0.106122)
-companion = NodePath("../s")
+companion = NodePath("../Player2")
 
-[node name="s" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("9_r0ske")]
+[node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("9_r0ske")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.3937, 1.82875, 2.14283)
 player_number = 2
 companion = NodePath("../Player1")

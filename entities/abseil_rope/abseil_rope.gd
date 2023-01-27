@@ -16,7 +16,10 @@ func _ready() -> void:
 	
 func _process(_delta: float) -> void:
 	if grabbed_by:
+		(end.get_node("CollisionShape3D") as CollisionShape3D).disabled = true
 		end.global_transform.origin = grabbed_by.global_transform.origin
+	else:
+		(end.get_node("CollisionShape3D") as CollisionShape3D).disabled = false
 
 func throw() -> void:
 	var force_forward = -host.global_transform.basis.z * 7

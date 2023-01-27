@@ -4,10 +4,10 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 
 func enter(_params: Dictionary) -> void:
-	player.animation.playback_speed = 0.5
+	player.animation.speed_scale = 0.5
 	
 func exit() -> void:
-	player.animation.playback_speed = 1
+	player.animation.speed_scale = 1
 
 func update(_delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
