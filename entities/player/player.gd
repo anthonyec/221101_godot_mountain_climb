@@ -66,14 +66,19 @@ func transform_direction_to_camera_angle(direction: Vector3) -> Vector3:
 	var camera = get_viewport().get_camera_3d()
 	var camera_angle_y = camera.global_transform.basis.get_euler().y
 	return direction.rotated(Vector3.UP, camera_angle_y)
-
+	
+func face_towards_instantly(target: Vector3) -> void:
+	look_at(target, Vector3.UP)
+	global_rotation.x = 0
+	global_rotation.z = 0
+		
 # Like `look_at` but only on the Y axis.
 # TODO: Add `speed` argument here to lerp rotation over time?
 func face_towards(target: Vector3, speed: float = 0.0, delta: float = 0.0) -> void:
 	if global_transform.origin == target:
 		return
 		
-	if speed == 0:
+	if is_zero_approx(speed):
 		look_at(target, Vector3.UP)
 		global_rotation.x = 0
 		global_rotation.z = 0
@@ -100,10 +105,41 @@ func stand_at_position(stand_position: Vector3) -> void:
 
 func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
+	
+func get_ledge(direction: Vector3) -> Dictionary:
+	var wall_hit = Raycast.cast_in_direction(global_transform.origin, direction, search_distance)
+	
+	if wall_hit.is_empty():
+		return { "error": "no_wall_hit" }
+
+	var floor_hit = Raycast.cast_in_direction(
+		wall_hit.position - (wall_hit.normal * 0.1) + (Vector3.UP * grab_height), 
+		Vector3.DOWN, 
+		grab_height
+	)
+	
+	if floor_hit.is_empty():
+		return { "error": "no_floor_hit" }
+		
+	# Edge normal is the wall normal with the Y component flattened to zero.
+	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
+	
+	var start_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal - (edge_normal * 0.1)
+	var end_edge_sweep_position: Vector3 = floor_hit.position + floor_hit.normal + (edge_normal * hang_distance_from_wall * 2)
+	var edge_hit = Raycast.sweep_find_edge(start_edge_sweep_position, end_edge_sweep_position, -floor_hit.normal, 1.2, {
+		"exclude": [self],
+		"collision_mask": 1
+	})
+	
+	return {
+		"position": edge_hit.position,
+		"normal": edge_normal,
+		"direction": edge_normal.cross(-floor_hit.normal)
+	}
 
 # TODO: When find_ledge_info fails, return an error and a reason why it failed. This is 
 # a somewhat chunky change though as I wont be able to check for is_empty when failed
-func find_ledge_info() -> Dictionary:	
+func find_ledge_info() -> Dictionary:
 	# TODO: Sweep the fan upwards to catch walls above the players head. Use the last hit as the result.
 	var wall_hit = Raycast.fan_out(
 		# TODO: Sync this with suggestion hang position. Hand postion can't be lower than this.

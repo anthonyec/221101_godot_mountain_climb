@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://nxrkrpymwik1"]
+[gd_scene load_steps=32 format=3 uid="uid://nxrkrpymwik1"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
 [ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
@@ -24,8 +24,10 @@
 [ext_resource type="Script" path="res://entities/player/states/abseil_wall.gd" id="21_0nsk0"]
 [ext_resource type="Script" path="res://entities/player/states/abseil_climb_up.gd" id="23_0njca"]
 [ext_resource type="Script" path="res://entities/player/states/debug.gd" id="23_rff44"]
+[ext_resource type="Script" path="res://entities/player/hang_2.gd" id="24_7v523"]
 [ext_resource type="PackedScene" uid="uid://syi5xfros8t1" path="res://entities/player/player_model.glb" id="24_ymvsn"]
 [ext_resource type="Texture2D" uid="uid://cjt5utav5vamg" path="res://entities/player/shadow_blob.png" id="25_twfhs"]
+[ext_resource type="Script" path="res://entities/player/hang_shimmy.gd" id="25_uirs5"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
 radius = 0.25
@@ -110,6 +112,12 @@ script = ExtResource("21_0nsk0")
 [node name="AbseilClimbUp" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("23_0njca")
 
+[node name="Hang2" type="Node" parent="StateMachine"]
+script = ExtResource("24_7v523")
+
+[node name="HangShimmy" type="Node" parent="StateMachine/Hang2"]
+script = ExtResource("25_uirs5")
+
 [node name="Debug" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("23_rff44")
 
@@ -140,7 +148,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.481408, 0)
 [node name="CollisionShape3D" type="CollisionShape3D" parent="PickupArea"]
 shape = SubResource("CylinderShape3D_nu83u")
 
-[node name="s" type="OmniLight3D" parent="."]
+[node name="AmbientOcclusion" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.363691, 0)
 light_energy = 0.25
 light_indirect_energy = 0.0

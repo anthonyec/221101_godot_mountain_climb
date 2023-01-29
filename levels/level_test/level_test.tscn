@@ -176,6 +176,13 @@ use_collision = true
 radius = 1.523
 sides = 16
 
+[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.999999, 0, 0, 0, 0.970355, -0.241685, 0, 0.241685, 0.970355, -34.6329, 1.2163, -0.170742)
+use_collision = true
+radius = 1.523
+height = 2.28864
+sides = 16
+
 [node name="CSGBox3D7" type="CSGBox3D" parent="."]
 transform = Transform3D(-0.13761, 0.279532, 0.950224, 0.304073, 0.924948, -0.228061, -0.942657, 0.257554, -0.212281, -28.3981, 0.389589, 7.52516)
 material_override = ExtResource("9_xnnf2")
