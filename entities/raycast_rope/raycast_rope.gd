@@ -28,6 +28,8 @@ func _process(_delta: float) -> void:
 		return
 	
 	target_position = target.global_transform.origin
+	
+	# TODO: Replace with Util method for total length.
 	total_length = 0
 	
 	# Calculate the total length of the rope
@@ -172,6 +174,7 @@ func get_last_joint() -> Vector3:
 func has_joints() -> bool:
 	return joints.size() != 0
 	
+# TODO: Replace with Utils method.
 func get_position_on_rope(length: float) -> Vector3:
 	var clamped_length = clamp(length, 0, total_length)
 	var joints = get_joints()

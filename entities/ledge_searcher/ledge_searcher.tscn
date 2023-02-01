@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bqbc560tcwu07"]
+
+[ext_resource type="Script" path="res://entities/ledge_searcher/ledge_searcher.gd" id="1_r62sr"]
+
+[node name="LedgeSearcher" type="Node3D"]
+script = ExtResource("1_r62sr")
