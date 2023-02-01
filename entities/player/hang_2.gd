@@ -1,39 +1,32 @@
 extends PlayerState
 
-var search_direction: Vector3 = Vector3.ZERO
+var position_on_ledge: float = 0
 
 func awake() -> void:
 	super.awake()
 
 func enter(params: Dictionary) -> void:
 	Raycast.debug = true
-	player.animation.play("T-pose")
-	search_direction = params.get("direction", Vector3.RIGHT)
-	player.model.global_scale(Vector3(0.5, 0.5, 0.5))
+	player.animation.play("Hang-loop_RobotArmature")
 	player.collision.disabled = true
+	
+	# TODO: Find out why this sometimes fails.
+	player.ledge.find_path()
+	assert(player.ledge.path)
 
 func exit() -> void:
 	Raycast.debug = false
 	player.collision.disabled = false
 
 func physics_update(delta: float) -> void:
-	var ledge = player.get_ledge(search_direction)
+	position_on_ledge += player.input_direction.x * delta
+	position_on_ledge = clamp(position_on_ledge, 0, player.ledge.total_length)
 	
-	if ledge.has("error"):
-		print("ledge error: ", ledge.get("error"))
-		return
+	var hang_position = player.ledge.get_position_on_ledge(position_on_ledge)
+	var hang_normal = player.ledge.get_normal_on_ledge(position_on_ledge)
 	
-	search_direction = -ledge.normal
-	player.global_transform.origin = ledge.position + (ledge.normal * 0.5) + (Vector3.DOWN * 0.1)
+	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)
+	player.face_towards(hang_position)
 	
-	player.face_towards(ledge.position)
-	
-	player.global_translate(ledge.direction * player.input_direction.x * delta)
-	
-	print(ledge.direction * player.input_direction.x * delta)
-#	print(ledge.normal.length())
-	
-	
-	DebugDraw.draw_cube(ledge.position, 0.1, Color.RED)
-	DebugDraw.draw_ray_3d(ledge.position, ledge.direction, 1, Color.GREEN)
+	DebugDraw.draw_cube(hang_position, 0.1, Color.RED)
 	

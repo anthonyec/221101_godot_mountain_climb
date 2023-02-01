@@ -30,8 +30,6 @@ func exit() -> void:
 	player.stamina.can_recover = false
 
 func update(_delta: float) -> void:
-	player.find_ledge_info()
-	
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
 	if direction.length():

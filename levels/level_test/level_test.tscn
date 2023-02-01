@@ -1,6 +1,5 @@
-[gd_scene load_steps=21 format=3 uid="uid://dv2mxk04ly8l7"]
+[gd_scene load_steps=20 format=3 uid="uid://dv2mxk04ly8l7"]
 
-[ext_resource type="PackedScene" uid="uid://v7u1ci5w4e5x" path="res://entities/debug_cam/debug_cam.tscn" id="1_u0uvf"]
 [ext_resource type="PackedScene" uid="uid://frfc23bak04b" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="2_bjssy"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="3_d1yn6"]
 [ext_resource type="Script" path="res://entities/checkpoint/checkpoint.gd" id="4_x5uc8"]
@@ -65,9 +64,6 @@ data = PackedVector3Array(13.125, -1.7998, -13.125, 15, 1.7614, -15, 15, -0.3635
 [sub_resource type="CylinderMesh" id="CylinderMesh_6jg6g"]
 
 [node name="Default" type="Node3D"]
-
-[node name="DebugCam" parent="." instance=ExtResource("1_u0uvf")]
-transform = Transform3D(1, -4.81575e-11, 5.14436e-10, -1.7057e-18, 0.995647, 0.0932047, -5.16685e-10, -0.0932047, 0.995647, -35.0915, 2.08648, 2.47271)
 
 [node name="LedgeSearcher" parent="." instance=ExtResource("13_05i7m")]
 transform = Transform3D(0.578498, -4.88836e-16, -0.815683, 2.29028e-16, 1, -4.36865e-16, 0.815684, 6.59108e-17, 0.578498, -32.8681, 2.03095, -2.62984)

@@ -30,8 +30,9 @@ extends CharacterBody3D
 @onready var pickup_collision: Area3D = $PickupArea
 @onready var stamina: Stamina = $Stamina as Stamina
 @onready var balance: Balance = $Balance as Balance
-@onready var inventory: Inventory = $Inventory
+@onready var inventory: Inventory = $Inventory as Inventory
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
+@onready var ledge: LedgeSearcher = $LedgeSearcher as LedgeSearcher
 
 var input_direction: Vector2 = Vector2.ZERO
 

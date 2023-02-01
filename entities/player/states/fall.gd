@@ -40,12 +40,12 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to("Move")
 		return
 		
-#	var ledge_info = player.find_ledge_info()
-	var ledge_info = player.get_ledge(-player.global_transform.basis.z)
+	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
+	var ledge_exists = !ledge_info.has("error")
+	var has_stamina = !player.stamina.is_depleted()
 	
-	if Input.is_action_pressed(player.get_action_name("grab")) and not ledge_info.is_empty() and not ledge_info.has("error") and not player.stamina.is_depleted():		
+	if Input.is_action_pressed(player.get_action_name("grab")) and ledge_exists and has_stamina:
 		state_machine.transition_to("Hang2", {
-			"direction": -ledge_info.normal
 #			"move_to": ledge_info.hang_position,
 #			"face_towards": ledge_info.wall.position
 		})
