@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://dv2mxk04ly8l7"]
+[gd_scene load_steps=19 format=3 uid="uid://dv2mxk04ly8l7"]
 
 [ext_resource type="PackedScene" uid="uid://frfc23bak04b" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="2_bjssy"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="3_d1yn6"]
@@ -12,7 +12,6 @@
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="11_hb3h1"]
 [ext_resource type="PackedScene" uid="uid://bnd4fpdgs6bh3" path="res://entities/abseil_rope/abseil_rope.tscn" id="12_60kwg"]
 [ext_resource type="PackedScene" path="res://entities/wood_pickup/wood_pickup.tscn" id="12_v1ho0"]
-[ext_resource type="PackedScene" uid="uid://bqbc560tcwu07" path="res://entities/ledge_searcher/ledge_searcher.tscn" id="13_05i7m"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
 background_mode = 1
@@ -64,12 +63,6 @@ data = PackedVector3Array(13.125, -1.7998, -13.125, 15, 1.7614, -15, 15, -0.3635
 [sub_resource type="CylinderMesh" id="CylinderMesh_6jg6g"]
 
 [node name="Default" type="Node3D"]
-
-[node name="LedgeSearcher" parent="." instance=ExtResource("13_05i7m")]
-transform = Transform3D(0.578498, -4.88836e-16, -0.815683, 2.29028e-16, 1, -4.36865e-16, 0.815684, 6.59108e-17, 0.578498, -32.8681, 2.03095, -2.62984)
-
-[node name="LedgeSearcher2" parent="." instance=ExtResource("13_05i7m")]
-transform = Transform3D(0.795251, -4.88836e-16, -0.60628, 3.48787e-16, 1, -3.48787e-16, 0.60628, 6.59108e-17, 0.795251, -36.0488, 2.03095, 1.54225)
 
 [node name="UI" type="Control" parent="."]
 layout_mode = 3

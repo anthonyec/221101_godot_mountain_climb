@@ -7,25 +7,49 @@ extends Node3D
 @export var search_distance: float = 0.7
 
 var path: Array[Vector3] = []
+var normals: Array[Vector3] = []
 var min_length: float = 0
 var max_length: float = 0
 
 func _ready() -> void:
 	Raycast.debug = true
-	find_path()
 
 func _process(_delta: float) -> void:
 	for index in range(path.size()):
 		var point = path[index]
 		DebugDraw.draw_cube(point, 0.05, Color.PURPLE)
 		
+		if index < path.size() - 1:
+			var next_point = path[index + 1]
+			DebugDraw.draw_ray_3d(point.lerp(next_point, 0.5), normals[index], 1, Color.WHITE)
+		
 		if index > 0:
 			var previous_point = path[index - 1]
 			DebugDraw.draw_line_3d(previous_point, point, Color.PURPLE)
 
+func reset() -> void:
+	path = []
+	normals = []
+	min_length = 0
+	max_length = 0
+
 # TODO: Interpolate the normals to avoid snappiness.
 func get_normal_on_ledge(length: float) -> Vector3:
-	return Vector3.RIGHT
+	var index_and_percent = Utils.get_index_percent_on_path(path, clamp(length, min_length, max_length))
+	var index = index_and_percent[0]
+	var percent = index_and_percent[1]
+	
+
+	if index < path.size() - 1:
+		var point_a = path[index]
+		var point_b = path[index + 1]
+		var mid_point = point_a.lerp(point_b, 0.5)
+		
+		DebugDraw.draw_cube(mid_point, 0.2, Color.RED)
+	
+	var clamped_index = clamp(index, 0, normals.size() - 1)
+	
+	return normals[clamped_index]
 
 func get_position_on_ledge(length: float) -> Vector3:
 	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
@@ -59,6 +83,26 @@ func find_path(direction: int = 1) -> void:
 		path.reverse()
 		path.append_array(simplify_path(points))
 		path.reverse()
+	
+	# Calculate normals.
+	normals = []
+		
+	for index in range(path.size() - 1):
+		var point_a = path[index]
+		var point_b = path[index + 1]
+		var direction_a_to_b = point_a.direction_to(point_b)
+		var cross = direction_a_to_b.cross(Vector3.UP)
+		
+		normals.append(cross)
+	
+	# Smooth normals.
+	for index in range(normals.size() - 2):
+		var normal_a = normals[index]
+		var normal_c = normals[index + 2]
+		var averaged_b = (normal_a + normal_c) / 2
+		
+		normals[index + 1] = averaged_b.normalized()
+	
 
 # Based on: https://github.com/mattdesl/simplify-path/blob/master/radial-distance.js
 func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
