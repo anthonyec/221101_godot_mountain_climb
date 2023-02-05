@@ -7,15 +7,12 @@ extends Node3D
 @export var search_distance: float = 0.7
 
 var path: Array[Vector3] = []
-var total_length: float = 0
-
 var min_length: float = 0
 var max_length: float = 0
 
 func _ready() -> void:
 	Raycast.debug = true
 	find_path()
-	print(total_length)
 
 func _process(_delta: float) -> void:
 	for index in range(path.size()):
@@ -31,9 +28,10 @@ func get_normal_on_ledge(length: float) -> Vector3:
 	return Vector3.RIGHT
 
 func get_position_on_ledge(length: float) -> Vector3:
-	return Utils.get_position_on_path(path, clamp(length, 0, total_length))
+	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
 
-func find_path() -> void:
+func find_path(direction: int = 1) -> void:
+	# TODO: Make this not tied to player? Or maybe kee it??
 	var ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
 	
 	if ledge.has("error"):
@@ -42,12 +40,25 @@ func find_path() -> void:
 		
 	var points = search(
 		ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1), 
-		ledge.direction, 
-		-ledge.normal
+		ledge.direction * direction, 
+		-ledge.normal,
+		direction
 	)
 	
-	path = simplify_path(points)
-	total_length = Utils.get_path_length(path)
+	if direction == 1:
+		var new_points_length = Utils.get_path_length(points)
+		
+		max_length += new_points_length
+		path.append_array(simplify_path(points))
+	else:
+		var new_points_length = Utils.get_path_length(points)
+		
+		min_length -= new_points_length
+		# TODO: Tehe, maybe there's a better to preprend_array to front. 
+		# Or maybe this is genius.
+		path.reverse()
+		path.append_array(simplify_path(points))
+		path.reverse()
 
 # Based on: https://github.com/mattdesl/simplify-path/blob/master/radial-distance.js
 func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
@@ -75,7 +86,7 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 
 	return new_points
 	
-func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3) -> Array[Vector3]:
+func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> Array[Vector3]:
 	var resolution = 0.02
 	
 	var points: Array[Vector3] = []
@@ -84,7 +95,9 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 	var last_normal = inital_normal
 	
 	for index in range(10):
-		var search_position = last_position + (last_direction * resolution * index)
+		var next_search_position = (last_direction * resolution * index)
+		# TODO: Temporary thing to get it working, make it more elgant later.
+		var search_position = last_position + next_search_position if temp_dir == 1 else last_position - next_search_position
 		var ledge = get_ledge_info(search_position, last_normal)
 		
 		DebugDraw.draw_cube(search_position, 0.05, Color.RED)

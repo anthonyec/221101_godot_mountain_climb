@@ -1,8 +1,11 @@
 extends Node
 	
-static func get_position_on_path(points: Array[Vector3], length: float) -> Vector3:
-	var total_length: float = 0
-	var position_on_path: Vector3 = Vector3.ZERO
+static func get_position_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Vector3:
+	var total_length: float = start_length
+	
+	# TODO: This is a bit of a work around because the total_length
+	# will be smaller than the max_length.
+	var position_on_path: Vector3 = points[points.size() - 1]
 	
 	for index in range(points.size()):
 		if index == 0:
@@ -10,9 +13,9 @@ static func get_position_on_path(points: Array[Vector3], length: float) -> Vecto
 		
 		var point_a = points[index - 1]
 		var point_b = points[index]
-		var segment_length = point_a.distance_to(point_b)
+		var distance_between_a_to_b = point_a.distance_to(point_b)
 		
-		total_length += segment_length
+		total_length += distance_between_a_to_b
 		
 		if total_length >= length:
 			var difference_in_length = total_length - length
@@ -32,8 +35,8 @@ static func get_path_length(points: Array[Vector3]) -> float:
 			
 		var point_a = points[index - 1]
 		var point_b = points[index]
-		var distance_between_joints = point_a.distance_to(point_b)
+		var distance_between_a_to_b = point_a.distance_to(point_b)
 		
-		total_length += distance_between_joints
+		total_length += distance_between_a_to_b
 
 	return total_length
