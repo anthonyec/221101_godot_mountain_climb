@@ -6,9 +6,11 @@ extends Node3D
 @export var grab_height: float = 1.2
 @export var search_distance: float = 0.7
 
-var path: Array[Dictionary] = []
-var positions: Array[Vector3] = []
+var path: Array[Vector3] = []
 var total_length: float = 0
+
+var min_length: float = 0
+var max_length: float = 0
 
 func _ready() -> void:
 	Raycast.debug = true
@@ -17,20 +19,19 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	for index in range(path.size()):
-		var point = path[index].position
+		var point = path[index]
 		DebugDraw.draw_cube(point, 0.05, Color.PURPLE)
 		
 		if index > 0:
-			var previous_point = path[index - 1].position
+			var previous_point = path[index - 1]
 			DebugDraw.draw_line_3d(previous_point, point, Color.PURPLE)
 
 # TODO: Interpolate the normals to avoid snappiness.
 func get_normal_on_ledge(length: float) -> Vector3:
-	var index = Utils.get_index_on_path(positions, clamp(length, 0, total_length))
-	return path[index].normal
+	return Vector3.RIGHT
 
 func get_position_on_ledge(length: float) -> Vector3:
-	return Utils.get_position_on_path(positions, clamp(length, 0, total_length))
+	return Utils.get_position_on_path(path, clamp(length, 0, total_length))
 
 func find_path() -> void:
 	var ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
@@ -46,25 +47,24 @@ func find_path() -> void:
 	)
 	
 	path = simplify_path(points)
-	positions = path.map(func(point): return point.position)
-	total_length = Utils.get_path_length(positions)
+	total_length = Utils.get_path_length(path)
 
 # Based on: https://github.com/mattdesl/simplify-path/blob/master/radial-distance.js
-func simplify_path(points: Array[Dictionary]) -> Array[Dictionary]:
+func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 	if points.size() <= 1:
 		return points
 		
 	var tolerance = 0.2
 	var tolerance_squared = tolerance * tolerance
 	
-	var previous_point = points[0]
-	var new_points = [previous_point]
-	var point: Dictionary
+	var previous_point: Vector3 = points[0]
+	var new_points: Array[Vector3] = [previous_point]
+	var point: Vector3
 	
 	for index in range(1, points.size()):
 		point = points[index]
 		
-		if previous_point.position.distance_squared_to(point.position) < tolerance_squared:
+		if previous_point.distance_squared_to(point) < tolerance_squared:
 			continue
 		
 		new_points.append(point)
@@ -75,10 +75,10 @@ func simplify_path(points: Array[Dictionary]) -> Array[Dictionary]:
 
 	return new_points
 	
-func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3) -> Array[Dictionary]:
+func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3) -> Array[Vector3]:
 	var resolution = 0.02
 	
-	var points = []
+	var points: Array[Vector3] = []
 	var last_position = initial_position
 	var last_direction = initial_direction
 	var last_normal = inital_normal
@@ -92,10 +92,7 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 		if ledge.has("error"):
 			break
 			
-		points.append({
-			"normal": ledge.normal,
-			"position": ledge.position
-		})
+		points.append(ledge.position)
 		
 		last_position = ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
 		last_normal = -ledge.normal
