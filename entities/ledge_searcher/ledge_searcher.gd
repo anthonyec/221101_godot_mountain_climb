@@ -1,6 +1,7 @@
 class_name LedgeSearcher
 extends Node3D
 
+@export var debug: bool = false
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
 @export var grab_height: float = 1.2
@@ -10,11 +11,17 @@ var path: Array[Vector3] = []
 var normals: Array[Vector3] = []
 var min_length: float = 0
 var max_length: float = 0
+var total_length: float = 0
 
 func _ready() -> void:
 	Raycast.debug = true
 
 func _process(_delta: float) -> void:
+	total_length = max_length - min_length
+	
+	if not debug:
+		return
+		
 	for index in range(path.size()):
 		var point = path[index]
 		DebugDraw.draw_cube(point, 0.05, Color.PURPLE)
@@ -32,31 +39,44 @@ func reset() -> void:
 	normals = []
 	min_length = 0
 	max_length = 0
+	total_length = 0
+	
+func clean() -> void:
+	pass
 
 # TODO: Interpolate the normals to avoid snappiness.
 func get_normal_on_ledge(length: float) -> Vector3:
-	var index_and_percent = Utils.get_index_percent_on_path(path, clamp(length, min_length, max_length))
-	var index = index_and_percent[0]
-	var percent = index_and_percent[1]
+	var progress = Utils.get_progress_on_path(path, clamp(length, min_length, max_length), min_length)
+	var index = progress.index
 	
-
 	if index < path.size() - 1:
 		var point_a = path[index]
 		var point_b = path[index + 1]
 		var mid_point = point_a.lerp(point_b, 0.5)
 		
-		DebugDraw.draw_cube(mid_point, 0.2, Color.RED)
+		if debug:
+			DebugDraw.draw_cube(mid_point, 0.1, Color.RED)
 	
 	var clamped_index = clamp(index, 0, normals.size() - 1)
-	
 	return normals[clamped_index]
 
 func get_position_on_ledge(length: float) -> Vector3:
 	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
 
-func find_path(direction: int = 1) -> void:
+func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 	# TODO: Make this not tied to player? Or maybe kee it??
-	var ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
+	var ledge: Dictionary
+	
+	if not is_continuation:
+		ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
+		
+	if is_continuation:
+		if direction == 1:
+			var normal = normals[normals.size() - 1]
+			ledge = get_ledge_info(path[path.size() - 1] + (normal * 0.1) + (Vector3.DOWN * 0.1), -normal)
+		else:
+			var normal = normals[0]
+			ledge = get_ledge_info(path[0] + (normal * 0.1) + (Vector3.DOWN * 0.1), -normal)
 	
 	if ledge.has("error"):
 		push_warning(ledge.get("error"))
@@ -73,7 +93,7 @@ func find_path(direction: int = 1) -> void:
 		var new_points_length = Utils.get_path_length(points)
 		
 		max_length += new_points_length
-		path.append_array(simplify_path(points))
+		path.append_array(points)
 	else:
 		var new_points_length = Utils.get_path_length(points)
 		
@@ -81,8 +101,13 @@ func find_path(direction: int = 1) -> void:
 		# TODO: Tehe, maybe there's a better to preprend_array to front. 
 		# Or maybe this is genius.
 		path.reverse()
-		path.append_array(simplify_path(points))
+		path.append_array(points)
 		path.reverse()
+	
+	# TODO: This can actually be done when appending to avoid
+	# the path changing. However, I'm doing it here to avoid positioning
+	# doubling up and messing up normals.
+	path = simplify_path(path)
 	
 	# Calculate normals.
 	normals = []
@@ -100,9 +125,8 @@ func find_path(direction: int = 1) -> void:
 		var normal_a = normals[index]
 		var normal_c = normals[index + 2]
 		var averaged_b = (normal_a + normal_c) / 2
-		
+
 		normals[index + 1] = averaged_b.normalized()
-	
 
 # Based on: https://github.com/mattdesl/simplify-path/blob/master/radial-distance.js
 func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
@@ -144,7 +168,8 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 		var search_position = last_position + next_search_position if temp_dir == 1 else last_position - next_search_position
 		var ledge = get_ledge_info(search_position, last_normal)
 		
-		DebugDraw.draw_cube(search_position, 0.05, Color.RED)
+		if debug:
+			DebugDraw.draw_cube(search_position, 0.05, Color.RED)
 		
 		if ledge.has("error"):
 			break

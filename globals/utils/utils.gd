@@ -1,7 +1,7 @@
 extends Node
 
-static func get_index_percent_on_path(points: Array[Vector3], length: float) -> Array[float]:
-	var total_length: float = 0
+static func get_progress_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Dictionary:
+	var total_length: float = start_length
 	var index_on_path: float = float(points.size() - 1)
 	var progress: float = 0
 	
@@ -21,7 +21,10 @@ static func get_index_percent_on_path(points: Array[Vector3], length: float) -> 
 			progress = progress_percent
 			break
 			
-	return [index_on_path, progress]
+	return {
+		"index": index_on_path,
+		"percent": progress
+	}
 	
 static func get_position_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Vector3:
 	var total_length: float = start_length

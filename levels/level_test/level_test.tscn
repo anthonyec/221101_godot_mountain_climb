@@ -176,6 +176,18 @@ use_collision = true
 radius = 1.523
 sides = 16
 
+[node name="CSGCylinder3D4" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.999999, 0, 0, 0, 1, 0, 0, 0, 1, -35.7154, 1.28666, -5.67012)
+use_collision = true
+radius = 1.523
+sides = 12
+
+[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0.999999, 0, 0, 0, 0.0390331, -0.999238, 0, 0.999238, 0.0390331, -31.4369, 1.32354, -8.3556)
+use_collision = true
+radius = 1.523
+sides = 16
+
 [node name="CSGCylinder3D2" type="CSGCylinder3D" parent="."]
 transform = Transform3D(0.999999, -2.58514e-16, 3.36902e-16, 3.36902e-16, 0.965926, -0.258819, -2.58514e-16, 0.258819, 0.965926, -34.6329, 1.2163, -0.170742)
 use_collision = true
