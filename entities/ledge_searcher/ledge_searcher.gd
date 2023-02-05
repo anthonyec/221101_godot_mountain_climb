@@ -196,6 +196,9 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> Dictionary:
 	
 	if floor_hit.is_empty():
 		return { "error": "no_floor_hit" }
+	
+	if floor_hit.normal.angle_to(Vector3.UP) > deg_to_rad(25):
+		return { "error": "bad_floor_angle" }
 		
 	# Edge normal is the wall normal with the Y component flattened to zero.
 	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
