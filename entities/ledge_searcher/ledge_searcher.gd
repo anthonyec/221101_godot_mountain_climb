@@ -65,7 +65,7 @@ func get_position_on_ledge(length: float) -> Vector3:
 
 func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 	# TODO: Make this not tied to player? Or maybe kee it??
-	var ledge: Dictionary
+	var ledge: LedgeInfo
 	
 	if not is_continuation:
 		ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
@@ -78,8 +78,8 @@ func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 			var normal = normals[0]
 			ledge = get_ledge_info(path[0] + (normal * 0.1) + (Vector3.DOWN * 0.1), -normal)
 	
-	if ledge.has("error"):
-		push_warning(ledge.get("error"))
+	if ledge.has_error():
+		push_warning(ledge.get_error_message())
 		return
 		
 	var points = search(
@@ -171,7 +171,7 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 		if debug:
 			DebugDraw.draw_cube(search_position, 0.05, Color.RED)
 		
-		if ledge.has("error"):
+		if ledge.has_error():
 			break
 			
 		points.append(ledge.position)
@@ -182,11 +182,13 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 		
 	return points
 
-func get_ledge_info(start_position: Vector3, direction: Vector3) -> Dictionary:
+func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
+	var info = LedgeInfo.new()
 	var wall_hit = Raycast.cast_in_direction(start_position, direction, search_distance)
 	
 	if wall_hit.is_empty():
-		return { "error": "no_wall_hit" }
+		info.error = LedgeInfo.Error.NO_WALL_HIT
+		return info
 
 	var floor_hit = Raycast.cast_in_direction(
 		wall_hit.position - (wall_hit.normal * 0.1) + (Vector3.UP * grab_height), 
@@ -195,10 +197,12 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> Dictionary:
 	)
 	
 	if floor_hit.is_empty():
-		return { "error": "no_floor_hit" }
+		info.error = LedgeInfo.Error.NO_FLOOR_HIT
+		return info
 	
 	if floor_hit.normal.angle_to(Vector3.UP) > deg_to_rad(25):
-		return { "error": "bad_floor_angle" }
+		info.error = LedgeInfo.Error.BAD_FLOOR_ANGLE
+		return info
 		
 	# Edge normal is the wall normal with the Y component flattened to zero.
 	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
@@ -206,11 +210,8 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> Dictionary:
 	var floor_plane = Plane(floor_hit.normal, floor_hit.position)
 	var edge_position = floor_plane.intersects_ray(wall_hit.position, floor_hit.normal)
 	
-	return {
-		# Position of the edge.
-		"position": edge_position,
-		# Direction of the edge facing outwards.
-		"normal": edge_normal,
-		# Direction the edge flows facing right.
-		"direction": edge_normal.cross(-floor_hit.normal)
-	}
+	info.position = edge_position
+	info.normal = edge_normal
+	info.direction = edge_normal.cross(-floor_hit.normal)
+	
+	return info

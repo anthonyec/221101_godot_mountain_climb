@@ -35,7 +35,7 @@ func physics_update(delta: float) -> void:
 	# TODO: Get normal from path rather than finding a ledge each frame :).
 #	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
 #
-#	if ledge_info.has("error"):
+#	if ledge_info.has_error():
 #		ledge_info.normal = Vector3.RIGHT
 	
 	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)

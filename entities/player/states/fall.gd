@@ -41,7 +41,7 @@ func physics_update(delta: float) -> void:
 		return
 		
 	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
-	var ledge_exists = !ledge_info.has("error")
+	var ledge_exists = !ledge_info.has_error()
 	var has_stamina = !player.stamina.is_depleted()
 	
 	if Input.is_action_pressed(player.get_action_name("grab")) and ledge_exists and has_stamina:

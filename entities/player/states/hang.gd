@@ -38,8 +38,8 @@ func update(delta: float) -> void:
 	
 	var ledge_info = player.find_ledge_info()
 	
-	if ledge_info.is_empty() or ledge_info.has("error"):
-		push_warning("Failed to find ledge info in grab state: " + ledge_info.get("error", "unknown_error"))
+	if ledge_info.has_error():
+		push_warning("Failed to find ledge info in grab state: " + ledge_info.error)
 		state_machine.transition_to("Move")
 		return
 	
