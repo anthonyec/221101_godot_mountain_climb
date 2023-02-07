@@ -14,8 +14,9 @@ func enter(params: Dictionary) -> void:
 #	player.model.scale = Vector3(0.5, 0.5, 0.5)
 	
 	# TODO: Find out why this sometimes fails.
-	player.ledge.find_path()
+	player.ledge.find_path(1)
 	player.ledge.find_path(-1)
+	
 	assert(player.ledge.path)
 
 func exit() -> void:
@@ -40,10 +41,10 @@ func physics_update(delta: float) -> void:
 	
 	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)
 	player.face_towards(hang_position)
-	
+
 	if position_on_ledge > player.ledge.max_length - 0.5:
 		player.ledge.find_path(1, true)
-		
+
 	if position_on_ledge < player.ledge.min_length + 0.5:
 		player.ledge.find_path(-1, true)
 	

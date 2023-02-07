@@ -77,35 +77,42 @@ func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 		push_warning(ledge.get_error_message())
 		return
 		
-	var points = search(
+	var search_result = search(
 		ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1), 
 		ledge.direction * direction, 
 		-ledge.normal,
 		direction
 	)
 	
+	var points = search_result.points
+	
+	if points.is_empty():
+		return
+	
+	var path_size_before_appending = path.size()
+	
 	if direction == 1:
-		var new_points_length = Utils.get_path_length(points)
-		
-		max_length += new_points_length
 		path.append_array(points)
-	else:
-		var new_points_length = Utils.get_path_length(points)
-		
-		min_length -= new_points_length
+	
+	if direction == -1:
 		# TODO: Tehe, maybe there's a better to preprend_array to front. 
 		# Or maybe this is genius.
 		path.reverse()
 		path.append_array(points)
 		path.reverse()
-	
+
 	# TODO: This can actually be done when appending to avoid
 	# the path changing. However, I'm doing it here to avoid positioning
 	# doubling up and messing up normals.
-	# TODO: There is a bug here where length keeps growing but the path
-	# never changes. Think of ways around this. This happens because
-	# the length gets added before the points are simplified.
 	path = simplify_path(path)
+	
+	# Measure the added path length after simplifying so that the size is 
+	# awlays consistent.
+	if direction == 1:
+		max_length += Utils.get_path_length(path.slice(path_size_before_appending, path.size()))
+		
+	if direction == -1:
+		min_length -= Utils.get_path_length(points.slice(0, points.size()))
 	
 	# Calculate normals.
 	normals = []
@@ -163,10 +170,10 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 
 	return new_points
 	
-func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> Array[Vector3]:
+func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> LedgeSearchResult:
 	var resolution = 0.02
 	
-	var points: Array[Vector3] = []
+	var result: LedgeSearchResult = LedgeSearchResult.new()
 	var last_position = initial_position
 	var last_direction = initial_direction
 	var last_normal = inital_normal
@@ -181,15 +188,16 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 			DebugDraw.draw_cube(search_position, 0.05, Color.RED)
 		
 		if ledge.has_error():
+			result.error = ledge.error
 			break
 			
-		points.append(ledge.position)
+		result.points.append(ledge.position)
 		
 		last_position = ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
 		last_normal = -ledge.normal
 		last_direction = ledge.direction
-		
-	return points
+	
+	return result
 
 func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	var info = LedgeInfo.new()
