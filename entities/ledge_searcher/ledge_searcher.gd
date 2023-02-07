@@ -24,11 +24,9 @@ func _process(_delta: float) -> void:
 		
 	for index in range(path.size()):
 		var point = path[index]
-		DebugDraw.draw_cube(point, 0.05, Color.PURPLE)
 		
-		if index < path.size() - 1:
-			var next_point = path[index + 1]
-			DebugDraw.draw_ray_3d(point.lerp(next_point, 0.5), normals[index], 1, Color.WHITE)
+		DebugDraw.draw_cube(point, 0.05, Color.PURPLE)
+		DebugDraw.draw_ray_3d(point, normals[index], 1, Color.WHITE)
 		
 		if index > 0:
 			var previous_point = path[index - 1]
@@ -49,16 +47,13 @@ func get_normal_on_ledge(length: float) -> Vector3:
 	var progress = Utils.get_progress_on_path(path, clamp(length, min_length, max_length), min_length)
 	var index = progress.index
 	
-	if index < path.size() - 1:
-		var point_a = path[index]
-		var point_b = path[index + 1]
-		var mid_point = point_a.lerp(point_b, 0.5)
-		
-		if debug:
-			DebugDraw.draw_cube(mid_point, 0.1, Color.RED)
+	var normal_a = normals[index]
 	
-	var clamped_index = clamp(index, 0, normals.size() - 1)
-	return normals[clamped_index]
+	if index < normals.size() - 1:
+		var normal_b = normals[index + 1]
+		return normal_a.lerp(normal_b, progress.percent)
+	
+	return normal_a
 
 func get_position_on_ledge(length: float) -> Vector3:
 	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
@@ -107,18 +102,32 @@ func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 	# TODO: This can actually be done when appending to avoid
 	# the path changing. However, I'm doing it here to avoid positioning
 	# doubling up and messing up normals.
+	# TODO: There is a bug here where length keeps growing but the path
+	# never changes. Think of ways around this. This happens because
+	# the length gets added before the points are simplified.
 	path = simplify_path(path)
 	
 	# Calculate normals.
 	normals = []
+	
+	var last_original_normal: Vector3
 		
-	for index in range(path.size() - 1):
+	for index in range(path.size()):
+		if index == path.size() - 1:
+			normals.append(last_original_normal)
+			continue
+		
 		var point_a = path[index]
 		var point_b = path[index + 1]
 		var direction_a_to_b = point_a.direction_to(point_b)
 		var cross = direction_a_to_b.cross(Vector3.UP)
 		
-		normals.append(cross)
+		if last_original_normal:
+			normals.append((last_original_normal + cross) / 2)
+		else:
+			normals.append(cross)
+			
+		last_original_normal = cross
 	
 	# Smooth normals.
 	for index in range(normals.size() - 2):
@@ -200,7 +209,7 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 		info.error = LedgeInfo.Error.NO_FLOOR_HIT
 		return info
 	
-	if floor_hit.normal.angle_to(Vector3.UP) > deg_to_rad(25):
+	if floor_hit.normal.angle_to(Vector3.UP) > deg_to_rad(35):
 		info.error = LedgeInfo.Error.BAD_FLOOR_ANGLE
 		return info
 		

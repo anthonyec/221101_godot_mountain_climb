@@ -41,6 +41,7 @@ func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
+	DebugDraw.set_text("player " + str(player_number) + " ledge", str(ledge.path.size()) + ", " + str(ledge.total_length) + "m")
 	
 	input_direction = Input.get_vector(
 		get_action_name("move_left"),

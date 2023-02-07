@@ -590,7 +590,6 @@ sides = 16
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Rope4")
 autoplay = "Rope Wiggle"
-playback_speed = 3.0
 libraries = {
 "": SubResource("AnimationLibrary_tldy5")
 }
