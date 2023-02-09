@@ -32,6 +32,7 @@ SFX="*res://globals/sfx/sfx.gd"
 
 gdscript/warnings/shadowed_variable=0
 gdscript/warnings/shadowed_variable_base_class=0
+gdscript/warnings/onready_with_export=1
 
 [display]
 

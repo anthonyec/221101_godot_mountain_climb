@@ -2,8 +2,8 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dqc1fo2wk7j15"
-path.etc2="res://.godot/imported/texture_10.png-876b8a709017b3bb725486ca2e156c0f.etc2.ctex"
+uid="uid://y31e4yhubu3e"
+path.etc2="res://.godot/imported/player_model_6.png-2921ac9e40564f16319bb436f90da081.etc2.ctex"
 metadata={
 "imported_formats": ["etc2_astc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://addons/kenney_prototypes/assets/colors/light/textures/texture_10.png"
-dest_files=["res://.godot/imported/texture_10.png-876b8a709017b3bb725486ca2e156c0f.etc2.ctex"]
+source_file="res://entities/player/player_model_6.png"
+dest_files=["res://.godot/imported/player_model_6.png-2921ac9e40564f16319bb436f90da081.etc2.ctex"]
 
 [params]
 

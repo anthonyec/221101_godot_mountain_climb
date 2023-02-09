@@ -44,6 +44,6 @@ func physics_update(delta: float) -> void:
 	
 	DebugDraw.draw_cube(hang_position, 0.1, Color.RED)
 	
-func handle_input(event: InputEvent) -> void:		
+func handle_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.keycode == 4194305 and event.pressed:
 		state_machine.transition_to_previous_state()
