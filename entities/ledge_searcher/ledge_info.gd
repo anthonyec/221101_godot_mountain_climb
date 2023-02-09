@@ -13,11 +13,15 @@ enum Error {
 # Position of the edge.
 @export var position: Vector3
 
-# Direction of the edge facing outwards.
+# Direction of the edge facing outwards. It's a flattened version of the 
+# floor normal.
 @export var normal: Vector3
 
 # Direction the edge flows facing right.
 @export var direction: Vector3
+
+# Direction of the wall facing outwards.
+@export var wall_normal: Vector3
 
 func has_error() -> bool:
 	return error != Error.NONE

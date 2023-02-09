@@ -170,22 +170,19 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 
 	return new_points
 	
-func search(initial_position: Vector3, initial_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> LedgeSearchResult:
+func search(initial_ledge_position: Vector3, initial_ledge_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> LedgeSearchResult:
 	var resolution = 0.02
 	
 	var result: LedgeSearchResult = LedgeSearchResult.new()
-	var last_position = initial_position
-	var last_direction = initial_direction
-	var last_normal = inital_normal
-	
+	var last_position = initial_ledge_position
+	var last_direction = initial_ledge_direction
+	var last_wall_normal = inital_normal
+
 	for index in range(10):
 		var next_search_position = (last_direction * resolution * index)
 		# TODO: Temporary thing to get it working, make it more elgant later.
 		var search_position = last_position + next_search_position if temp_dir == 1 else last_position - next_search_position
-		var ledge = get_ledge_info(search_position, last_normal)
-		
-		if debug:
-			DebugDraw.draw_cube(search_position, 0.05, Color.RED)
+		var ledge = get_ledge_info(search_position, last_wall_normal)
 		
 		if ledge.has_error():
 			result.error = ledge.error
@@ -194,7 +191,7 @@ func search(initial_position: Vector3, initial_direction: Vector3, inital_normal
 		result.points.append(ledge.position)
 		
 		last_position = ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
-		last_normal = -ledge.normal
+		last_wall_normal = -ledge.wall_normal
 		last_direction = ledge.direction
 	
 	return result
@@ -230,5 +227,6 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	info.position = edge_position
 	info.normal = edge_normal
 	info.direction = edge_normal.cross(-floor_hit.normal)
+	info.wall_normal = wall_hit.normal
 	
 	return info
