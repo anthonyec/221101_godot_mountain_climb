@@ -50,8 +50,8 @@ func _process(delta: float) -> void:
 		DebugDraw.draw_cube(step.props.position, 0.1, step.props.color)
 		
 	if step.type == "cast":
-		DebugDraw.draw_cube(step.props.start_position, 0.02, step.props.color)
-		DebugDraw.draw_ray_3d(step.props.start_position, step.props.direction, step.props.length, step.props.color)
+		DebugDraw.draw_cube(step.props.position, 0.02, step.props.color)
+		DebugDraw.draw_ray_3d(step.props.position, step.props.direction, step.props.length, step.props.color)
 	
 func _unhandled_input(event: InputEvent) -> void:
 	if Input.is_action_just_pressed("debug_toggle_trace"):

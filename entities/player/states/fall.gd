@@ -46,8 +46,7 @@ func physics_update(delta: float) -> void:
 	
 	if Input.is_action_pressed(player.get_action_name("grab")) and ledge_exists and has_stamina:
 		state_machine.transition_to("Hang2", {
-#			"move_to": ledge_info.hang_position,
-#			"face_towards": ledge_info.wall.position
+			"ledge_info": ledge_info
 		})
 		return
 		

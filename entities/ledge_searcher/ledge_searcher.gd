@@ -7,11 +7,18 @@ extends Node3D
 @export var grab_height: float = 1.2
 @export var search_distance: float = 0.7
 
+enum Direction {
+	LEFT = -1,
+	RIGHT = 1
+}
+
 var path: Array[Vector3] = []
 var normals: Array[Vector3] = []
 var min_length: float = 0
 var max_length: float = 0
 var total_length: float = 0
+var last_min_ledge_info: LedgeInfo
+var last_max_ledge_info: LedgeInfo
 
 func _ready() -> void:
 	Raycast.debug = true
@@ -42,7 +49,6 @@ func reset() -> void:
 func clean() -> void:
 	pass
 
-# TODO: Interpolate the normals to avoid snappiness.
 func get_normal_on_ledge(length: float) -> Vector3:
 	var progress = Utils.get_progress_on_path(path, clamp(length, min_length, max_length), min_length)
 	var index = progress.index
@@ -57,49 +63,39 @@ func get_normal_on_ledge(length: float) -> Vector3:
 
 func get_position_on_ledge(length: float) -> Vector3:
 	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
+	
+func extend_path(direction: Direction) -> void:
+	var ledge_info: LedgeInfo
+	
+	if direction == Direction.RIGHT:
+		ledge_info = last_max_ledge_info
+		
+	if direction == Direction.LEFT:
+		ledge_info = last_min_ledge_info
 
-func find_path(direction: int = 1, is_continuation: bool = false) -> void:
-	# TODO: Make this not tied to player? Or maybe kee it??
-	var ledge: LedgeInfo
+	find_and_build_path(ledge_info, direction)
+
+func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) -> void:
+	var search_result = search_for_more_ledge(initial_ledge_info, direction)
 	
-	if not is_continuation:
-		ledge = get_ledge_info(global_transform.origin, -global_transform.basis.z)
-		
-	if is_continuation:
-		if direction == 1:
-			var normal = normals[normals.size() - 1]
-			ledge = get_ledge_info(path[path.size() - 1] + (normal * 0.1) + (Vector3.DOWN * 0.1), -normal)
-		else:
-			var normal = normals[0]
-			ledge = get_ledge_info(path[0] + (normal * 0.1) + (Vector3.DOWN * 0.1), -normal)
-	
-	if ledge.has_error():
-		push_warning(ledge.get_error_message())
+	if search_result.points.is_empty():
+		# TODO: Maybe return just one ledge point so that player can just 
+		# hand but not move?
 		return
 		
-	var search_result = search(
-		ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1), 
-		ledge.direction * direction, 
-		-ledge.normal,
-		direction
-	)
-	
-	var points = search_result.points
-	
-	if points.is_empty():
-		return
-	
 	var path_size_before_appending = path.size()
 	
-	if direction == 1:
-		path.append_array(points)
+	if direction == Direction.RIGHT:
+		path.append_array(search_result.points)
+		last_max_ledge_info = search_result.last_ledge_info
 	
-	if direction == -1:
+	if direction == Direction.LEFT:
 		# TODO: Tehe, maybe there's a better to preprend_array to front. 
 		# Or maybe this is genius.
 		path.reverse()
-		path.append_array(points)
+		path.append_array(search_result.points)
 		path.reverse()
+		last_min_ledge_info = search_result.last_ledge_info
 
 	# TODO: This can actually be done when appending to avoid
 	# the path changing. However, I'm doing it here to avoid positioning
@@ -108,11 +104,12 @@ func find_path(direction: int = 1, is_continuation: bool = false) -> void:
 	
 	# Measure the added path length after simplifying so that the size is 
 	# awlays consistent.
-	if direction == 1:
+	if direction == Direction.RIGHT:
+		# TODO: This length seems to be lower than the min length??
 		max_length += Utils.get_path_length(path.slice(path_size_before_appending, path.size()))
 		
-	if direction == -1:
-		min_length -= Utils.get_path_length(points.slice(0, points.size()))
+	if direction == Direction.LEFT:
+		min_length -= Utils.get_path_length(search_result.points.slice(0, search_result.points.size()))
 	
 	# Calculate normals.
 	normals = []
@@ -170,38 +167,46 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 
 	return new_points
 	
-func search(initial_ledge_position: Vector3, initial_ledge_direction: Vector3, inital_normal: Vector3, temp_dir: int = 1) -> LedgeSearchResult:
+func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> LedgeSearchResult:
 	var resolution = 0.02
 	
 	var result: LedgeSearchResult = LedgeSearchResult.new()
-	var last_position = initial_ledge_position
-	var last_direction = initial_ledge_direction
-	var last_wall_normal = inital_normal
+	var last_ledge = initial_ledge
 
 	for index in range(10):
-		var next_search_position = (last_direction * resolution * index)
-		# TODO: Temporary thing to get it working, make it more elgant later.
-		var search_position = last_position + next_search_position if temp_dir == 1 else last_position - next_search_position
-		var ledge = get_ledge_info(search_position, last_wall_normal)
+		var offset_along_ledge = (last_ledge.direction * resolution * index)
+		var offset_away_from_ledge = (last_ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
+	
+		var start_search_position: Vector3 = last_ledge.position
+		
+		if direction == Direction.RIGHT:
+			start_search_position = start_search_position + offset_along_ledge + offset_away_from_ledge
+		
+		if direction == Direction.LEFT:
+			start_search_position = start_search_position - offset_along_ledge + offset_away_from_ledge
+		
+		var ledge = get_ledge_info(start_search_position, -last_ledge.wall_normal)
 		
 		if ledge.has_error():
 			result.error = ledge.error
 			break
 			
 		result.points.append(ledge.position)
-		
-		last_position = ledge.position + (ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
-		last_wall_normal = -ledge.wall_normal
-		last_direction = ledge.direction
+		last_ledge = ledge
 	
+	result.last_ledge_info = last_ledge
 	return result
 
 func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	var info = LedgeInfo.new()
 	var wall_hit = Raycast.cast_in_direction(start_position, direction, search_distance)
-	
+
 	if wall_hit.is_empty():
 		info.error = LedgeInfo.Error.NO_WALL_HIT
+		return info
+		
+	if wall_hit.normal.angle_to(Vector3.UP) < deg_to_rad(80):
+		info.error = LedgeInfo.Error.BAD_WALL_ANGLE
 		return info
 
 	var floor_hit = Raycast.cast_in_direction(
@@ -218,11 +223,12 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 		info.error = LedgeInfo.Error.BAD_FLOOR_ANGLE
 		return info
 		
-	# Edge normal is the wall normal with the Y component flattened to zero.
-	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
 	
 	var floor_plane = Plane(floor_hit.normal, floor_hit.position)
 	var edge_position = floor_plane.intersects_ray(wall_hit.position, floor_hit.normal)
+	
+	# Edge normal is the wall normal with the Y component flattened to zero.
+	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
 	
 	info.position = edge_position
 	info.normal = edge_normal

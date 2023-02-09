@@ -4,7 +4,8 @@ enum Error {
 	NONE,
 	NO_WALL_HIT,
 	NO_FLOOR_HIT,
-	BAD_FLOOR_ANGLE
+	BAD_FLOOR_ANGLE,
+	BAD_WALL_ANGLE
 }
 
 # Why the ledge was not found.
