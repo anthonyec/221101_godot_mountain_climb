@@ -1,4 +1,4 @@
-class_name LedgeInfo extends Object
+class_name LedgeInfo extends RefCounted
 
 enum Error {
 	NONE,
