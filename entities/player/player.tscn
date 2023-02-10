@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://5bt448gyhdxx"]
+[gd_scene load_steps=31 format=3 uid="uid://cxqdpc8g3lot8"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
 [ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
@@ -24,10 +24,8 @@
 [ext_resource type="Script" path="res://entities/player/states/abseil_wall.gd" id="21_0nsk0"]
 [ext_resource type="Script" path="res://entities/player/states/abseil_climb_up.gd" id="23_0njca"]
 [ext_resource type="Script" path="res://entities/player/states/debug.gd" id="23_rff44"]
-[ext_resource type="Script" path="res://entities/player/states/hang_2.gd" id="24_b1d2c"]
 [ext_resource type="PackedScene" uid="uid://syi5xfros8t1" path="res://entities/player/player_model.glb" id="24_ymvsn"]
 [ext_resource type="Texture2D" uid="uid://cjt5utav5vamg" path="res://entities/player/shadow_blob.png" id="25_twfhs"]
-[ext_resource type="Script" path="res://entities/player/hang_shimmy.gd" id="25_uirs5"]
 [ext_resource type="PackedScene" uid="uid://bqbc560tcwu07" path="res://entities/ledge_searcher/ledge_searcher.tscn" id="27_2aujs"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
@@ -71,7 +69,7 @@ script = ExtResource("8_ruy6m")
 [node name="Fall" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("9_b20a8")
 
-[node name="Hang" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+[node name="Hang" type="Node" parent="StateMachine"]
 script = ExtResource("10_pvcqn")
 
 [node name="Vault" parent="StateMachine" instance=ExtResource("6_jtsi6")]
@@ -112,12 +110,6 @@ script = ExtResource("21_0nsk0")
 
 [node name="AbseilClimbUp" parent="StateMachine/Abseil" instance=ExtResource("6_jtsi6")]
 script = ExtResource("23_0njca")
-
-[node name="Hang2" type="Node" parent="StateMachine"]
-script = ExtResource("24_b1d2c")
-
-[node name="HangShimmy" type="Node" parent="StateMachine/Hang2"]
-script = ExtResource("25_uirs5")
 
 [node name="Debug" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("23_rff44")

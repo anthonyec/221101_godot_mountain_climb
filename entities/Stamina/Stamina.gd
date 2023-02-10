@@ -5,7 +5,7 @@ signal depleted
 signal full
 
 @export var can_recover: bool = true
-@export var regain_amount: float = 20.0
+@export var regain_amount: float = 70.0
 @export var pause_time: float = 1.0
 @export var max_stamina: float = 100.0
 

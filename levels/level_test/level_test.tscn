@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="3_d1yn6"]
 [ext_resource type="Script" path="res://entities/checkpoint/checkpoint.gd" id="4_x5uc8"]
 [ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="5_5ov6s"]
-[ext_resource type="PackedScene" uid="uid://5bt448gyhdxx" path="res://entities/player/player.tscn" id="6_nww3r"]
+[ext_resource type="PackedScene" uid="uid://cxqdpc8g3lot8" path="res://entities/player/player.tscn" id="6_nww3r"]
 [ext_resource type="PackedScene" uid="uid://be35a6dwusiii" path="res://entities/camping_scene/camping_scene.tscn" id="7_c7mac"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="8_tj570"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="9_xnnf2"]

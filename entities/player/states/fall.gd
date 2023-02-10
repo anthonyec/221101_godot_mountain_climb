@@ -45,7 +45,7 @@ func physics_update(delta: float) -> void:
 	var has_stamina = !player.stamina.is_depleted()
 	
 	if Input.is_action_pressed(player.get_action_name("grab")) and ledge_exists and has_stamina:
-		state_machine.transition_to("Hang2", {
+		state_machine.transition_to("Hang", {
 			"ledge_info": ledge_info
 		})
 		return

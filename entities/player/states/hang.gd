@@ -1,104 +1,91 @@
 extends PlayerState
 
-var direction: Vector3 = Vector3.ZERO
-var movement: Vector3 = Vector3.ZERO
-var climb_up_position: Vector3 = Vector3.ZERO
+var position_on_ledge: float = 0
+
+func awake() -> void:
+	super.awake()
 
 func enter(params: Dictionary) -> void:
-	# TODO: Should this be renamed to "hang_position"? At the moment it is 
-	# consistent with the `move` state.
-	if params.has("move_to"):
-		player.global_transform.origin = params.get("move_to")
-	
-	if params.has("face_towards"):
-		player.face_towards(params.get("face_towards"))
-	
-	player.animation.play("Hang-loop_RobotArmature")
+#	Raycast.debug = true
+#	player.ledge.debug = true
 
-func update(delta: float) -> void:
-	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
+	player.animation.play("Hang-loop_RobotArmature")
+	player.collision.disabled = true
 	
+	var ledge_info = params.get("ledge_info")
+	assert(ledge_info, "Ledge info required for hang state to work")
+	
+	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.RIGHT)
+	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.LEFT)
+	assert(player.ledge.path, "Path should be found")
+
+func exit() -> void:
+	Raycast.debug = false
+	position_on_ledge = 0
+	player.collision.disabled = false
+	player.ledge.reset()
+	player.model.scale = Vector3(1, 1, 1)
+	
+func update(_delta: float) -> void:
+	DebugDraw.set_text(
+		"player " + str(player.player_number) + " ledge min/max", 
+		str(Debug.round_to_dec(position_on_ledge, 2)) + " : " + 
+		str(Debug.round_to_dec(player.ledge.min_length, 2)) + " " + 
+		str(Debug.round_to_dec(player.ledge.max_length, 2))
+	)
+	DebugDraw.set_text(
+		"player " + str(player.player_number) + " ledge path", 
+		str(player.ledge.total_length) + ", " +
+		str(player.ledge.path.size())
+	)
+	
+	if !Input.is_action_pressed(player.get_action_name("grab")):
+		state_machine.transition_to("Fall")
+		return
+
+func physics_update(delta: float) -> void:
+	var direction = player.transform_direction_to_camera_angle(
+		Vector3(player.input_direction.x, 0, player.input_direction.y)
+	)
+	
+	# TODO: Remove last bit "RobotArmature" of animation name.
 	if direction.length() != 0:
 		player.animation.play("Hang-shimmy_RobotArmature")
 	else:
-		player.animation.play("Hang-loop_RobotArmature") # TODO: Remove last bit of animation name
-	
+		player.animation.play("Hang-loop_RobotArmature")
+		
 	player.stamina.use(1.5 * delta)
 	
 	if player.stamina.is_depleted():
 		state_machine.transition_to("Fall")
 		return 
-
-	player.set_velocity(movement)
-	# TODOConverter40 looks that snap in Godot 4.0 is float, not vector like in Godot 3 - previous value `snap_vector`
-	player.set_up_direction(Vector3.UP)
-	player.set_floor_stop_on_slope_enabled(true)
-	var _move_and_slide = player.move_and_slide()
-	movement = player.velocity
+		
+	var hang_position = player.ledge.get_position_on_ledge(position_on_ledge)
+	var hang_normal = player.ledge.get_normal_on_ledge(position_on_ledge)
 	
-	var ledge_info = player.find_ledge_info()
+	var ledge_direction = hang_normal.cross(Vector3.DOWN)
+	var shimmy_strength = ledge_direction.dot(direction)
+	var vault_strength = hang_normal.dot(-direction)
 	
-	if ledge_info.has_error():
-		push_warning("Failed to find ledge info in grab state: " + ledge_info.error)
-		state_machine.transition_to("Move")
-		return
+	DebugDraw.draw_ray_3d(player.global_transform.origin, ledge_direction, 2, Color.RED)
+	DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
+	DebugDraw.set_text("shimmy_strength", shimmy_strength)
+	DebugDraw.set_text("vault_strength", vault_strength)
 	
-	var shimmy_direction = ledge_info.edge_direction
-	var shimmy_strength = -player.global_transform.basis.x.dot(direction)
-	var shimmy_strength_clamped = clamp(
-		shimmy_strength,
-		## TODO: Any way to fix this so it isn't flipped round in a very unintutive way?
-		-1 if !ledge_info.has_reached_right_bound else 0,
-		1 if !ledge_info.has_reached_left_bound else 0,
-	)
-	
+	position_on_ledge += shimmy_strength * delta
+	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
 	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
-	var climb_up_strength = -player.global_transform.basis.z.dot(direction)
-	
-	movement = shimmy_direction * shimmy_strength_clamped
-	
-	player.global_transform.origin = ledge_info.hang_position
-	player.face_towards(ledge_info.wall.position)
-	
-	var start_climb_up_position: Vector3 = ledge_info.floor.position + (player.global_transform.basis.y * 1.25) + (ledge_info.wall.normal * 0.6)
-	var end_climb_up_position: Vector3 = ledge_info.floor.position + (player.global_transform.basis.y * 1.25) + (-ledge_info.wall.normal * 0.5)
-	
-	var debug_prev = Raycast.debug
-	Raycast.debug = false
-	# TODO: Turn iterations stuff into a Raycast helper. I think the name would be sweep. Might alreayd be build in, search ShapeSweep3D.
-	var hit: Array = []
-	var iterations: int = 5
-	
-	for index in range(0, iterations):
-		var percent = float(index) / float(iterations)
-		var check_position = start_climb_up_position.lerp(end_climb_up_position, percent)
-		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25, 1, [self])
+	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)
+	player.face_towards(hang_position)
+
+	if position_on_ledge > player.ledge.max_length - 0.6:
+		player.ledge.extend_path(LedgeSearcher.Direction.RIGHT)
+
+	if position_on_ledge < player.ledge.min_length + 0.6:
+		player.ledge.extend_path(LedgeSearcher.Direction.LEFT)
 		
-		if shape_hit:
-			hit = shape_hit
-			break
-	Raycast.debug = debug_prev
-	
-	climb_up_position = ledge_info.floor.position + (player.global_transform.basis.y)
-	
-	if hit.is_empty() and Raycast.debug:
-		DebugDraw.draw_line_3d(player.global_transform.origin, climb_up_position, Color.GREEN)
-		DebugDraw.draw_cube(climb_up_position, 0.5, Color.GREEN)
-		
-	if Raycast.debug:
-		DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
-	
-	if climb_up_strength > 0.8 and state_machine.time_in_current_state > 200 and hit.is_empty():
-		state_machine.transition_to("Vault")
-		return
-	
-	# TODO: Change time check input resetting.
-	if abs(climb_up_strength) == 0 and Input.is_action_just_pressed(player.get_action_name("jump")) and hit.is_empty():
-		state_machine.transition_to("Vault")
-		return
-		
-	if Input.is_action_just_pressed(player.get_action_name("jump")) and climb_up_strength < -0.4:
+	if vault_strength < -0.4 and Input.is_action_just_pressed(player.get_action_name("jump")):
 		player.face_towards(player.global_transform.origin + direction)
 		player.stamina.use(30.0)
 		
@@ -109,10 +96,30 @@ func update(delta: float) -> void:
 			"jump_strength": 5
 		})
 		return
-		
-	if !Input.is_action_pressed(player.get_action_name("grab")):
-		state_machine.transition_to("Fall")
+
+	# TODO: Change time check input resetting.
+	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
+	
+	var start_position = player.global_transform.origin + Vector3.UP
+	var end_position = ledge_info.position + Vector3.UP - (ledge_info.wall_normal * 0.45)
+	var is_vault_area_hit = sweep_cylinder(start_position, end_position)
+	
+	if not is_vault_area_hit and (vault_strength > 0.8 or Input.is_action_just_pressed(player.get_action_name("jump"))) and state_machine.time_in_current_state > 200:
+		state_machine.transition_to("Vault")
 		return
+
+# TODO: Turn iterations stuff into a Raycast helper. I think the name would be sweep. Might alreayd be build in, search ShapeSweep3D.
+func sweep_cylinder(start_position: Vector3, end_position: Vector3) -> bool:
+	var hit: Array = []
+	var iterations: int = 5
 	
+	for index in range(0, iterations):
+		var percent = float(index) / float(iterations)
+		var check_position = start_position.lerp(end_position, percent)
+		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25, 1, [self])
+		
+		if shape_hit:
+			hit = shape_hit
+			break
 	
-	
+	return not hit.is_empty()
