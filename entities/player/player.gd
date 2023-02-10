@@ -41,15 +41,14 @@ func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
-	DebugDraw.set_text("player " + str(player_number) + " ledge", str(ledge.path.size()) + ", " + str(ledge.total_length) + "m")
 	
+	# TODO: This seems broken at 45 degree angles, Godot RC.1 bug?
 	input_direction = Input.get_vector(
 		get_action_name("move_left"),
 		get_action_name("move_right"),
 		get_action_name("move_forward"),
 		get_action_name("move_backward")
-	# TODO: Should this need to be normalized? Is it a Goot 4 RC.1 bug?
-	).normalized()
+	)
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":

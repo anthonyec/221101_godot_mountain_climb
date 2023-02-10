@@ -84,17 +84,26 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 		return
 		
 	var path_size_before_appending = path.size()
+	var new_length: float = 0
 	
 	if direction == Direction.RIGHT:
-		path.append_array(search_result.points)
+		var new_points = simplify_path(search_result.points)
+		
+		path.append_array(new_points)
+		
+		new_length = Utils.get_path_length(new_points)
 		last_max_ledge_info = search_result.last_ledge_info
 	
 	if direction == Direction.LEFT:
+		var new_points = simplify_path(search_result.points)
+		
 		# TODO: Tehe, maybe there's a better to preprend_array to front. 
 		# Or maybe this is genius.
 		path.reverse()
-		path.append_array(search_result.points)
+		path.append_array(new_points)
 		path.reverse()
+		
+		new_length = Utils.get_path_length(new_points)
 		last_min_ledge_info = search_result.last_ledge_info
 
 	# TODO: This can actually be done when appending to avoid
@@ -106,10 +115,10 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 	# awlays consistent.
 	if direction == Direction.RIGHT:
 		# TODO: This length seems to be lower than the min length??
-		max_length += Utils.get_path_length(path.slice(path_size_before_appending, path.size()))
+		max_length += new_length
 		
 	if direction == Direction.LEFT:
-		min_length -= Utils.get_path_length(search_result.points.slice(0, search_result.points.size()))
+		min_length -= new_length
 	
 	# Calculate normals.
 	normals = []
@@ -168,15 +177,14 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 	return new_points
 	
 func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> LedgeSearchResult:
-	var resolution = 0.02
+	var resolution = 0.01
 	
 	var result: LedgeSearchResult = LedgeSearchResult.new()
 	var last_ledge = initial_ledge
 
 	for index in range(10):
 		var offset_along_ledge = (last_ledge.direction * resolution * index)
-		var offset_away_from_ledge = (last_ledge.normal * 0.1) + (Vector3.DOWN * 0.1)
-	
+		var offset_away_from_ledge = (last_ledge.normal * 0.1) + (-last_ledge.floor_normal * 0.1)
 		var start_search_position: Vector3 = last_ledge.position
 		
 		if direction == Direction.RIGHT:
@@ -186,6 +194,13 @@ func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> Le
 			start_search_position = start_search_position - offset_along_ledge + offset_away_from_ledge
 		
 		var ledge = get_ledge_info(start_search_position, -last_ledge.wall_normal)
+		
+		DebugTrace.step("search", "cast", {
+			"position": start_search_position,
+			"direction": -last_ledge.wall_normal,
+			"length": 1,
+			"color": Color.RED
+		})
 		
 		if ledge.has_error():
 			result.error = ledge.error
@@ -234,5 +249,6 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	info.normal = edge_normal
 	info.direction = edge_normal.cross(-floor_hit.normal)
 	info.wall_normal = wall_hit.normal
+	info.floor_normal = floor_hit.normal
 	
 	return info
