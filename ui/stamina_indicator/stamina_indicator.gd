@@ -1,6 +1,6 @@
 extends Control
 
-@export @onready var player: Player
+@export var player: Node3D
 
 @onready var progress_bar: ProgressBar = $ProgressBar
 @onready var stamina: Stamina = player.get_node("Stamina")

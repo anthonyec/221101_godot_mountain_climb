@@ -5,7 +5,7 @@ extends CharacterBody3D
 
 # TODO: Find out if I need @onready annotation. Seems to work without but maybe 
 # it's safer. I originally saw it in this video: https://youtu.be/8BgAeN4RRR4?t=150
-@export var companion: Player
+@export var companion: Node3D
 
 @export_group("Movement")
 @export var gravity: float = 40
@@ -48,7 +48,8 @@ func _process(_delta: float) -> void:
 		get_action_name("move_right"),
 		get_action_name("move_forward"),
 		get_action_name("move_backward")
-	)
+	# TODO: Should this need to be normalized? Is it a Goot 4 RC.1 bug?
+	).normalized()
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":
