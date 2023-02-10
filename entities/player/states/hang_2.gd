@@ -6,9 +6,9 @@ func awake() -> void:
 	super.awake()
 
 func enter(params: Dictionary) -> void:
-	Raycast.debug = true
-	player.ledge.debug = true
-	
+#	Raycast.debug = true
+#	player.ledge.debug = true
+
 	player.animation.play("Hang-loop_RobotArmature")
 	player.collision.disabled = true
 	
@@ -44,11 +44,37 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
-	position_on_ledge += player.input_direction.x * delta
-	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
+	var direction = player.transform_direction_to_camera_angle(
+		Vector3(player.input_direction.x, 0, player.input_direction.y)
+	)
 	
+	# TODO: Remove last bit "RobotArmature" of animation name.
+	if direction.length() != 0:
+		player.animation.play("Hang-shimmy_RobotArmature")
+	else:
+		player.animation.play("Hang-loop_RobotArmature")
+		
+	player.stamina.use(1.5 * delta)
+	
+	if player.stamina.is_depleted():
+		state_machine.transition_to("Fall")
+		return 
+		
 	var hang_position = player.ledge.get_position_on_ledge(position_on_ledge)
 	var hang_normal = player.ledge.get_normal_on_ledge(position_on_ledge)
+	
+	var ledge_direction = hang_normal.cross(Vector3.DOWN)
+	var shimmy_strength = ledge_direction.dot(direction)
+	var vault_strength = hang_normal.dot(-direction)
+	
+	DebugDraw.draw_ray_3d(player.global_transform.origin, ledge_direction, 2, Color.RED)
+	DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
+	DebugDraw.set_text("shimmy_strength", shimmy_strength)
+	DebugDraw.set_text("vault_strength", vault_strength)
+	
+	position_on_ledge += shimmy_strength * delta
+	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
+	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
 	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)
 	player.face_towards(hang_position)
@@ -58,5 +84,42 @@ func physics_update(delta: float) -> void:
 
 	if position_on_ledge < player.ledge.min_length + 0.6:
 		player.ledge.extend_path(LedgeSearcher.Direction.LEFT)
+		
+	if vault_strength < -0.4 and Input.is_action_just_pressed(player.get_action_name("jump")):
+		player.face_towards(player.global_transform.origin + direction)
+		player.stamina.use(30.0)
+		
+		# TODO: This should probably transition to a specfic VaultJump state.
+		state_machine.transition_to("Jump", {
+			# TODO: Don't use magic numbers here for jump strength
+			"movement": direction * 5,
+			"jump_strength": 5
+		})
+		return
+
+	# TODO: Change time check input resetting.
+	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
 	
-	DebugDraw.draw_cube(hang_position, 0.1, Color.RED)
+	var start_position = player.global_transform.origin + Vector3.UP
+	var end_position = ledge_info.position + Vector3.UP - (ledge_info.wall_normal * 0.45)
+	var is_vault_area_hit = sweep_cylinder(start_position, end_position)
+	
+	if not is_vault_area_hit and (vault_strength > 0.8 or Input.is_action_just_pressed(player.get_action_name("jump"))) and state_machine.time_in_current_state > 200:
+		state_machine.transition_to("Vault")
+		return
+
+# TODO: Turn iterations stuff into a Raycast helper. I think the name would be sweep. Might alreayd be build in, search ShapeSweep3D.
+func sweep_cylinder(start_position: Vector3, end_position: Vector3) -> bool:
+	var hit: Array = []
+	var iterations: int = 5
+	
+	for index in range(0, iterations):
+		var percent = float(index) / float(iterations)
+		var check_position = start_position.lerp(end_position, percent)
+		var shape_hit = Raycast.intersect_cylinder(check_position, 1.5, 0.25, 1, [self])
+		
+		if shape_hit:
+			hit = shape_hit
+			break
+	
+	return not hit.is_empty()

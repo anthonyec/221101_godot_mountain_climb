@@ -20,9 +20,6 @@ var total_length: float = 0
 var last_min_ledge_info: LedgeInfo
 var last_max_ledge_info: LedgeInfo
 
-func _ready() -> void:
-	Raycast.debug = true
-
 func _process(_delta: float) -> void:
 	total_length = max_length - min_length
 	

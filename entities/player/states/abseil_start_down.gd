@@ -7,8 +7,7 @@ var start_position: Vector3
 
 func enter(_params: Dictionary) -> void:
 	assert(parent_state.rope, "Abseil states need rope")
-	
-	Raycast.debug = true
+
 	player.animation.play("Idle")
 	start_position = player.global_transform.origin
 	
