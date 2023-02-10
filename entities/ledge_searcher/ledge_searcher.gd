@@ -181,8 +181,9 @@ func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> Le
 	
 	var result: LedgeSearchResult = LedgeSearchResult.new()
 	var last_ledge = initial_ledge
-
-	for index in range(10):
+	
+	# Start from index 1 and not 0 to skip "re-finding" the last ledge.
+	for index in range(1, 10):
 		var offset_along_ledge = (last_ledge.direction * resolution * index)
 		var offset_away_from_ledge = (last_ledge.normal * 0.1) + (-last_ledge.floor_normal * 0.1)
 		var start_search_position: Vector3 = last_ledge.position
@@ -194,13 +195,6 @@ func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> Le
 			start_search_position = start_search_position - offset_along_ledge + offset_away_from_ledge
 		
 		var ledge = get_ledge_info(start_search_position, -last_ledge.wall_normal)
-		
-		DebugTrace.step("search", "cast", {
-			"position": start_search_position,
-			"direction": -last_ledge.wall_normal,
-			"length": 1,
-			"color": Color.RED
-		})
 		
 		if ledge.has_error():
 			result.error = ledge.error
