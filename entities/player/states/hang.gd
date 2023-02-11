@@ -72,7 +72,8 @@ func physics_update(delta: float) -> void:
 	DebugDraw.set_text("shimmy_strength", shimmy_strength)
 	DebugDraw.set_text("vault_strength", vault_strength)
 	
-	position_on_ledge += shimmy_strength * delta
+	position_on_ledge += player.input_direction.x * delta
+#	position_on_ledge += shimmy_strength * delta
 	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
 	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
@@ -104,7 +105,7 @@ func physics_update(delta: float) -> void:
 	var end_position = ledge_info.position + Vector3.UP - (ledge_info.wall_normal * 0.45)
 	var is_vault_area_hit = sweep_cylinder(start_position, end_position)
 	
-	if not is_vault_area_hit and (vault_strength > 0.8 or Input.is_action_just_pressed(player.get_action_name("jump"))) and state_machine.time_in_current_state > 200:
+	if not is_vault_area_hit and Input.is_action_just_pressed(player.get_action_name("jump")) and state_machine.time_in_current_state > 200:
 		state_machine.transition_to("Vault")
 		return
 

@@ -40,7 +40,6 @@ func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 	
-	# TODO: This seems broken at 45 degree angles, Godot RC.1 bug?
 	input_direction = Input.get_vector(
 		get_action_name("move_left"),
 		get_action_name("move_right"),

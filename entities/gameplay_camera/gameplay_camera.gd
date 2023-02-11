@@ -2,7 +2,7 @@ class_name GameplayCamera
 extends Node3D
 
 @export var debug: bool = false
-@export var exclude_players: Array[int]
+@export var players: Array[NodePath]
 
 @export var distance: float = 10
 @export var pitch: float = 0
@@ -14,9 +14,10 @@ extends Node3D
 
 var targets = []
 
-func _process(delta: float) -> void:
-	targets = get_tree().get_nodes_in_group("player")
+func _ready() -> void:
+	targets = players.map(func(player_path): return get_node(player_path))
 	
+func _process(delta: float) -> void:	
 	# Get the average position of all targets.
 	var average_target_position: Vector3 = Vector3.ZERO
 	
