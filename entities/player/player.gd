@@ -32,6 +32,12 @@ extends CharacterBody3D
 @onready var state_machine: StateMachine = $StateMachine as StateMachine
 @onready var ledge: LedgeSearcher = $LedgeSearcher as LedgeSearcher
 
+enum InputType {
+	CONTROLLER,
+	KEYBOARD
+}
+
+var input_type: InputType = InputType.KEYBOARD
 var input_direction: Vector2 = Vector2.ZERO
 
 func _process(_delta: float) -> void:
@@ -39,13 +45,7 @@ func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
-	
-	input_direction = Input.get_vector(
-		get_action_name("move_left"),
-		get_action_name("move_right"),
-		get_action_name("move_forward"),
-		get_action_name("move_backward")
-	)
+	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":
@@ -54,6 +54,27 @@ func _process(_delta: float) -> void:
 		else:
 			state_machine.transition_to("Move")
 			return
+			
+func _input(event: InputEvent) -> void:
+	var is_move_left_action = event.get_action_strength(get_action_name("move_left")) > 0
+	var is_move_right_action = event.get_action_strength(get_action_name("move_right")) > 0
+	var is_move_forward_action = event.get_action_strength(get_action_name("move_forward")) > 0
+	var is_move_backward_action = event.get_action_strength(get_action_name("move_backward")) > 0
+	
+	var is_movement_action = is_move_left_action or is_move_right_action or is_move_forward_action or is_move_backward_action
+	
+	if is_movement_action and event is InputEventKey:
+		input_type = InputType.KEYBOARD
+		
+	if is_movement_action and event is InputEventJoypadMotion:
+		input_type = InputType.CONTROLLER
+		
+	input_direction = Input.get_vector(
+		get_action_name("move_left"),
+		get_action_name("move_right"),
+		get_action_name("move_forward"),
+		get_action_name("move_backward")
+	)
 
 # Get the action name with player number suffix.
 func get_action_name(action_name: String) -> String:

@@ -1,7 +1,7 @@
 [gd_scene load_steps=13 format=3 uid="uid://iasfcg88c4sb"]
 
 [ext_resource type="Script" path="res://levels/default/default.gd" id="1_dkhqu"]
-[ext_resource type="PackedScene" uid="uid://nxrkrpymwik1" path="res://entities/player/player.tscn" id="2_evhup"]
+[ext_resource type="PackedScene" uid="uid://cxqdpc8g3lot8" path="res://entities/player/player.tscn" id="2_evhup"]
 [ext_resource type="PackedScene" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="3"]
 [ext_resource type="AudioStream" uid="uid://dey3trujnu83q" path="res://globals/sfx/audio/enviroment/wind_loop.wav" id="4"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="4_sqhbd"]
@@ -79,6 +79,7 @@ shadow_enabled = true
 
 [node name="GameplayCamera" parent="." instance=ExtResource("3")]
 debug = true
+players = Array[NodePath]([NodePath("../Player2")])
 distance = 5.0
 yaw = -90.0
 speed = 1.0

@@ -67,13 +67,13 @@ func physics_update(delta: float) -> void:
 	var shimmy_strength = ledge_direction.dot(direction)
 	var vault_strength = hang_normal.dot(-direction)
 	
-	DebugDraw.draw_ray_3d(player.global_transform.origin, ledge_direction, 2, Color.RED)
-	DebugDraw.draw_ray_3d(player.global_transform.origin, direction, 2, Color.GREEN)
-	DebugDraw.set_text("shimmy_strength", shimmy_strength)
-	DebugDraw.set_text("vault_strength", vault_strength)
-	
-	position_on_ledge += player.input_direction.x * delta
-#	position_on_ledge += shimmy_strength * delta
+	# Keyboard only has 4 way directional control, so the movement should 
+	# ignore any relative direction.
+	if player.input_type == player.InputType.KEYBOARD:
+		shimmy_strength = player.input_direction.x
+		vault_strength = -player.input_direction.y
+
+	position_on_ledge += shimmy_strength * delta
 	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
 	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
@@ -87,13 +87,14 @@ func physics_update(delta: float) -> void:
 		player.ledge.extend_path(LedgeSearcher.Direction.LEFT)
 		
 	if vault_strength < -0.4 and Input.is_action_just_pressed(player.get_action_name("jump")):
-		player.face_towards(player.global_transform.origin + direction)
+		player.face_towards(player.global_transform.origin + hang_normal)
 		player.stamina.use(30.0)
 		
-		# TODO: This should probably transition to a specfic VaultJump state.
+		# TODO: This should probably transition to a specfic VaultJump state that
+		# ignores input_direction.
 		state_machine.transition_to("Jump", {
 			# TODO: Don't use magic numbers here for jump strength
-			"movement": direction * 5,
+			"movement": hang_normal * 5,
 			"jump_strength": 5
 		})
 		return
