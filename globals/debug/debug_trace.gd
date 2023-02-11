@@ -30,7 +30,7 @@ func step(category: String, type: String, props: Dictionary) -> void:
 		"props": props
 	})
 	
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if enabled:
 		var step_category: String
 		
@@ -53,7 +53,7 @@ func _process(delta: float) -> void:
 		DebugDraw.draw_cube(step.props.position, 0.02, step.props.color)
 		DebugDraw.draw_ray_3d(step.props.position, step.props.direction, step.props.length, step.props.color)
 	
-func _unhandled_input(event: InputEvent) -> void:
+func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("debug_toggle_trace"):
 		enabled = !enabled
 		

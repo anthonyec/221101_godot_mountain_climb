@@ -80,7 +80,6 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 		# hand but not move?
 		return
 		
-	var path_size_before_appending = path.size()
 	var new_length: float = 0
 	
 	if direction == Direction.RIGHT:

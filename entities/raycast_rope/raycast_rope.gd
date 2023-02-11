@@ -4,7 +4,7 @@ extends Node3D
 const WORLD_COLLISION_MASK: int = 1
 
 @export var debug: bool = false
-@onready @export var target: Node3D
+@export var target: Node3D
 
 @export var margin: float = 0.1
 @export var max_length: float = 10
@@ -17,7 +17,7 @@ var total_length: float = 0
 var joints: Array[Vector3] = []
 var edge_info: Array = []
 
-func _ready() -> void:	
+func _ready() -> void:
 	if target:
 		target_position = target.global_transform.origin
 		

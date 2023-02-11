@@ -1,7 +1,7 @@
 class_name AbseilRope
 extends Node3D
 
-@onready @export var host: Node3D
+@export var host: Node3D
 
 @onready var rope: RaycastRope = $RaycastRope as RaycastRope
 @onready var end: RopeEnd = $RopeEnd as RopeEnd

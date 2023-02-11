@@ -1,6 +1,6 @@
 extends Node
 
-static func get_progress_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Dictionary:
+func get_progress_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Dictionary:
 	var total_length: float = start_length
 	var index_on_path: float = float(points.size() - 1)
 	var progress: float = 0
@@ -14,7 +14,6 @@ static func get_progress_on_path(points: Array[Vector3], length: float, start_le
 		
 		if total_length >= length:
 			var difference_in_length = total_length - length
-			var direction_a_to_b = point_a.direction_to(point_b)
 			var progress_percent = 1 - (difference_in_length / distance_between_a_to_b)
 			
 			index_on_path = index
@@ -26,7 +25,7 @@ static func get_progress_on_path(points: Array[Vector3], length: float, start_le
 		"percent": progress
 	}
 	
-static func get_position_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Vector3:
+func get_position_on_path(points: Array[Vector3], length: float, start_length: float = 0) -> Vector3:
 	var total_length: float = start_length
 	
 	# TODO: This is a bit of a work around because the total_length
@@ -52,7 +51,7 @@ static func get_position_on_path(points: Array[Vector3], length: float, start_le
 			
 	return position_on_path
 
-static func get_path_length(points: Array[Vector3]) -> float:
+func get_path_length(points: Array[Vector3]) -> float:
 	var total_length: float = 0
 	
 	for index in points.size():
