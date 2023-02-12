@@ -67,6 +67,36 @@ func intersect_cylinder(position: Vector3, height: float = 2.0, radius: float = 
 		DebugDraw.draw_box(params.transform.origin, Vector3(radius * 2, height, radius * 2), debug_color)
 	
 	return space_state.intersect_shape(params)
+	
+class CollideCylinderParams:
+	var collision_mask = DEFAULT_COLLISION_MASK
+	var exclude: Array
+	var max_results: int = 32
+	
+func collide_cylinder(
+	position: Vector3, 
+	height: float = 2.0, 
+	radius: float = 0.5, 
+	params: CollideCylinderParams = CollideCylinderParams.new()
+) -> PackedVector3Array:
+	var space_state = get_world_3d().direct_space_state
+	
+	var physics = PhysicsShapeQueryParameters3D.new()
+	var shape = CylinderShape3D.new()
+	
+	shape.height = height
+	shape.radius = radius
+	
+	physics.shape = shape
+	physics.transform.origin = position
+	physics.collision_mask = params.collision_mask
+	physics.exclude = params.exclude
+	
+	if debug:
+		DebugDraw.draw_box(physics.transform.origin, Vector3(radius * 2, height, radius * 2), debug_color)
+	
+	# TODO: I am unsure why this returns Vector2 when the results are Vector3. Seems like a Godot bug.
+	return space_state.collide_shape(physics, params.max_results)
 
 func cast_in_direction(start_position: Vector3, direction: Vector3, length: float = 1.0, collision_mask: int = DEFAULT_COLLISION_MASK, exclude: Array = [], hit_back_faces: bool = false) -> Dictionary:
 	return intersect_ray(start_position, start_position + (direction * length), collision_mask, exclude, hit_back_faces)
