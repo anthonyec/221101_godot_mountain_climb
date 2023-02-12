@@ -21,7 +21,7 @@ buses/default_bus_layout="res://globals/sfx/buses/default_bus_layout.tres"
 
 [autoload]
 
-Debug="*res://globals/debug/debug.tscn"
+Debug="*res://globals/debug/debug.gd"
 DebugDraw="*res://addons/zylann.debug_draw/debug_draw.gd"
 DebugTrace="*res://globals/debug/debug_trace.gd"
 Utils="*res://globals/utils/utils.gd"

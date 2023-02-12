@@ -57,6 +57,8 @@ func _unhandled_input(_event: InputEvent) -> void:
 	if Input.is_action_just_pressed("debug_toggle_trace"):
 		enabled = !enabled
 		
+		Debug.notify("Recording trace: " + str(enabled))
+		
 		if not enabled:
 			current_step = 0
 			steps.clear()
