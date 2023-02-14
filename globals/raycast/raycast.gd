@@ -78,6 +78,7 @@ func collide_cylinder(
 	height: float = 2.0, 
 	radius: float = 0.5, 
 	params: CollideCylinderParams = CollideCylinderParams.new()
+# TODO: Using the correct return type, https://github.com/godotengine/godot/issues/73182
 ) -> PackedVector3Array:
 	var space_state = get_world_3d().direct_space_state
 	

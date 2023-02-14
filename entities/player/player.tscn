@@ -30,7 +30,7 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_d63ma"]
 radius = 0.25
-height = 1.6
+height = 1.0
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_c3m2q"]
 radius = 0.6
@@ -117,7 +117,7 @@ script = ExtResource("23_rff44")
 [node name="LedgeSearcher" parent="." instance=ExtResource("27_2aujs")]
 
 [node name="Collision" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.181363, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 0, 2.08165e-12)
 shape = SubResource("CapsuleShape3D_d63ma")
 
 [node name="AbseilCollision" type="CollisionShape3D" parent="."]

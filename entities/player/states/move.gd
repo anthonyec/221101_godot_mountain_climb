@@ -1,10 +1,13 @@
 extends PlayerState
 
+const WORLD_COLLISION_MASK: int = 1
+
 var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
+	Raycast.debug = true
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
 	player.stamina.can_recover = true
@@ -38,40 +41,33 @@ func update(_delta: float) -> void:
 		player.animation.play("Idle")
 
 func physics_update(delta: float) -> void:
-	if not player.is_on_floor():
-		state_machine.transition_to("Fall", {
-			"movement": movement,
-			"coyote_time_enabled": true,
-		})
-		return
-	
 	var player_forward = -player.global_transform.basis.z
 	
 	movement = player_forward * direction.length() * player.walk_speed
-	movement.y -= player.gravity * delta
 	
-	# TODO: Implement proper turning on spot.
-	if direction.length() > 0.3:
-		player.face_towards(player.global_transform.origin + direction, player.ground_turn_speed, delta)
-	else:
-		player.face_towards(player.global_transform.origin + direction)
-		
 	player.velocity = movement
+	player.face_towards(player.global_transform.origin + direction)
+	
+	if player.velocity.length() >= 20.0:
+		player.velocity = player.velocity.normalized() * 20.0
 
 	# TODO: Add correct warning ID to ignore unused vars.
 	# warning-ignore:warning-id
 	player.move_and_slide()
 	movement = player.velocity
-	
-	# TODO: Clean this up. Maybe it could use a step up animation or state.
-	var curb_hit = Raycast.cast_in_direction(player.get_offset_position(0.0, -0.95), direction.normalized(), 0.35)
-	
-	if not curb_hit.is_empty() and curb_hit.normal.angle_to(Vector3.UP) > deg_to_rad(85):
-		var curb_floor_hit = Raycast.cast_in_direction(curb_hit.position - (curb_hit.normal * 0.1) + Vector3.UP * 0.5, Vector3.DOWN, 0.5)
 		
-		if not curb_floor_hit.is_empty():
-			DebugDraw.draw_cube(curb_floor_hit.position, 0.1, Color.RED)
-			player.stand_at_position(curb_floor_hit.position)
+	var floor_info = player.get_floor_info()
+	
+	if floor_info.is_on_floor:
+		# TODO: Set the position based on a foot position, and calculate the height 
+		# of the foot from that plus a buffer
+		player.global_transform.origin.y = floor_info.position_when_grounded
+	else:
+		state_machine.transition_to("Fall", {
+			"movement": movement,
+			"coyote_time_enabled": true
+		})
+		return
 	
 	var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
 	var companion_state = player.companion.state_machine.current_state.name

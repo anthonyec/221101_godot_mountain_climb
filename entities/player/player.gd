@@ -1,9 +1,12 @@
 class_name Player
 extends CharacterBody3D
 
+const WORLD_COLLISION_MASK: int = 1
+
 @export_range(1, 2) var player_number: int = 1
 
 @export var companion: Node3D
+@export var height: float = 2.0
 
 @export_group("Movement")
 @export var gravity: float = 40
@@ -54,7 +57,7 @@ func _process(_delta: float) -> void:
 		else:
 			state_machine.transition_to("Move")
 			return
-			
+
 func _input(event: InputEvent) -> void:
 	var is_move_left_action = event.get_action_strength(get_action_name("move_left")) > 0
 	var is_move_right_action = event.get_action_strength(get_action_name("move_right")) > 0
@@ -134,3 +137,25 @@ func set_collision_mode(mode: String) -> void:
 	if mode == "default":
 		collision.disabled = false
 		abseil_collision.disabled = true
+
+func get_floor_info() -> Dictionary:
+	var floor_hit = Raycast.cast_in_direction(global_transform.origin, Vector3.DOWN, height, WORLD_COLLISION_MASK)
+	
+	if floor_hit.is_empty():
+		return {
+			is_on_floor: false
+		}
+	
+	var position_when_grounded: Vector3 = Vector3(
+		global_transform.origin.x,
+		global_transform.origin.y + floor_hit.position.y + (height / 2),
+		global_transform.origin.z
+	)
+	
+	var is_on_floor = floor_hit.position.y < (global_transform.origin.y + (height / 2))
+	
+	return {
+		is_on_floor: is_on_floor,
+		position_when_grounded: position_when_grounded
+	}
+

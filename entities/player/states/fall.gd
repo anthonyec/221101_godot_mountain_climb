@@ -36,7 +36,9 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
-	if player.is_on_floor():
+	var floor_info = player.get_floor_info()
+	
+	if floor_info.is_on_floor:
 		state_machine.transition_to("Move")
 		return
 		
@@ -66,7 +68,7 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 	movement = player.velocity
 
-func handle_input(event: InputEvent) -> void:		
+func handle_input(event: InputEvent) -> void:
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
 		state_machine.transition_to("Jump", { "movement": movement })
 		return
