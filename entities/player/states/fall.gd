@@ -36,9 +36,7 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
-	var floor_info = player.get_floor_info()
-	
-	if floor_info.is_on_floor:
+	if player.is_on_ground():
 		state_machine.transition_to("Move")
 		return
 		

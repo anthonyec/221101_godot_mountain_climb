@@ -55,13 +55,9 @@ func physics_update(delta: float) -> void:
 	# warning-ignore:warning-id
 	player.move_and_slide()
 	movement = player.velocity
-		
-	var floor_info = player.get_floor_info()
 	
-	if floor_info.is_on_floor:
-		# TODO: Set the position based on a foot position, and calculate the height 
-		# of the foot from that plus a buffer
-		player.global_transform.origin.y = floor_info.position_when_grounded
+	if player.is_near_ground():
+		player.snap_to_ground()
 	else:
 		state_machine.transition_to("Fall", {
 			"movement": movement,
