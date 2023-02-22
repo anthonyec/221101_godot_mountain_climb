@@ -27,9 +27,10 @@ func enter(params: Dictionary) -> void:
 	# so that `is_on_floor()` does not return `false` on the first physics update.
 	# This fixes "vault" to "move" state causing it to breifly enter the "fall" state.
 	if params.get("snap_to_floor"):
-		player.snap_to_floor()
+		player.snap_to_ground()
 
 func exit() -> void:
+	Raycast.debug = false
 	player.stamina.can_recover = false
 
 func update(_delta: float) -> void:

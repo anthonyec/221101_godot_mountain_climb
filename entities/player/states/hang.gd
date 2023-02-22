@@ -6,9 +6,6 @@ func awake() -> void:
 	super.awake()
 
 func enter(params: Dictionary) -> void:
-#	Raycast.debug = true
-#	player.ledge.debug = true
-
 	player.animation.play("Hang-loop_RobotArmature")
 	player.collision.disabled = true
 	
@@ -20,7 +17,6 @@ func enter(params: Dictionary) -> void:
 	assert(player.ledge.path, "Path should be found")
 
 func exit() -> void:
-	Raycast.debug = false
 	position_on_ledge = 0
 	player.collision.disabled = false
 	player.ledge.reset()

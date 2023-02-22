@@ -109,19 +109,6 @@ func face_towards(target: Vector3, speed: float = 0.0, delta: float = 0.0) -> vo
 		# From: https://github.com/JohnnyRouddro/3d_rotate_direct_constant_smooth/blob/master/rotate.gd
 		var direction = global_transform.origin.direction_to(target)
 		global_rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), speed * delta)
-		
-	
-func snap_to_floor() -> void:
-	var iterations: int = 0
-	
-	while iterations < 10:
-		move_and_slide()
-		
-		if is_on_floor():
-			break
-			
-		global_transform.origin += Vector3.DOWN * 0.01
-		iterations += 1
 
 func stand_at_position(stand_position: Vector3) -> void:
 	global_transform.origin = stand_position + (Vector3.UP * 0.95)

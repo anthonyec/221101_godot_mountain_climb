@@ -9,7 +9,7 @@ enum Error {
 }
 
 # Why the ledge was not found.
-var error: Error = Error.NONE
+var error: LedgeInfo.Error = LedgeInfo.Error.NONE
 
 # Position of the edge.
 var position: Vector3
