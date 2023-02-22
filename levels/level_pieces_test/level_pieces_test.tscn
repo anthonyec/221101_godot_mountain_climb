@@ -7,7 +7,7 @@
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="7_j02qa"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/light/materials/material_009.tres" id="8_bd8aj"]
 [ext_resource type="PackedScene" uid="uid://celdt7e0rapnk" path="res://entities/camera_hint/camera_hint.tscn" id="9_5qjss"]
-[ext_resource type="PackedScene" uid="uid://nxrkrpymwik1" path="res://entities/player/player.tscn" id="9_r0ske"]
+[ext_resource type="PackedScene" uid="uid://cxqdpc8g3lot8" path="res://entities/player/player.tscn" id="9_r0ske"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/purple/materials/material_009.tres" id="10_5odj7"]
 
 [sub_resource type="Environment" id="Environment_q64ch"]
@@ -36,6 +36,7 @@ shadow_enabled = true
 [node name="GameplayCamera" parent="." instance=ExtResource("2_atslf")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
 debug = true
+players = Array[NodePath]([NodePath("../Player1")])
 distance = 5.0
 yaw = -90.0
 speed = 1.0

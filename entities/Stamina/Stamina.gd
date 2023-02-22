@@ -18,7 +18,7 @@ var is_recovering: bool = false
 func _ready() -> void:
 	regain_timer.wait_time = pause_time
 
-func _process(delta):
+func _process(delta) -> void:
 	if is_recovering:
 		regain(regain_amount * delta)
 	
@@ -29,7 +29,7 @@ func _process(delta):
 		if is_full():
 			full.emit()
 
-func use(amount_to_subtract: float = 1.0):
+func use(amount_to_subtract: float = 1.0) -> void:
 	is_recovering = false
 	previous_amount = amount
 	amount = clamp(amount - amount_to_subtract, 0, max_stamina)
@@ -38,12 +38,15 @@ func use(amount_to_subtract: float = 1.0):
 	regain_timer.stop()
 	regain_timer.start()
 	
-func regain(amount_to_add: float = 1.0):
+func regain(amount_to_add: float = 1.0) -> void:
 	if !can_recover:
 		return
 
 	previous_amount = amount
 	amount = clamp(amount + amount_to_add, 0, max_stamina)
+	
+func reset() -> void:
+	regain(max_stamina)
 
 func is_depleted() -> bool:
 	return amount == 0
