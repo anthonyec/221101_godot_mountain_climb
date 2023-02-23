@@ -34,6 +34,34 @@ func _input(event: InputEvent) -> void:
 	if key_event.keycode == KEY_1:
 		Raycast.debug = !Raycast.debug
 		notify("Show raycasts: " + str(Raycast.debug))
+		
+	if key_event.keycode == KEY_2:
+		var players = get_tree().get_nodes_in_group("player")
+		
+		if players.is_empty():
+			return
+		
+		var toggled: bool
+		
+		for player in players:
+			player = player as Player
+			player.ledge.debug = !player.ledge.debug 
+			toggled = player.ledge.debug
+			
+		notify("Show ledge: " + str(toggled))
+		
+		
+	if key_event.keycode == KEY_3:
+		var players = get_tree().get_nodes_in_group("player")
+		
+		if players.is_empty():
+			return
+		
+		for player in players:
+			player = player as Player
+			player.stamina.reset()
+			
+		notify("Stamina refilled")
 	
 	if key_event.keycode == KEY_8:
 		Engine.max_fps = 30 if Engine.max_fps == 60 else 60
