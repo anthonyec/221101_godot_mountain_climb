@@ -87,7 +87,6 @@ speed = 1.0
 [node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="."]
 transform = Transform3D(0.710208, -0.0186935, 0.703743, 0.0181654, 0.999801, 0.00822541, -0.703757, 0.006942, 0.710407, 4.51594, 30.9783, -35.1081)
 stream = ExtResource("4")
-autoplay = true
 max_distance = 50.0
 
 [node name="Ground" type="CSGBox3D" parent="."]
