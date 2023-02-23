@@ -25,6 +25,10 @@ func exit() -> void:
 	player.gravity = original_gravity
 
 func update(_delta: float) -> void:
+	if player.is_on_ground():
+		state_machine.transition_to("Move")
+		return
+		
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
 	if state_machine.time_in_current_state > 5000:
