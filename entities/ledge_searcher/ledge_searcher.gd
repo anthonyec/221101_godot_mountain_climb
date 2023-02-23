@@ -1,6 +1,8 @@
 class_name LedgeSearcher
 extends Node3D
 
+const WORLD_COLLISION_MASK: int = 1
+
 @export var debug: bool = false
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
@@ -227,13 +229,21 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	if floor_hit.normal.angle_to(Vector3.UP) > deg_to_rad(35):
 		info.error = LedgeInfo.Error.BAD_FLOOR_ANGLE
 		return info
-		
 	
 	var floor_plane = Plane(floor_hit.normal, floor_hit.position)
 	var edge_position = floor_plane.intersects_ray(wall_hit.position, floor_hit.normal)
 	
 	# Edge normal is the wall normal with the Y component flattened to zero.
 	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
+	var edge_direction = edge_normal.cross(-floor_hit.normal)
+	
+	var hand_direction = floor_hit.normal.cross(edge_direction)
+	var hand_position = edge_position + (floor_hit.normal * 0.1) + (hand_direction * 0.1)
+	var hand_hit = Raycast.intersect_ray(hand_position - (hand_direction * 0.2), hand_position, WORLD_COLLISION_MASK)
+	
+	if not hand_hit.is_empty():
+		info.error = LedgeInfo.Error.NO_HAND_SPACE
+		return info
 	
 	info.position = edge_position
 	info.normal = edge_normal

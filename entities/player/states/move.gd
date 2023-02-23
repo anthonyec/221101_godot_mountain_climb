@@ -7,7 +7,6 @@ var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
-	Raycast.debug = true
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
 	player.stamina.can_recover = true
@@ -30,7 +29,6 @@ func enter(params: Dictionary) -> void:
 		player.snap_to_ground()
 
 func exit() -> void:
-	Raycast.debug = false
 	player.stamina.can_recover = false
 
 func update(_delta: float) -> void:
