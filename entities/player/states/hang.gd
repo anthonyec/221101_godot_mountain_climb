@@ -20,7 +20,6 @@ func exit() -> void:
 	position_on_ledge = 0
 	player.collision.disabled = false
 	player.ledge.reset()
-	player.model.scale = Vector3(1, 1, 1)
 	
 func update(_delta: float) -> void:
 	DebugDraw.set_text(

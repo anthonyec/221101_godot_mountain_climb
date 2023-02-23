@@ -7,6 +7,8 @@ const WORLD_COLLISION_MASK: int = 1
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
 @export var grab_height: float = 1.2
+# The depth size of space required to be collision free for hands to grab.
+@export var hand_depth: float = 0.1
 @export var search_distance: float = 0.7
 
 enum Direction {
@@ -237,12 +239,24 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	var edge_normal = Vector3(wall_hit.normal.x, 0, wall_hit.normal.z).normalized()
 	var edge_direction = edge_normal.cross(-floor_hit.normal)
 	
+	# Hand direction is perpendicular to the edge direction, going inwards to the ledge.
 	var hand_direction = floor_hit.normal.cross(edge_direction)
-	var hand_position = edge_position + (floor_hit.normal * 0.1) + (hand_direction * 0.1)
-	var hand_hit = Raycast.intersect_ray(hand_position - (hand_direction * 0.2), hand_position, WORLD_COLLISION_MASK)
+	var hand_position = edge_position + (floor_hit.normal * hand_depth) + (hand_direction * hand_depth)
+	var hand_hit = Raycast.intersect_ray(hand_position - (hand_direction * hand_depth * 2), hand_position, WORLD_COLLISION_MASK)
 	
 	if not hand_hit.is_empty():
 		info.error = LedgeInfo.Error.NO_HAND_SPACE
+		return info
+		
+	var hang_position = edge_position - (hand_direction * hang_distance_from_wall)
+	
+	var params = Raycast.CollideCylinderParams.new()
+	params.collision_mask = WORLD_COLLISION_MASK
+	
+	var hang_hit = Raycast.collide_cylinder(hang_position, 0.5, 0.1, params)
+	
+	if not hang_hit.is_empty():
+		info.error = LedgeInfo.Error.NO_HANG_SPACE
 		return info
 	
 	info.position = edge_position

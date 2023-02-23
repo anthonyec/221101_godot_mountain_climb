@@ -40,7 +40,7 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to("Move")
 		return
 		
-	var ledge_info = player.ledge.get_ledge_info(player.global_transform.origin, -player.global_transform.basis.z)
+	var ledge_info = player.ledge.get_ledge_info(player.get_offset_position(0, 0.2), -player.global_transform.basis.z)
 	var ledge_exists = !ledge_info.has_error()
 	var has_stamina = !player.stamina.is_depleted()
 	
