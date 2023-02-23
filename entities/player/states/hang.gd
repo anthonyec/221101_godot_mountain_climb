@@ -49,8 +49,6 @@ func physics_update(delta: float) -> void:
 		player.animation.play("Hang-shimmy_RobotArmature")
 	else:
 		player.animation.play("Hang-loop_RobotArmature")
-		
-	player.stamina.use(1.5 * delta)
 	
 	if player.stamina.is_depleted():
 		state_machine.transition_to("Fall")
