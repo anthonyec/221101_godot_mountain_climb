@@ -248,12 +248,12 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 		info.error = LedgeInfo.Error.NO_HAND_SPACE
 		return info
 		
-	var hang_position = edge_position - (hand_direction * hang_distance_from_wall)
+	var hang_position = edge_position - (hand_direction * hang_distance_from_wall) + (Vector3.DOWN * 0.35)
 	
 	var params = Raycast.CollideCylinderParams.new()
 	params.collision_mask = WORLD_COLLISION_MASK
 	
-	var hang_hit = Raycast.collide_cylinder(hang_position, 0.5, 0.1, params)
+	var hang_hit = Raycast.collide_cylinder(hang_position, 1.5, 0.1, params)
 	
 	if not hang_hit.is_empty():
 		info.error = LedgeInfo.Error.NO_HANG_SPACE

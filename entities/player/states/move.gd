@@ -34,6 +34,8 @@ func exit() -> void:
 func update(_delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
+	player.face_towards(player.global_transform.origin + direction)
+	
 	if direction.length():
 		player.animation.play("Run")
 	else:
@@ -45,7 +47,6 @@ func physics_update(delta: float) -> void:
 	movement = player_forward * direction.length() * player.walk_speed
 	
 	player.velocity = movement
-	player.face_towards(player.global_transform.origin + direction)
 	
 	if player.velocity.length() >= 20.0:
 		player.velocity = player.velocity.normalized() * 20.0
@@ -54,7 +55,7 @@ func physics_update(delta: float) -> void:
 	# warning-ignore:warning-id
 	player.move_and_slide()
 	movement = player.velocity
-	
+		
 	if player.is_near_ground():
 		player.snap_to_ground()
 	else:
