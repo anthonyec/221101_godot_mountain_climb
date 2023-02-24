@@ -5,12 +5,14 @@ script/source = "extends Area3D
 
 @export var gameplay_camera: Node3D
 @export var players_required: int = 1
+@export var required_state: String = \"\"
 @export var distance: float = 10
 @export var pitch: float = 45
 @export var yaw: float = -90
 @export var distance_enabled: bool = true
 @export var pitch_enabled: bool = true
 @export var yaw_enabled: bool = true
+@export var follow_player_rotation: bool = false
 @export var return_to_previous_settings: bool = true
 
 var number_of_players: int = 0
@@ -18,12 +20,40 @@ var original_distance: float = 0
 var original_pitch: float = 0
 var original_yaw: float = 0
 
-func _on_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_index):
+var bodies: Array = []
+
+func _process(_delta: float) -> void:
+	if follow_player_rotation and not bodies.is_empty():
+		var average_rotation: float = 0
+		var follow_enabled: bool = true
+		
+		for object in bodies:
+			if not object is Player:
+				continue
+
+			object = object as Player
+			
+			if object.state_machine.current_state.name != required_state:
+				follow_enabled = false
+				continue
+			
+			var rotation_y = object.global_rotation.y
+			
+			average_rotation += rotation_y
+		
+		average_rotation = average_rotation / bodies.size()
+		
+		if follow_enabled:
+			gameplay_camera.yaw = rad_to_deg(average_rotation)
+
+func _on_body_shape_entered(_body_rid, body, _body_shape_index, _local_shape_index):
+	bodies.append(body)
+	
 	number_of_players += 1
 	
 	if number_of_players < players_required:
 		return
-	
+		
 	original_distance = gameplay_camera.distance
 	original_pitch = gameplay_camera.pitch
 	original_yaw = gameplay_camera.yaw
@@ -36,8 +66,11 @@ func _on_body_shape_entered(_body_rid, _body, _body_shape_index, _local_shape_in
 	
 	if yaw_enabled:
 		gameplay_camera.yaw = yaw
-
-func _on_body_shape_exited(_body_rid, _body, _body_shape_index, _local_shape_index):
+	
+func _on_body_shape_exited(_body_rid, body, _body_shape_index, _local_shape_index):
+	var body_index_to_remove = bodies.find(body)
+	bodies.remove_at(body_index_to_remove)
+	
 	number_of_players -= 1
 	
 	if number_of_players < players_required:
