@@ -43,6 +43,36 @@ enum InputType {
 var input_type: InputType = InputType.KEYBOARD
 var input_direction: Vector2 = Vector2.ZERO
 
+func on_state_change(previous_state: State, next_state: State, params: Dictionary) -> void:
+	if previous_state:
+		var prev_properties = previous_state.get_property_list()
+		var next_properties = next_state.get_property_list()
+		var prev_vars = {}
+		var next_vars = {}
+		
+		prev_properties = prev_properties.filter(func(property): return property.type == TYPE_VECTOR3)
+		next_properties = next_properties.filter(func(property): return property.type == TYPE_VECTOR3)
+		
+		prev_properties.map(func(property):
+			prev_vars[property.name] = previous_state[property.name]
+		)
+		
+		next_properties.map(func(property):
+			next_vars[property.name] = next_state[property.name]
+		)
+		
+		DebugTrace.startGroup()
+		DebugTrace.point("player_position", global_transform.origin)
+		DebugTrace.log(previous_state.name + " -> " + next_state.name, {
+			"prev_vars": prev_vars,
+			"message": params,
+			"next_vars": next_vars
+		})
+		DebugTrace.endGroup()
+
+func _ready() -> void:
+	state_machine.connect("state_changed", on_state_change)
+
 func _process(_delta: float) -> void:
 	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
 	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())

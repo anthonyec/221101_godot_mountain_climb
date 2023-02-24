@@ -1,6 +1,8 @@
 class_name StateMachine
 extends Node
 
+signal state_changed(previous_state: State, next_state: State, params: Dictionary)
+
 var previous_state: State
 var current_state: State
 var current_parent_state: State
@@ -78,6 +80,7 @@ func transition_to(state_name: String, params: Dictionary = {}) -> void:
 	
 	current_state.enter(params)
 	time_in_current_state = 0
+	state_changed.emit(previous_state, current_state, params)
 
 func transition_to_previous_state() -> void:
 	transition_to(previous_state.name)

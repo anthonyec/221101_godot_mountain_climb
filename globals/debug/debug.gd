@@ -4,6 +4,7 @@ const FONT = preload("res://addons/zylann.debug_draw/Hack-Regular.ttf")
 
 var canvas_item: CanvasItem = Node2D.new()
 
+var current_message: String = ""
 var notification: String = ""
 
 func round_to_dec(mumber: float, digit: int):
@@ -81,8 +82,22 @@ func notify(message: String) -> void:
 	await get_tree().create_timer(2).timeout
 	
 	notification = ""
+	
+func show_message(message: String) -> void:
+	current_message = message
 
 func _on_canvas_item_draw() -> void:
+	if current_message != "":
+		var messages = current_message.split("\n")
+		var start_position = Vector2(500, 300)
+		
+		for index in messages.size():
+			var message = messages[index]
+			var line_position = Vector2(start_position.x, start_position.y + (18 * index))
+			
+			canvas_item.draw_string(FONT, line_position + Vector2(1, 1), message, 0, -1, 13, Color(0, 0, 0, 0.75))
+			canvas_item.draw_string(FONT, line_position, message, 0, -1, 13, Color.WHITE)
+		
 	if notification != "":
 		canvas_item.draw_string(FONT, Vector2(501, 52), notification, 0, -1, 24, Color(0, 0, 0, 0.75))
 		canvas_item.draw_string(FONT, Vector2(500, 50), notification, 0, -1, 24, Color.WHITE)
