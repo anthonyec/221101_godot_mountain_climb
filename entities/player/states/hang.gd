@@ -66,7 +66,7 @@ func physics_update(delta: float) -> void:
 		shimmy_strength = player.input_direction.x
 		vault_strength = -player.input_direction.y
 
-	position_on_ledge += shimmy_strength * delta
+	position_on_ledge += shimmy_strength * player.shimmy_speed * delta
 	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
 	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	

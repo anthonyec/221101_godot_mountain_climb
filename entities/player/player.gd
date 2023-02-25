@@ -19,6 +19,7 @@ const WORLD_COLLISION_MASK: int = 1
 @export var air_turn_speed: float = 2.5
 
 @export_group("Ledge Grabbing")
+@export var shimmy_speed: float = 2.0
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
 @export var grab_height: float = 1.2

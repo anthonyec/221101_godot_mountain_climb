@@ -72,8 +72,8 @@ func _on_body_shape_exited(_body_rid, body, _body_shape_index, _local_shape_inde
 	bodies.remove_at(body_index_to_remove)
 	
 	number_of_players -= 1
-	
-	if number_of_players < players_required:
+
+	if number_of_players < players_required - 1:
 		return
 	
 	if !return_to_previous_settings:
