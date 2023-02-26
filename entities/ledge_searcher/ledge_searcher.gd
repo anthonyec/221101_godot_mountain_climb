@@ -68,22 +68,30 @@ func get_position_on_ledge(length: float) -> Vector3:
 	return Utils.get_position_on_path(path, clamp(length, min_length, max_length), min_length)
 	
 func extend_path(direction: Direction) -> void:
-	var ledge_info: LedgeInfo
+	var ledge_info: LedgeInfo = null
 	
-	if direction == Direction.RIGHT:
+	if direction == Direction.RIGHT and last_max_ledge_info != null:
 		ledge_info = last_max_ledge_info
 		
-	if direction == Direction.LEFT:
+	if direction == Direction.LEFT and last_min_ledge_info != null:
 		ledge_info = last_min_ledge_info
 
-	find_and_build_path(ledge_info, direction)
+	if ledge_info != null:
+		find_and_build_path(ledge_info, direction)
 
 func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) -> void:
 	var search_result = search_for_more_ledge(initial_ledge_info, direction)
 	
 	if search_result.points.is_empty():
-		# TODO: Maybe return just one ledge point so that player can just 
-		# hand but not move?
+		# Ensure a min or max still exists even if additional ledge was not found.
+		# This is because the enviroment might change while hanging, and we'd 
+		# still want to continue a ledge search from this position.
+		if direction == Direction.RIGHT:
+			last_max_ledge_info = initial_ledge_info
+			
+		if direction == Direction.LEFT:
+			last_min_ledge_info = initial_ledge_info
+		
 		return
 		
 	var new_length: float = 0
@@ -179,6 +187,9 @@ func simplify_path(points: Array[Vector3]) -> Array[Vector3]:
 	return new_points
 	
 func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> LedgeSearchResult:
+	assert(initial_ledge != null, "Ledge info must exist")
+	assert(!initial_ledge.has_error(), "Ledge info must not have error")
+	
 	var resolution = 0.01
 	
 	var result: LedgeSearchResult = LedgeSearchResult.new()
