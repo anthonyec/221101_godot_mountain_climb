@@ -46,6 +46,8 @@ func reset() -> void:
 	min_length = 0
 	max_length = 0
 	total_length = 0
+	last_min_ledge_info = null
+	last_max_ledge_info = null
 	
 func clean() -> void:
 	pass
