@@ -63,8 +63,8 @@ func render_step(step) -> void:
 		for key in step.props.keys():
 			var value = step.props[key]
 			
-			if value is String:
-				message += key + ": " + value
+			if not value is Dictionary:
+				message += key + ": " + str(value)
 				message += "\n"
 				
 			if value is Dictionary:
