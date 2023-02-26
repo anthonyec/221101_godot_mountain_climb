@@ -7,10 +7,10 @@ func awake() -> void:
 
 func enter(params: Dictionary) -> void:
 	player.animation.play("Hang-loop_RobotArmature")
-#	player.collision.disabled = true
 	
 	var ledge_info = params.get("ledge_info")
 	assert(ledge_info, "Ledge info required for hang state to work")
+	assert(!ledge_info.has_error(), "Ledge info must not have error")
 	
 	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.RIGHT)
 	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.LEFT)
@@ -18,7 +18,6 @@ func enter(params: Dictionary) -> void:
 
 func exit() -> void:
 	position_on_ledge = 0
-#	player.collision.disabled = false
 	player.ledge.reset()
 	
 func update(_delta: float) -> void:

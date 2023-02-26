@@ -157,7 +157,7 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 		var normal_a = normals[index]
 		var normal_c = normals[index + 2]
 		var averaged_b = (normal_a + normal_c) / 2
-
+		
 		normals[index + 1] = averaged_b.normalized()
 
 # Based on: https://github.com/mattdesl/simplify-path/blob/master/radial-distance.js
