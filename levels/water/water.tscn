@@ -162,6 +162,12 @@ material_override = ExtResource("8_443gt")
 use_collision = true
 size = Vector3(100, 1, 100)
 
+[node name="WaterCollision" type="Area3D" parent="." groups=["water"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.13344, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WaterCollision"]
+shape = SubResource("BoxShape3D_4tfgo")
+
 [node name="Water" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.14672, 0)
 material_override = SubResource("StandardMaterial3D_rbbv6")

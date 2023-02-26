@@ -74,6 +74,18 @@ func physics_update(delta: float) -> void:
 			is_ready_to_lift_companion = true
 	else:
 		is_ready_to_lift_companion = false
+		
+	var collisions = player.pickup_collision.get_overlapping_areas()
+	var water_collision = collisions.filter(func (area: Area3D):
+		return area.is_in_group("water")
+	)
+	
+	if not water_collision.is_empty():
+		var water_area = water_collision[0]
+		
+		# TODO: Pass water area to swim state?
+		state_machine.transition_to("Swim")
+		return
 	
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):

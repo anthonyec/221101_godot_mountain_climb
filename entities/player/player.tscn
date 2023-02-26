@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://cxqdpc8g3lot8"]
+[gd_scene load_steps=32 format=3 uid="uid://cxqdpc8g3lot8"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
 [ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cugjrmwt16ejf" path="res://entities/state_machine/state_machine.tscn" id="5_34cx1"]
 [ext_resource type="PackedScene" uid="uid://bt1l6u0dxhrsp" path="res://entities/state_machine/state.tscn" id="6_jtsi6"]
 [ext_resource type="Script" path="res://entities/player/states/move.gd" id="7_5lt8n"]
+[ext_resource type="Script" path="res://entities/player/states/swim.gd" id="8_6ld44"]
 [ext_resource type="Script" path="res://entities/player/states/jump.gd" id="8_ruy6m"]
 [ext_resource type="Script" path="res://entities/player/states/fall.gd" id="9_b20a8"]
 [ext_resource type="Script" path="res://entities/player/states/hang.gd" id="10_pvcqn"]
@@ -62,6 +63,9 @@ one_shot = true
 
 [node name="Move" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("7_5lt8n")
+
+[node name="Swim" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("8_6ld44")
 
 [node name="Jump" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("8_ruy6m")
