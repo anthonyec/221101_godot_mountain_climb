@@ -11,6 +11,12 @@ func enter(_params: Dictionary) -> void:
 	movement = player.velocity * 0.5
 	SFX.play_at_location("impact/water", player.global_transform.origin)
 	
+	# TODO: Add a special effects API like this?
+	# ```gdscript
+	# Particles.spawn_at_location("impact/water", player.global_transform.origin)
+	# var water_trail = Particles.attach_to("water_trail", player)
+	# ```
+	
 func exit() -> void:
 	movement = Vector3.ZERO
 
