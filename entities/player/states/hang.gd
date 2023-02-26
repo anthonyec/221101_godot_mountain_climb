@@ -82,6 +82,13 @@ func physics_update(delta: float) -> void:
 		player.face_towards(player.global_transform.origin + hang_normal)
 		player.stamina.use(30.0)
 		
+		# Give a little stamina boost so that player can still grab on to
+		# something after jumping.
+		# TODO: Work out the gameplay implications of this.
+		if player.stamina.amount < 10.0:
+			# TODO: Find out why stamina.regain does not work here.
+			player.stamina.amount = max(player.stamina.amount, 2.0)
+		
 		# TODO: This should probably transition to a specfic VaultJump state that
 		# ignores input_direction.
 		state_machine.transition_to("Jump", {
