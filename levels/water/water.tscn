@@ -26,10 +26,14 @@ sky_material = SubResource("ProceduralSkyMaterial_odsyj")
 background_mode = 2
 background_color = Color(0.972549, 0.956863, 0.929412, 1)
 sky = SubResource("Sky_33nyb")
+tonemap_white = 0.27
 ssao_enabled = true
 ssao_radius = 2.0
 ssao_intensity = 1.5
 ssao_power = 2.0
+fog_light_color = Color(1, 1, 1, 1)
+volumetric_fog_density = 0.01
+volumetric_fog_ambient_inject = 1.0
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4tfgo"]
 size = Vector3(100, 1, 100)
