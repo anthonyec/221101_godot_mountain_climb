@@ -14,7 +14,10 @@ func enter(params: Dictionary) -> void:
 	
 	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.RIGHT)
 	player.ledge.find_and_build_path(ledge_info, LedgeSearcher.Direction.LEFT)
-	assert(player.ledge.path, "Path should be found")
+	
+	if player.ledge.path.is_empty():
+		Debug.notify("Warning: Not ledge path created")
+		state_machine.transition_to_previous_state()
 
 func exit() -> void:
 	position_on_ledge = 0
@@ -103,9 +106,10 @@ func physics_update(delta: float) -> void:
 	
 	var start_position = player.global_transform.origin + Vector3.UP
 	var end_position = ledge_info.position + Vector3.UP - (ledge_info.wall_normal * 0.45)
-	var is_vault_area_hit = sweep_cylinder(start_position, end_position)
+	var is_vault_space_clear = not sweep_cylinder(start_position, end_position)
+	var is_jumping_or_moving_up = (Input.is_action_just_pressed(player.get_action_name("jump")) or vault_strength > 0.8)
 	
-	if not is_vault_area_hit and Input.is_action_just_pressed(player.get_action_name("jump")) and state_machine.time_in_current_state > 200:
+	if is_vault_space_clear and is_jumping_or_moving_up and state_machine.time_in_current_state > 200:
 		state_machine.transition_to("Vault")
 		return
 

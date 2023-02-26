@@ -45,6 +45,13 @@ func physics_update(delta: float) -> void:
 	var has_stamina = !player.stamina.is_depleted()
 	
 	if Input.is_action_pressed(player.get_action_name("grab")) and ledge_exists and has_stamina:
+#		DebugTrace.log("fall_found_ledge", {
+#			"player_position": player.global_transform.origin,
+#			"player_rotation": player.global_rotation,
+#			"ledge_search_position": player.get_offset_position(0, 0.2),
+#			"ledge_search_direction": -player.global_transform.basis.z,
+#			"found_ledge_position": ledge_info.position
+#		})
 		state_machine.transition_to("Hang", {
 			"ledge_info": ledge_info
 		})

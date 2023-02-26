@@ -63,6 +63,22 @@ func _input(event: InputEvent) -> void:
 			player.stamina.reset()
 			
 		notify("Stamina refilled")
+		
+	if key_event.keycode == KEY_4:
+		var players = get_tree().get_nodes_in_group("player")
+		
+		if players.is_empty():
+			return
+		
+		for player in players:
+			player = player as Player
+			
+			if player.input_type == Player.InputType.CONTROLLER:
+				player.global_transform.origin = Vector3(7.365429, 5.890122, 15.62682)
+				player.global_rotation = Vector3(0, 0.236252, 0)
+			
+		notify("Set player postion and rotation")
+		pass
 	
 	if key_event.keycode == KEY_8:
 		Engine.max_fps = 30 if Engine.max_fps == 60 else 60

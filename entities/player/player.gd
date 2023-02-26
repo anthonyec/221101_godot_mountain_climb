@@ -62,14 +62,14 @@ func on_state_change(previous_state: State, next_state: State, params: Dictionar
 			next_vars[property.name] = next_state[property.name]
 		)
 		
-		DebugTrace.startGroup()
-		DebugTrace.point("player_position", global_transform.origin)
-		DebugTrace.log(previous_state.name + " -> " + next_state.name, {
-			"prev_vars": prev_vars,
-			"message": params,
-			"next_vars": next_vars
-		})
-		DebugTrace.endGroup()
+#		DebugTrace.startGroup()
+#		DebugTrace.point("player_position", global_transform.origin)
+#		DebugTrace.log(previous_state.name + " -> " + next_state.name, {
+#			"prev_vars": prev_vars,
+#			"message": params,
+#			"next_vars": next_vars
+#		})
+#		DebugTrace.endGroup()
 
 func _ready() -> void:
 	state_machine.connect("state_changed", on_state_change)

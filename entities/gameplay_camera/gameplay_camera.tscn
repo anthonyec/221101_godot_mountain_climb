@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=2 format=3 uid="uid://x4a4si75gp2x"]
 
 [ext_resource type="Script" path="res://entities/gameplay_camera/gameplay_camera.gd" id="1"]
 
@@ -11,4 +11,5 @@ unique_name_in_owner = true
 
 [node name="Camera3D" type="Camera3D" parent="Rig"]
 unique_name_in_owner = true
+current = true
 fov = 80.0
