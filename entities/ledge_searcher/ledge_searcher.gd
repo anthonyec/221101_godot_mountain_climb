@@ -97,7 +97,7 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 			
 		if direction == Direction.LEFT:
 			last_min_ledge_info = initial_ledge_info
-		
+			
 		return
 		
 	var new_length: float = 0
@@ -216,6 +216,8 @@ func search_for_more_ledge(initial_ledge: LedgeInfo, direction: Direction) -> Le
 		var ledge = get_ledge_info(start_search_position, -last_ledge.wall_normal)
 		
 		if ledge.has_error():
+			# TODO: Add a way to do retries here to search a little further 
+			# along the ledge.
 			result.error = ledge.error
 			break
 			
@@ -274,10 +276,13 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 	
 	var hang_hit = Raycast.collide_cylinder(hang_position, 1.5, 0.1, hang_hit_params)
 	
+	# Edge position fuzz starts a little bit above the edge position to clear 
+	# any little steps in the geometry.
+	var edge_position_fuzz = (floor_hit.normal * 0.05)
+	
 	# Check for collisions between the edge and hang position because there can 
-	# be cases where there is a thin wall between them, e.g two cubes next to 
-	# each other.
-	var space_between_edge_and_hang_hit = Raycast.intersect_ray(edge_position, hang_position, WORLD_COLLISION_MASK)
+	# be cases where there is a thin wall between them. .
+	var space_between_edge_and_hang_hit = Raycast.intersect_ray(edge_position + edge_position_fuzz, hang_position, WORLD_COLLISION_MASK)
 	
 	if not hang_hit.is_empty() or not space_between_edge_and_hang_hit.is_empty():
 		info.error = LedgeInfo.Error.NO_HANG_SPACE
