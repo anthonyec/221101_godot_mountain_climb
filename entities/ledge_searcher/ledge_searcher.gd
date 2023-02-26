@@ -39,6 +39,12 @@ func _process(_delta: float) -> void:
 		if index > 0:
 			var previous_point = path[index - 1]
 			DebugDraw.draw_line_3d(previous_point, point, Color.PURPLE)
+			
+	if last_min_ledge_info:
+		DebugDraw.draw_cube(last_min_ledge_info.position, 0.2, Color.CYAN)
+		
+	if last_max_ledge_info:
+		DebugDraw.draw_cube(last_max_ledge_info.position, 0.2, Color.ORANGE)
 
 func reset() -> void:
 	path = []
