@@ -268,13 +268,18 @@ func get_ledge_info(start_position: Vector3, direction: Vector3) -> LedgeInfo:
 		return info
 		
 	var hang_position = edge_position - (hand_direction * hang_distance_from_wall) + (Vector3.DOWN * 0.35)
+	var hang_hit_params = Raycast.CollideCylinderParams.new()
 	
-	var params = Raycast.CollideCylinderParams.new()
-	params.collision_mask = WORLD_COLLISION_MASK
+	hang_hit_params.collision_mask = WORLD_COLLISION_MASK
 	
-	var hang_hit = Raycast.collide_cylinder(hang_position, 1.5, 0.1, params)
+	var hang_hit = Raycast.collide_cylinder(hang_position, 1.5, 0.1, hang_hit_params)
 	
-	if not hang_hit.is_empty():
+	# Check for collisions between the edge and hang position because there can 
+	# be cases where there is a thin wall between them, e.g two cubes next to 
+	# each other.
+	var space_between_edge_and_hang_hit = Raycast.intersect_ray(edge_position, hang_position, WORLD_COLLISION_MASK)
+	
+	if not hang_hit.is_empty() or not space_between_edge_and_hang_hit.is_empty():
 		info.error = LedgeInfo.Error.NO_HANG_SPACE
 		return info
 	
