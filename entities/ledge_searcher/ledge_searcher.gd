@@ -119,7 +119,12 @@ func find_and_build_path(initial_ledge_info: LedgeInfo, direction: Direction) ->
 		path.append_array(new_points)
 		path.reverse()
 		
+		# The length needs to include the first path element, otherwise
+		# the current position will move back one path segment in size.
+		# TOOD: Clean this up! Appending and removing seems a bit messy.
+		new_points.append(path[0])
 		new_length = Utils.get_path_length(new_points)
+		new_points.pop_back()
 		last_min_ledge_info = search_result.last_ledge_info
 
 	# TODO: This can actually be done when appending to avoid
