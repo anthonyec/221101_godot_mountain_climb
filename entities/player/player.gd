@@ -172,7 +172,7 @@ func is_near_ground() -> bool:
 	if floor_hit.is_empty():
 		return false
 	
-	return true
+	return true 
 	
 func snap_to_ground() -> void:
 	var floor_hit = Raycast.cast_in_direction(global_transform.origin, Vector3.DOWN, height, WORLD_COLLISION_MASK)

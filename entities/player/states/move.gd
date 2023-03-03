@@ -6,6 +6,10 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
 
+var last_slope_percent: float = 0
+var momentum: Vector3 = Vector3.ZERO
+var momentum_speed: float = 0
+
 func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
@@ -31,10 +35,10 @@ func enter(params: Dictionary) -> void:
 func exit() -> void:
 	player.stamina.can_recover = false
 
-func update(_delta: float) -> void:
+func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
-	player.face_towards(player.global_transform.origin + direction)
+	player.face_towards(player.global_transform.origin + direction, 10, delta)
 	
 	if direction.length():
 		player.animation.play("Run")
@@ -46,7 +50,7 @@ func physics_update(delta: float) -> void:
 	
 	movement = player_forward * direction.length() * player.walk_speed
 	
-	player.velocity = movement
+#	player.velocity = movement
 	
 	if player.velocity.length() >= 20.0:
 		player.velocity = player.velocity.normalized() * 20.0
@@ -56,25 +60,67 @@ func physics_update(delta: float) -> void:
 	player.move_and_slide()
 	movement = player.velocity
 		
-	if player.is_near_ground():
-		player.snap_to_ground()
-	else:
+	if not player.is_near_ground():
 		state_machine.transition_to("Fall", {
 			"movement": movement,
 			"coyote_time_enabled": true
 		})
 		return
 	
-	var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
-	var companion_state = player.companion.state_machine.current_state.name
+	player.snap_to_ground()
 	
-	if Input.is_action_pressed(player.get_action_name("grab")) and Input.is_action_pressed(player.companion.get_action_name("grab")):
-		if distance_to_companion < 1 and companion_state == "Move":
-			DebugDraw.draw_line_3d(player.global_transform.origin, player.companion.global_transform.origin, Color.GREEN)
-			is_ready_to_lift_companion = true
-	else:
-		is_ready_to_lift_companion = false
+	var floor_hit = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
+	assert(not floor_hit.is_empty())
+	
+	var floor_normal_right = floor_hit.normal.cross(Vector3.DOWN).normalized()
+	var up_slope_direction = floor_hit.normal.cross(floor_normal_right)
+	
+	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal, 2, Color.GREEN)
+	DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_right, 2, Color.RED)
+	DebugDraw.draw_ray_3d(floor_hit.position, up_slope_direction, 2, Color.CYAN)
+	
+	var momentum_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
+	var slope_percent = 1 - momentum_on_slope.y
+	
+	DebugDraw.draw_ray_3d(floor_hit.position, momentum_on_slope, 2, Color.WHITE)
+	
+	print(slope_percent)
+	
+#	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal.cross(player.global_transform.basis.x), 1, Color.PINK)
+#	DebugDraw.draw_ray_3d(floor_hit.position, slope_direction, 1, Color.GREEN)
+#	DebugDraw.draw_ray_3d(floor_hit.position + (Vector3.UP * 0.1), momentum.normalized(), 1, Color.CYAN)
+	
+#	var dot = momentum.normalized().dot(up_slope_direction)
+	
+#	print(dot)
+	
+#	momentum += direction * momentum_speed
+#	momentum *= 0.85
+	
+	momentum = direction
+	var target_speed = player.walk_speed * slope_percent
+	momentum_speed = lerp(momentum_speed, target_speed, delta)
+	
+	player.velocity = direction * momentum_speed
+	
+	last_slope_percent = slope_percent
+	
+	DebugDraw.set_text("target_speed", target_speed)
+	DebugDraw.set_text("momentum_speed", momentum_speed)
+	
+	player.animation.speed_scale = momentum_speed / player.walk_speed
+	
+	if player.companion:
+		var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
+		var companion_state = player.companion.state_machine.current_state.name
 		
+		if Input.is_action_pressed(player.get_action_name("grab")) and Input.is_action_pressed(player.companion.get_action_name("grab")):
+			if distance_to_companion < 1 and companion_state == "Move":
+				DebugDraw.draw_line_3d(player.global_transform.origin, player.companion.global_transform.origin, Color.GREEN)
+				is_ready_to_lift_companion = true
+		else:
+			is_ready_to_lift_companion = false
+			
 	var collisions = player.pickup_collision.get_overlapping_areas()
 	var water_collision = collisions.filter(func (area: Area3D):
 		return area.is_in_group("water")
