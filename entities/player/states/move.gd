@@ -42,8 +42,10 @@ func update(delta: float) -> void:
 	
 	if direction.length():
 		player.animation.play("Run")
+		player.animation.speed_scale = player.velocity.length() / player.walk_speed
 	else:
 		player.animation.play("Idle")
+		player.animation.speed_scale = 1
 
 func physics_update(delta: float) -> void:
 	var player_forward = -player.global_transform.basis.z
@@ -75,16 +77,30 @@ func physics_update(delta: float) -> void:
 	var floor_normal_right = floor_hit.normal.cross(Vector3.DOWN).normalized()
 	var up_slope_direction = floor_hit.normal.cross(floor_normal_right)
 	
-	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal, 2, Color.GREEN)
-	DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_right, 2, Color.RED)
-	DebugDraw.draw_ray_3d(floor_hit.position, up_slope_direction, 2, Color.CYAN)
+	var forward_on_slope = Plane(floor_hit.normal).project(player.global_transform.basis.z).normalized()
+	var right_on_slope = floor_hit.normal.cross(forward_on_slope).normalized()
+	var model_basis = Basis(right_on_slope, floor_hit.normal, forward_on_slope).orthonormalized()
+	
+	player.model.global_transform.basis = model_basis
+	
+	player.model.transform.origin = Vector3.ZERO
+	var model_position = floor_hit.position + floor_hit.normal
+	
+	player.model.global_transform.origin = model_position
+	
+	DebugDraw.draw_ray_3d(floor_hit.position, model_basis.x, 2, Color.RED)
+	DebugDraw.draw_ray_3d(floor_hit.position, model_basis.y, 2, Color.GREEN)
+	DebugDraw.draw_ray_3d(floor_hit.position, model_basis.z, 2, Color.CYAN)
+	DebugDraw.draw_line_3d(floor_hit.position, model_position, Color.WHITE)
+	
+#	DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_right, 2, Color.RED)
+#	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal, 2, Color.GREEN)
+#	DebugDraw.draw_ray_3d(floor_hit.position, up_slope_direction, 2, Color.CYAN)
 	
 	var momentum_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
 	var slope_percent = 1 - momentum_on_slope.y
 	
 	DebugDraw.draw_ray_3d(floor_hit.position, momentum_on_slope, 2, Color.WHITE)
-	
-	print(slope_percent)
 	
 #	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal.cross(player.global_transform.basis.x), 1, Color.PINK)
 #	DebugDraw.draw_ray_3d(floor_hit.position, slope_direction, 1, Color.GREEN)
@@ -97,18 +113,28 @@ func physics_update(delta: float) -> void:
 #	momentum += direction * momentum_speed
 #	momentum *= 0.85
 	
+#	momentum += direction * delta * (player.walk_speed * 1.5)
+#	momentum *= 0.9
+	
 	momentum = direction
+	
 	var target_speed = player.walk_speed * slope_percent
 	momentum_speed = lerp(momentum_speed, target_speed, delta)
 	
-	player.velocity = direction * momentum_speed
+	player.velocity = momentum * momentum_speed
 	
 	last_slope_percent = slope_percent
 	
 	DebugDraw.set_text("target_speed", target_speed)
 	DebugDraw.set_text("momentum_speed", momentum_speed)
 	
-	player.animation.speed_scale = momentum_speed / player.walk_speed
+#	var up = floor_hit.normal
+#
+#	player.model.transform.origin = Vector3(0, 0, 0)
+#	player.model.global_transform.basis.y = up
+#	player.model.global_transform.basis.x = -player.model.global_transform.basis.z.cross(up)
+#	player.model.global_transform.basis = player.model.global_transform.basis.orthonormalized()
+#	player.model.transform.origin = Vector3(0, 1, 0)
 	
 	if player.companion:
 		var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)

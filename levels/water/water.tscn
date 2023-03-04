@@ -107,7 +107,7 @@ shadow_enabled = true
 [node name="GameplayCamera" parent="." instance=ExtResource("5_hisql")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.0585, 2.8142, 0.162889)
 debug = true
-players = Array[NodePath]([NodePath("../Player1"), NodePath("../Player2")])
+players = Array[NodePath]([NodePath("../Player2")])
 distance = 9.0
 yaw = -90.0
 speed = 1.0
