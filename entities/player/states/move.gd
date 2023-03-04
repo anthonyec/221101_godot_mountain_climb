@@ -9,6 +9,7 @@ var is_ready_to_lift_companion: bool = false
 var last_slope_percent: float = 0
 var momentum: Vector3 = Vector3.ZERO
 var momentum_speed: float = 0
+var floor_normal_lerped: Vector3 = Vector3.UP
 
 func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
@@ -34,6 +35,9 @@ func enter(params: Dictionary) -> void:
 
 func exit() -> void:
 	player.stamina.can_recover = false
+	player.model.transform.basis = Basis.IDENTITY
+	player.model.transform.origin = Vector3.ZERO
+	floor_normal_lerped = Vector3.UP
 
 func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
@@ -77,14 +81,23 @@ func physics_update(delta: float) -> void:
 	var floor_normal_right = floor_hit.normal.cross(Vector3.DOWN).normalized()
 	var up_slope_direction = floor_hit.normal.cross(floor_normal_right)
 	
-	var forward_on_slope = Plane(floor_hit.normal).project(player.global_transform.basis.z).normalized()
+	var momentum_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
+	
+	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
+	var slope_percent = 1 - momentum_on_slope.y
+	
+	if player.velocity.length() > 4 and slope_percent > 1.2:
+		floor_normal_lerped += (floor_hit.normal - floor_normal_lerped) * delta * 5.0
+	else:
+		floor_normal_lerped += (Vector3.UP - floor_normal_lerped) * delta * 5.0
+	
+	var forward_on_slope = Plane(floor_normal_lerped).project(player.global_transform.basis.z).normalized()
 	var right_on_slope = floor_hit.normal.cross(forward_on_slope).normalized()
-	var model_basis = Basis(right_on_slope, floor_hit.normal, forward_on_slope).orthonormalized()
+	var model_basis = Basis(right_on_slope, floor_normal_lerped, forward_on_slope).orthonormalized()
 	
 	player.model.global_transform.basis = model_basis
 	
-	player.model.transform.origin = Vector3.ZERO
-	var model_position = floor_hit.position + floor_hit.normal
+	var model_position = floor_hit.position + floor_normal_lerped
 	
 	player.model.global_transform.origin = model_position
 	
@@ -94,11 +107,9 @@ func physics_update(delta: float) -> void:
 	DebugDraw.draw_line_3d(floor_hit.position, model_position, Color.WHITE)
 	
 #	DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_right, 2, Color.RED)
-#	DebugDraw.draw_ray_3d(floor_hit.position, floor_hit.normal, 2, Color.GREEN)
+	DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_lerped, 3, Color.GREEN)
 #	DebugDraw.draw_ray_3d(floor_hit.position, up_slope_direction, 2, Color.CYAN)
-	
-	var momentum_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
-	var slope_percent = 1 - momentum_on_slope.y
+
 	
 	DebugDraw.draw_ray_3d(floor_hit.position, momentum_on_slope, 2, Color.WHITE)
 	
@@ -127,6 +138,7 @@ func physics_update(delta: float) -> void:
 	
 	DebugDraw.set_text("target_speed", target_speed)
 	DebugDraw.set_text("momentum_speed", momentum_speed)
+	DebugDraw.set_text("slope_percent", slope_percent)
 	
 #	var up = floor_hit.normal
 #
@@ -135,7 +147,7 @@ func physics_update(delta: float) -> void:
 #	player.model.global_transform.basis.x = -player.model.global_transform.basis.z.cross(up)
 #	player.model.global_transform.basis = player.model.global_transform.basis.orthonormalized()
 #	player.model.transform.origin = Vector3(0, 1, 0)
-	
+
 	if player.companion:
 		var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
 		var companion_state = player.companion.state_machine.current_state.name
