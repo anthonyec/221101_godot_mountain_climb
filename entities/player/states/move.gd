@@ -5,7 +5,8 @@ const WORLD_COLLISION_MASK: int = 1
 var is_ready_to_lift_companion: bool = false
 var direction: Vector3 = Vector3.ZERO
 var momentum: Vector3 = Vector3.ZERO
-var momentum_speed: float = 0
+var momentum_speed: float = 5
+var input_speed: float = 0
 
 func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
@@ -36,6 +37,11 @@ func exit() -> void:
 func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
+	if direction.length() == 0:
+		input_speed = 0
+	else:
+		input_speed = remap(direction.length(), 0, 1, 0.2, 1)
+		
 	player.face_towards(player.global_transform.origin + direction, 7.0, delta)
 	
 	if player.velocity.length() > 0.2:
@@ -68,7 +74,7 @@ func physics_update(delta: float) -> void:
 		target_speed = 0.0
 	
 	momentum_speed = lerp(momentum_speed, target_speed, delta)
-	momentum = player_forward * direction.length()
+	momentum = player_forward * input_speed
 	
 	player.velocity = momentum * momentum_speed
 	player.move_and_slide()
