@@ -122,9 +122,9 @@ func align_model_to_floor(delta: float) -> void:
 	
 	floor_normal_lerped += (floor_hit.normal - floor_normal_lerped) * delta * 5.0
 	
-	var forward_on_slope: Vector3 = Plane(floor_normal_lerped).project(global_transform.basis.z).normalized()
-	var right_on_slope: Vector3 = floor_normal_lerped.cross(forward_on_slope).normalized()
-	var model_basis: Basis = Basis(right_on_slope, floor_normal_lerped, forward_on_slope).orthonormalized()
+	var floor_aligned_forward: Vector3 = Plane(floor_normal_lerped).project(global_transform.basis.z).normalized()
+	var floor_aligned_right: Vector3 = floor_normal_lerped.cross(floor_aligned_forward).normalized()
+	var model_basis: Basis = Basis(floor_aligned_right, floor_normal_lerped, floor_aligned_forward).orthonormalized()
 	var model_position: Vector3 = floor_hit.position + (floor_normal_lerped.lerp(Vector3.UP, align_to_floor_amount))
 	
 	model_basis = model_basis.slerp(global_transform.basis, align_to_floor_amount)
