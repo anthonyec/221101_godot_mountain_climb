@@ -3,6 +3,7 @@ extends CharacterBody3D
 
 const WORLD_COLLISION_MASK: int = 1
 
+@export var debug: bool = false
 @export_range(1, 2) var player_number: int = 1
 
 @export var companion: Node3D
@@ -109,6 +110,37 @@ func _input(event: InputEvent) -> void:
 		get_action_name("move_forward"),
 		get_action_name("move_backward")
 	)
+
+var floor_normal_lerped: Vector3 = Vector3.ZERO
+var align_to_floor_amount: float = 0.7
+
+func align_model_to_floor(delta: float) -> void:
+	var floor_hit = Raycast.cast_in_direction(global_transform.origin, Vector3.DOWN, height, WORLD_COLLISION_MASK)
+	
+	if floor_hit.is_empty():
+		return
+	
+	floor_normal_lerped += (floor_hit.normal - floor_normal_lerped) * delta * 5.0
+	
+	var forward_on_slope: Vector3 = Plane(floor_normal_lerped).project(global_transform.basis.z).normalized()
+	var right_on_slope: Vector3 = floor_normal_lerped.cross(forward_on_slope).normalized()
+	var model_basis: Basis = Basis(right_on_slope, floor_normal_lerped, forward_on_slope).orthonormalized()
+	var model_position: Vector3 = floor_hit.position + (floor_normal_lerped.lerp(Vector3.UP, align_to_floor_amount))
+	
+	model_basis = model_basis.slerp(global_transform.basis, align_to_floor_amount)
+	
+	model.global_transform.basis = model_basis
+	model.global_transform.origin = model_position
+	
+	if debug:
+		DebugDraw.draw_ray_3d(floor_hit.position, model_basis.x, 2, Color.RED)
+		DebugDraw.draw_ray_3d(floor_hit.position, model_basis.y, 2, Color.GREEN)
+		DebugDraw.draw_ray_3d(floor_hit.position, model_basis.z, 2, Color.CYAN)
+		DebugDraw.draw_ray_3d(floor_hit.position, floor_normal_lerped, 3, Color.WHITE)
+
+func reset_model_alignment() -> void:
+	model.transform.basis = Basis.IDENTITY
+	model.transform.origin = Vector3.ZERO
 
 # Get the action name with player number suffix.
 func get_action_name(action_name: String) -> String:

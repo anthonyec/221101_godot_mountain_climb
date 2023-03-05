@@ -2,12 +2,10 @@ extends PlayerState
 
 const WORLD_COLLISION_MASK: int = 1
 
-var direction: Vector3 = Vector3.ZERO
 var is_ready_to_lift_companion: bool = false
-
+var direction: Vector3 = Vector3.ZERO
 var momentum: Vector3 = Vector3.ZERO
 var momentum_speed: float = 0
-var floor_normal_lerped: Vector3 = Vector3.UP
 
 func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
@@ -33,13 +31,14 @@ func enter(params: Dictionary) -> void:
 
 func exit() -> void:
 	player.stamina.can_recover = false
+	player.reset_model_alignment()
 
 func update(delta: float) -> void:
 	direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
 	
 	player.face_towards(player.global_transform.origin + direction, 7.0, delta)
 	
-	if direction.length():
+	if player.velocity.length() > 0.2:
 		player.animation.play("Run")
 		player.animation.speed_scale = player.velocity.length() / player.walk_speed
 	else:
@@ -62,8 +61,11 @@ func physics_update(delta: float) -> void:
 	var momentum_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
 	
 	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
-	var slope_percent = 1 - momentum_on_slope.y	
-	var target_speed = player.walk_speed * slope_percent
+	var slope_percent = 1 - momentum_on_slope.y
+	var target_speed: float = player.walk_speed * slope_percent
+	
+	if direction.length() == 0:
+		target_speed = 0.0
 	
 	momentum_speed = lerp(momentum_speed, target_speed, delta)
 	momentum = player_forward * direction.length()
@@ -71,6 +73,7 @@ func physics_update(delta: float) -> void:
 	player.velocity = momentum * momentum_speed
 	player.move_and_slide()
 	player.snap_to_ground()
+	player.align_model_to_floor(delta)
 	
 	DebugDraw.draw_ray_3d(floor_hit.position, momentum_on_slope, 2, Color.WHITE)
 	DebugDraw.set_text("target_speed", target_speed)
