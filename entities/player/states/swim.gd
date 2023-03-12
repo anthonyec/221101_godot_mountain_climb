@@ -9,6 +9,7 @@ func enter(_params: Dictionary) -> void:
 	player.animation.play("Dive")
 	player.global_transform.origin = player.get_offset_position(0, 0.5)
 	movement = player.velocity * 0.5
+	
 	SFX.play_at_location("impact/water", player.global_transform.origin)
 	
 	# TODO: Add a special effects API like this?

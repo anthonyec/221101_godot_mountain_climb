@@ -30,6 +30,8 @@ func enter(params: Dictionary) -> void:
 	# This fixes "vault" to "move" state causing it to breifly enter the "fall" state.
 	if params.get("snap_to_floor"):
 		player.snap_to_ground()
+		
+	SFX.play_attached_to_node("impact/dirt_1_footstep_[%n]", player)
 
 func exit() -> void:
 	player.stamina.can_recover = false
