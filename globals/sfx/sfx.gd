@@ -25,6 +25,9 @@ class Parameters extends RefCounted:
 	var max_polyphony: int = 1
 	
 func _ready() -> void:
+	load_sounds()
+	
+func load_sounds() -> void:
 	number_suffix_regex = RegEx.new()
 	number_suffix_regex.compile("\\d+$")
 		
@@ -37,8 +40,12 @@ func _ready() -> void:
 	is_loaded = true
 
 func create_player_3d(sound_name: String, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
-	if !sounds.has(sound_name.trim_suffix(RANDOM_NUMBER_PLACEHOLDER)):
+	if not sounds.has(sound_name.trim_suffix(RANDOM_NUMBER_PLACEHOLDER)):
 		push_error("SFX: The sound called '", sound_name, "' does not exist.")
+		return AudioStreamPlayer3D.new()
+		
+	if sounds.has(sound_name) and sounds[sound_name] is Array:
+		push_error("SFX: The sound called '", sound_name, "' is a collection of sounds. Access them by using the '" + RANDOM_NUMBER_PLACEHOLDER + "' suffix.")
 		return AudioStreamPlayer3D.new()
 		
 	var file = get_sound_file(sound_name)
@@ -149,7 +156,7 @@ func get_files_with_extension(path: String, file_extension: String) -> Array[Str
 	var directory = DirAccess.open(path)
 	
 	if directory == null:
-		push_error("Failed to open directory: " + path)
+		push_error("SFX: Failed to open directory: " + path)
 		return []
 		
 	directory.list_dir_begin()

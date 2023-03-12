@@ -37,6 +37,7 @@ func update(_delta: float) -> void:
 
 func physics_update(delta: float) -> void:
 	if player.is_on_ground():
+		SFX.play_attached_to_node("impact/dirt_1_footstep_[%n]", player)
 		state_machine.transition_to("Move")
 		return
 		
