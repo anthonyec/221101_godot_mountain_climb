@@ -1,184 +1,176 @@
 extends Node3D
 
-var loaded: bool = false
+const RANDOM_NUMBER_PLACEHOLDER = "[%n]"
 
-# Type/shape of the sounds dictionary is: "sound_name": ["sound_file.wav": AudioStream]
+@export var sounds_directory: String = "res://globals/sfx/audio"
+
+var number_suffix_regex: RegEx = null
+var is_loaded: bool = false
 var sounds: Dictionary = {}
 
-func _ready():
-	var current_directory_path = self.get_script().get_path()
-	var base_directory_path = str(current_directory_path).replace("/sfx.gd", "/audio")
-	var results = scan_directory(base_directory_path, ".wav")
+# TODO: Add all the audio params here.
+class Parameters extends RefCounted:
+	# General params
+	var bus: String = "Master"
+	var volume_db: float = 0
+	var pitch_scale: float = 1
+	var loop: bool = false # Custom param
 	
-	if results.is_empty():
+	# 3D only params
+	var attenuation_filter_cutoff_hz: int = 20500
+	var max_db: float = 0
+	var max_distance: float = 30
+	
+	# 2D only params
+	var max_polyphony: int = 1
+	
+func _ready() -> void:
+	number_suffix_regex = RegEx.new()
+	number_suffix_regex.compile("\\d+$")
+		
+	var sound_files = get_files_with_extension(sounds_directory, ".wav")
+	
+	if sound_files.is_empty():
 		push_warning("SFX: Warning, no sound files were found.")
 		
-		for result in scan_directory(base_directory_path):
-			push_warning("SFX: Non-sound file found: ", result)
-			
-	for result in results:
-		# Remove the leading "/" and remove_at the trailing file extension including period.
-		# E.g, the path "/physics/glass/sound.wav" will become "physics/glass/sound"
-		var sound_name = result.replace(base_directory_path, "").trim_prefix("/").replace(result.get_extension(), "").trim_suffix(".")
-		
-		# TODO: This is a lazy way to get the number at the end. The correct way would be to use
-		# regex or going backwards of each char.
-		var number = sound_name.to_int()
-		var sound_name_without_number_suffix = sound_name.replace(str(number), "")
-		
-		sounds[sound_name] = [load(result)]
-		
-		# TODO: This does not supprt the number "0".
-		if number != 0:
-			if !sounds.has(sound_name_without_number_suffix):
-				sounds[sound_name_without_number_suffix] = []
-		
-			sounds[sound_name_without_number_suffix].append(load(result))
-	
-	loaded = true
-	
-func create(sound_name: String, options = {}) -> AudioStreamPlayer3D:
-	if !sounds.has(sound_name.trim_suffix("{%n}")):
+	sounds = build_sound_library_from_files(sound_files)
+	is_loaded = true
+
+func create_player_3d(sound_name: String, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
+	if !sounds.has(sound_name.trim_suffix(RANDOM_NUMBER_PLACEHOLDER)):
 		push_error("SFX: The sound called '", sound_name, "' does not exist.")
 		return AudioStreamPlayer3D.new()
 		
 	var file = get_sound_file(sound_name)
-	var player: AudioStreamPlayer3D = spawn_player(file, options)
+	var player: AudioStreamPlayer3D = spawn_player(file, parameters)
 	
 	return player
 	
-func play_attached_to_node(sound_name: String, node: Node3D, options = {}) -> AudioStreamPlayer3D:
-	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		push_error("SFX: The sound called '", sound_name, "' does not exist.")
-		return AudioStreamPlayer3D.new()
-		
-	var file = get_sound_file(sound_name)
-	var player: AudioStreamPlayer3D = spawn_player(file, options)
+func play_at_location(sound_name: String, location: Vector3, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
+	var player = create_player_3d(sound_name, parameters)
+	
+	add_child(player)
+	player.global_transform.origin = location
+	player.play()
+	
+	return player
+	
+func play_attached_to_node(sound_name: String, node: Node3D, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
+	var player = create_player_3d(sound_name, parameters)
 	
 	node.add_child(player)
-	
 	player.play()
 	
 	return player
-
-func play_at_location(sound_name: String, position_in_world: Vector3, options = {}) -> AudioStreamPlayer3D:
-	if !sounds.has(sound_name.trim_suffix("{%n}")):
+	
+func play_everywhere(sound_name: String, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer2D:
+	if !sounds.has(sound_name.trim_suffix(RANDOM_NUMBER_PLACEHOLDER)):
 		push_error("SFX: The sound called '", sound_name, "' does not exist.")
-		return AudioStreamPlayer3D.new()
+		return AudioStreamPlayer2D.new()
 		
-	var file = get_sound_file(sound_name)
-	var player: AudioStreamPlayer3D = spawn_player(file, options)
+	var sound_file = get_sound_file(sound_name)
+	var player: AudioStreamPlayer2D = AudioStreamPlayer2D.new()
 	
-	add_child(player)
-	
-	player.global_transform.origin = position_in_world
-	player.play()
-	
-	return player
-
-# TODO: Match all settings for everywhere to be the same as spatial sound.
-func play_everywhere(sound_name: String, options = {}) -> AudioStreamPlayer:
-	if !sounds.has(sound_name.trim_suffix("{%n}")):
-		push_error("SFX: The sound called '", sound_name, "' does not exist.")
-		return AudioStreamPlayer.new()
-		
-	var file = get_sound_file(sound_name)
-	var player: AudioStreamPlayer = AudioStreamPlayer.new()
-	var _signal = player.connect("finished",Callable(player,"queue_free"))
+	var _signal = player.connect("finished", func(): player.queue_free())
 	
 	player.set_process_mode(PROCESS_MODE_ALWAYS)
-	player.stream = file
-	
-	if options.has("bus"):
-		player.bus = options["bus"]
-	
-	if options.has("volume_db"):
-		player.volume_db = options["volume_db"]
+	player.stream = sound_file
+	player.bus = parameters.bus
+	player.volume_db = parameters.volume_db
+	player.pitch_scale = parameters.pitch_scale
+	player.max_polyphony = parameters.max_polyphony
 	
 	add_child(player)
 	player.play()
 	
 	return player
 
+func spawn_player(stream: AudioStream, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
+	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
+	var timer: SceneTreeTimer = get_tree().create_timer(float(stream.get_length()), false)
+	
+	player.stream = stream
+	player.bus = parameters.bus
+	player.attenuation_filter_cutoff_hz = parameters.attenuation_filter_cutoff_hz
+	player.volume_db = parameters.volume_db
+	player.max_db = parameters.max_db
+	player.max_distance = parameters.max_distance
+	player.pitch_scale = parameters.pitch_scale
+	
+	# TODO: Loop seems to be broken. Fix it one day.
+	if parameters.loop:
+		var _signal = timer.connect("timeout", on_timer_end.bind(player))
+	
+	return player
+	
 func on_timer_end(player: AudioStreamPlayer3D) -> void:
 	player.queue_free()
 
-func spawn_player(file: AudioStream, options = {}) -> AudioStreamPlayer3D:
-	var player: AudioStreamPlayer3D = AudioStreamPlayer3D.new()
-	var timer: SceneTreeTimer = get_tree().create_timer(float(file.get_length()), false)
-	
-	player.attenuation_filter_cutoff_hz = 20500
-	player.stream = file
-	player.volume_db = 0
-	player.max_db = 0
-	player.max_distance = 30
-	
-	if options.has("bus"):
-		player.bus = options["bus"]
-	
-	if options.has("volume_db"):
-		player.volume_db = options["volume_db"]
-		
-	if options.has("max_distance"):
-		player.max_distance = options["max_distance"]
-		
-	if options.has("max_db"):
-		player.max_db = options["max_db"]
-		
-	if options.has("pitch_scale"):
-		player.pitch_scale = options["pitch_scale"]
-		
-	if !options.has("loop"):
-		var _signal = timer.connect("timeout",Callable(self,"on_timer_end").bind(player))
-	
-	return player
-	
 func get_sound_file(sound_name: String) -> AudioStream:
 	var file: AudioStream = null
 	
-	if sound_name.ends_with("{%n}"):
-		var sound_name_without_template = sound_name.trim_suffix("{%n}")
-		var number_of_sound_files = sounds[sound_name_without_template].size()
+	if sound_name.ends_with(RANDOM_NUMBER_PLACEHOLDER):
+		var sound_collection_name = sound_name.trim_suffix(RANDOM_NUMBER_PLACEHOLDER)
+		var number_of_sound_files = sounds[sound_collection_name].size()
 		var random_index = floor(randf_range(0, number_of_sound_files))
-
-		file = sounds[sound_name_without_template][random_index] as AudioStream
+		
+		file = sounds[sound_collection_name][random_index] as AudioStream
 	else:
-		file = sounds[sound_name][0] as AudioStream
+		file = sounds[sound_name] as AudioStream
 		
 	return file
 	
-func scan_directory(path: String, fileNameEndsWith: String = ""):	
+func build_sound_library_from_files(sound_files: Array[String]) -> Dictionary:
+	var collection: Dictionary = {}
+	
+	for sound_file in sound_files:
+		# Turn the full sound file path int oa name, e.g "res://globals/sfx/audio/physics/glass/sound.wav" -> "physics/glass/sound".
+		var sound_name = sound_file.replace(sounds_directory, "").trim_prefix("/").replace("." + sound_file.get_extension(), "")
+		var number_suffix_match = number_suffix_regex.search(sound_name)
+		
+		if number_suffix_match:
+			var number = number_suffix_match.get_string()
+			var sound_collection_name = sound_name.trim_suffix(number)
+			
+			if not collection.has(sound_collection_name):
+				collection[sound_collection_name] = []
+
+			collection[sound_collection_name].append(load(sound_file))
+		
+		# Add all sounds to the collection, even if they contain a number as
+		# this will be faster to lookup (probably). Though it does waste a 
+		# bit of memory.
+		collection[sound_name] = load(sound_file)
+		
+	return collection
+	
+# Perform a recursive scan of a directory and return all the files of a certain type.
+func get_files_with_extension(path: String, file_extension: String) -> Array[String]:
 	var directory = DirAccess.open(path)
 	
 	if directory == null:
-		push_error("SFX: Failed to open path: " + path)
+		push_error("Failed to open directory: " + path)
 		return []
-
-	var results = []
-
-	directory.list_dir_begin() # TODOGODOT4 fill missing arguments https://github.com/godotengine/godot/pull/40547
-
+		
+	directory.list_dir_begin()
+	
+	var results: Array[String] = []
 	var file_name = directory.get_next()
-
+	
 	while file_name != "":
 		if directory.current_is_dir():
-			var directory_path_to_scan = path + "/" + file_name
-			var recursive_results = scan_directory(directory_path_to_scan, fileNameEndsWith)
-
+			var recursive_results = get_files_with_extension(path + "/" + file_name, file_extension)
 			results.append_array(recursive_results)
-		else:
-			if fileNameEndsWith == "":
-				# TODO: Why is this `file_path` var not used?
-				var _file_path = path + "/" + file_name
-				results.append(path)
-			elif file_name.ends_with(fileNameEndsWith + ".import"):
-				# When the game is exported, assets no longer exists in their original file form and are instead
-				# their binary data is stored in a ".import" file. So we look for those, and then use the original
-				# file name by removing the ".import" extension. Godot `load` will work with normal file extensions.
-				# https://github.com/godotengine/godot/issues/18390#issuecomment-384041374
+		
+		if not directory.current_is_dir():
+			# When the game is exported, assets no longer exists in their original file form and are instead
+			# their binary data is stored in a ".import" file. So we look for those, and then use the original
+			# file name by removing the ".import" extension. Godot `load` will work with normal file extensions.
+			# https://github.com/godotengine/godot/issues/18390#issuecomment-384041374
+			if file_name.ends_with(file_extension + ".import"):
 				var file_path_without_import = path + "/" + file_name.replace(".import", "")
 				results.append(file_path_without_import)
-
+				
 		file_name = directory.get_next()
-
+	
 	return results
