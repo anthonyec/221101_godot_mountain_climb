@@ -76,11 +76,11 @@ func _ready() -> void:
 	state_machine.connect("state_changed", on_state_change)
 
 func _process(_delta: float) -> void:
-	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
-	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
-	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
-	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
-	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
+#	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
+#	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
+#	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
+#	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
+#	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":

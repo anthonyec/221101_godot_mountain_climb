@@ -1,10 +1,5 @@
 extends Node3D
 
-func _process(delta):
-	DebugDraw.set_text("Rope", "R1")
-	DebugDraw.set_text("Grab", "R2")
-	DebugDraw.set_text("Jump", "X")
-
 func _input(event):
 	if Input.is_key_pressed(KEY_0):
 		if Engine.time_scale == 0.05:

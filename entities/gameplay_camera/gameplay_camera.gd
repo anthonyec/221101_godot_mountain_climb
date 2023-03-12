@@ -17,7 +17,7 @@ var targets = []
 func _ready() -> void:
 	targets = players.map(func(player_path): return get_node(player_path))
 	
-func _process(delta: float) -> void:	
+func _physics_process(delta: float) -> void:
 	# Get the average position of all targets.
 	var average_target_position: Vector3 = Vector3.ZERO
 	

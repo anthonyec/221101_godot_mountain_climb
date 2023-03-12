@@ -18,8 +18,8 @@ func _process(_delta: float) -> void:
 	var memory = float(OS.get_static_memory_usage()) / 1000000
 	var fps = Engine.get_frames_per_second()
 	
-	DebugDraw.set_text("memory (mb)", round_to_dec(memory, 2))
-	DebugDraw.set_text("fps", fps)
+#	DebugDraw.set_text("memory (mb)", round_to_dec(memory, 2))
+#	DebugDraw.set_text("fps", fps)
 	
 	canvas_item.queue_redraw()
 

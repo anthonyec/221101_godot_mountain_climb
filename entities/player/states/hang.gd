@@ -24,18 +24,6 @@ func exit() -> void:
 	player.ledge.reset()
 	
 func update(_delta: float) -> void:
-	DebugDraw.set_text(
-		"player " + str(player.player_number) + " ledge min/max", 
-		str(Debug.round_to_dec(position_on_ledge, 2)) + " : " + 
-		str(Debug.round_to_dec(player.ledge.min_length, 2)) + " " + 
-		str(Debug.round_to_dec(player.ledge.max_length, 2))
-	)
-	DebugDraw.set_text(
-		"player " + str(player.player_number) + " ledge path", 
-		str(player.ledge.total_length) + ", " +
-		str(player.ledge.path.size())
-	)
-	
 	if !Input.is_action_pressed(player.get_action_name("grab")):
 		state_machine.transition_to("Fall")
 		return
