@@ -58,11 +58,11 @@ func physics_update(delta: float) -> void:
 		})
 		return
 		
-	player.face_towards(player.global_transform.origin + direction, player.air_turn_speed, delta)
+#	player.face_towards(player.global_transform.origin + direction, player.air_turn_speed, delta)
 
 	movement.x = into_fall_movement.x + direction.x
 	movement.z = into_fall_movement.z + direction.z
-	movement.y -= player.gravity * delta
+	movement.y -= player.gravity * player.fall_multipler * delta
 	
 	player.velocity = movement
 	

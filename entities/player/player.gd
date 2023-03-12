@@ -11,7 +11,8 @@ const WORLD_COLLISION_MASK: int = 1
 
 @export_group("Movement")
 @export var gravity: float = 40
-@export var jump_strength: float = 8
+@export var jump_height: float = 1.5 # meters
+@export var fall_multipler: float = 1.25
 @export var rotation_speed: float = 20
 @export var walk_speed: float = 5
 @export var sprint_speed: float = 8
@@ -82,6 +83,8 @@ func _process(_delta: float) -> void:
 #	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 #	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
 	
+	DebugDraw.set_text("velocity.y", global_transform.origin.y)
+	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":
 			state_machine.transition_to("Debug")
@@ -89,6 +92,10 @@ func _process(_delta: float) -> void:
 		else:
 			state_machine.transition_to("Move")
 			return
+			
+func _physics_process(_delta: float) -> void:
+	if player_number == 2:
+		DebugGraph.plot("y_" + str(player_number), -global_transform.origin.y)
 
 func _input(event: InputEvent) -> void:
 	var is_move_left_action = event.get_action_strength(get_action_name("move_left")) > 0

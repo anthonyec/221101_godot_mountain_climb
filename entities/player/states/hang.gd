@@ -85,6 +85,7 @@ func physics_update(delta: float) -> void:
 		state_machine.transition_to("Jump", {
 			# TODO: Don't use magic numbers here for jump strength
 			"movement": hang_normal * 5,
+			"momentum_speed": 0.5,
 			"jump_strength": 5
 		})
 		return

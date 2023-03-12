@@ -35,6 +35,9 @@ func exit() -> void:
 	player.stamina.can_recover = false
 	player.animation.speed_scale = 1
 	player.reset_model_alignment()
+	
+	momentum_speed = clamp(momentum_speed, 0, 1)
+	momentum_speed *= 0.9
 
 func update(delta: float) -> void:
 	input_direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
@@ -77,6 +80,8 @@ func physics_update(delta: float) -> void:
 	
 	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
 	var slope_percent = 1 - momentum_projected_on_slope.y
+	
+	slope_percent = clamp(slope_percent, 0.9, 2)
 	
 	# This acts as the friction. When the player starts running, we want to 
 	# gain speed slowly. When the player stops, we want to loose speed quickly.
@@ -130,7 +135,10 @@ func handle_input(event: InputEvent) -> void:
 
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
-		state_machine.transition_to("Jump", { "movement": player.velocity })
+		state_machine.transition_to("Jump", {
+			"movement": player.velocity,
+			"momentum_speed": clamp(momentum_speed, 0, 1.1)
+		})
 		return
 		
 	if event.is_action_pressed(player.get_action_name("grab")):

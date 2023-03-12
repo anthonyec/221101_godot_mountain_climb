@@ -38,5 +38,8 @@ func physics_update(delta: float) -> void:
 		
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("jump")):
-		state_machine.transition_to("Jump", { "movement": movement })
+		state_machine.transition_to("Jump", {
+			"movement": movement,
+			"momentum_speed": 1
+		})
 		return
