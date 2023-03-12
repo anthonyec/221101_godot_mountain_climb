@@ -30,14 +30,20 @@ func enter(params: Dictionary) -> void:
 	# This fixes "vault" to "move" state causing it to breifly enter the "fall" state.
 	if params.get("snap_to_floor"):
 		player.snap_to_ground()
+		
+	if params.has("momentum_speed"):
+		momentum_speed = clamp(params.get("momentum_speed", 0) * 0.9, 0, 1)
+		print("move -> enter: ", momentum_speed)
 
 func exit() -> void:
 	player.stamina.can_recover = false
 	player.animation.speed_scale = 1
 	player.reset_model_alignment()
 	
-	momentum_speed = clamp(momentum_speed, 0, 1)
-	momentum_speed *= 0.9
+	input_length = 0
+	input_direction = Vector3.ZERO
+	momentum = Vector3.ZERO
+	momentum_speed = 0
 
 func update(delta: float) -> void:
 	input_direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
@@ -69,6 +75,7 @@ func physics_update(delta: float) -> void:
 	if not player.is_near_ground():
 		state_machine.transition_to("Fall", {
 			"movement": player.velocity,
+			"momentum_speed": momentum_speed,
 			"coyote_time_enabled": true
 		})
 		return
@@ -89,6 +96,8 @@ func physics_update(delta: float) -> void:
 	
 	momentum_speed = lerp(momentum_speed, input_length * slope_percent, momentum_lerp_speed * delta)
 	momentum = -player.global_transform.basis.z * player.walk_speed * momentum_speed
+	
+	print("move -> update: ", momentum_speed)
 	
 	player.velocity = momentum
 	player.move_and_slide()
@@ -135,9 +144,11 @@ func handle_input(event: InputEvent) -> void:
 
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
+		print("move -> input: ", momentum_speed)
+		
 		state_machine.transition_to("Jump", {
 			"movement": player.velocity,
-			"momentum_speed": clamp(momentum_speed, 0, 1.1)
+			"momentum_speed": momentum_speed
 		})
 		return
 		

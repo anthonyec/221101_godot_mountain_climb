@@ -7,10 +7,14 @@ extends PlayerState
 var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var into_fall_movement: Vector3 = Vector3.ZERO
+var momentum_speed: float = 0
 
-func enter(params: Dictionary) -> void:	
+func enter(params: Dictionary) -> void:
 	player.animation.play("Fall")
 	into_fall_movement = params.get("movement", Vector3.ZERO)
+	momentum_speed = params.get("momentum_speed", 0)
+	
+	print("fall -> enter:", momentum_speed)
 	
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
@@ -36,9 +40,13 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
+	print("fall -> update:", momentum_speed)
+	
 	if player.is_on_ground():
 		SFX.play_attached_to_node("impact/dirt_1_footstep_[%n]", player)
-		state_machine.transition_to("Move")
+		state_machine.transition_to("Move", {
+			"momentum_speed": momentum_speed
+		})
 		return
 		
 	var ledge_info = player.ledge.get_ledge_info(player.get_offset_position(0, 0.2), -player.global_transform.basis.z)
@@ -76,5 +84,10 @@ func physics_update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
-		state_machine.transition_to("Jump", { "movement": movement })
+		print("fall -> input:", momentum_speed)
+		
+		state_machine.transition_to("Jump", {
+			"movement": movement,
+			"momentum_speed": momentum_speed
+		})
 		return

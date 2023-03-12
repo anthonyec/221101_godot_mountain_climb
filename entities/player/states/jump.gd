@@ -4,13 +4,16 @@ var direction: Vector3 = Vector3.ZERO
 var movement: Vector3 = Vector3.ZERO
 var into_jump_movement: Vector3 = Vector3.ZERO
 var original_gravity: float = 0
+var momentum_speed: float = 0
 
 var debug_last_height: float = 0
 var debug_start_position: Vector3
 
 func enter(params: Dictionary) -> void:
 	into_jump_movement = params.get("movement", Vector3.ZERO)
-	var momentum_speed = params.get("momentum_speed", 0)
+	momentum_speed = clamp(params.get("momentum_speed", 0), 0, 1.1)
+	
+	print("jump -> enter: ", momentum_speed)
 	
 	into_jump_movement.x = into_jump_movement.x * 1.7 * momentum_speed
 	into_jump_movement.z = into_jump_movement.z * 1.7 * momentum_speed
@@ -85,11 +88,16 @@ func physics_update(delta: float) -> void:
 	movement = player.velocity
 	
 	if player.is_on_floor():
-		state_machine.transition_to("Move")
+		state_machine.transition_to("Move", {
+			"momentum_speed": momentum_speed
+		})
 		return 
 		
 	if movement.y < 0:
-		state_machine.transition_to("Fall", { "movement": movement })
+		state_machine.transition_to("Fall", {
+			"movement": movement,
+			"momentum_speed": momentum_speed
+		})
 		return 
 	
 func handle_input(event: InputEvent) -> void:
