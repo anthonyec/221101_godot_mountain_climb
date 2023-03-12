@@ -2,8 +2,6 @@ extends Node3D
 
 const RANDOM_NUMBER_PLACEHOLDER = "[%n]"
 
-@export var sounds_directory: String = "res://globals/sfx/audio"
-
 var number_suffix_regex: RegEx = null
 var is_loaded: bool = false
 var sounds: Dictionary = {}
@@ -25,18 +23,26 @@ class Parameters extends RefCounted:
 	var max_polyphony: int = 1
 	
 func _ready() -> void:
-	load_sounds()
+	var sounds_directory = ProjectSettings.get_setting("addons/sfx/sounds")
 	
-func load_sounds() -> void:
+	if sounds_directory == "" or sounds_directory == null:
+		push_warning("No sounds directory has been set in Project Settings. See setup instructions in the README file: res://addons/anthonyec.sfx/README.md")
+		return
+		
 	number_suffix_regex = RegEx.new()
 	number_suffix_regex.compile("\\d+$")
 		
-	var sound_files = get_files_with_extension(sounds_directory, ".wav")
+	var sound_files: Array[String] = []
+	
+	sound_files.append_array(get_files_with_extension(sounds_directory, ".wav"))
+	sound_files.append_array(get_files_with_extension(sounds_directory, ".mp3"))
+	sound_files.append_array(get_files_with_extension(sounds_directory, ".ogg"))
 	
 	if sound_files.is_empty():
-		push_warning("SFX: Warning, no sound files were found.")
+		push_warning("SFX: No sound files were found inside " + sounds_directory)
+		return
 		
-	sounds = build_sound_library_from_files(sound_files)
+	sounds = build_sound_library_from_files(sounds_directory, sound_files)
 	is_loaded = true
 
 func create_player_3d(sound_name: String, parameters: Parameters = Parameters.new()) -> AudioStreamPlayer3D:
@@ -127,7 +133,7 @@ func get_sound_file(sound_name: String) -> AudioStream:
 		
 	return file
 	
-func build_sound_library_from_files(sound_files: Array[String]) -> Dictionary:
+func build_sound_library_from_files(sounds_directory: String, sound_files: Array[String]) -> Dictionary:
 	var collection: Dictionary = {}
 	
 	for sound_file in sound_files:

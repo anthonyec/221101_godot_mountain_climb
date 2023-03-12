@@ -3,12 +3,12 @@
 importer="wav"
 type="AudioStreamWAV"
 uid="uid://dvskuoc156nai"
-path="res://.godot/imported/dirt_1_footstep_3.wav-d5a57e3a3b01bc942c5146c7bb64be2f.sample"
+path="res://.godot/imported/dirt_1_footstep_3.wav-a25dce05e364d02c2ae1e05eaa84de4c.sample"
 
 [deps]
 
-source_file="res://globals/sfx/audio/impact/dirt_1_footstep_3.wav"
-dest_files=["res://.godot/imported/dirt_1_footstep_3.wav-d5a57e3a3b01bc942c5146c7bb64be2f.sample"]
+source_file="res://audio/impact/dirt_1_footstep_3.wav"
+dest_files=["res://.godot/imported/dirt_1_footstep_3.wav-a25dce05e364d02c2ae1e05eaa84de4c.sample"]
 
 [params]
 

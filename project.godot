@@ -8,6 +8,10 @@
 
 config_version=5
 
+[addons]
+
+sfx/sounds="res://audio"
+
 [application]
 
 config/name="221101_godot_mountain_climb"
@@ -26,7 +30,7 @@ DebugDraw="*res://addons/zylann.debug_draw/debug_draw.gd"
 DebugTrace="*res://globals/debug/debug_trace.gd"
 Utils="*res://globals/utils/utils.gd"
 Raycast="*res://globals/raycast/raycast.gd"
-SFX="*res://globals/sfx/sfx.gd"
+SFX="*res://addons/anthonyec.sfx/sfx.gd"
 
 [debug]
 
@@ -43,6 +47,10 @@ window/stretch/scale=2.0
 [editor]
 
 movie_writer/movie_file="/Users/anthony/projects/misc/221101_godot_mountain_climb/test.avi"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/anthonyec.sfx/plugin.cfg")
 
 [gui]
 
