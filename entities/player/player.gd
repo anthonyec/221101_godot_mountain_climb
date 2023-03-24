@@ -46,37 +46,88 @@ enum InputType {
 var input_type: InputType = InputType.KEYBOARD
 var input_direction: Vector2 = Vector2.ZERO
 
-func on_state_change(previous_state: State, next_state: State, params: Dictionary) -> void:
-	if previous_state:
-		var prev_properties = previous_state.get_property_list()
-		var next_properties = next_state.get_property_list()
-		var prev_vars = {}
-		var next_vars = {}
-		
-		prev_properties = prev_properties.filter(func(property): return property.type == TYPE_VECTOR3)
-		next_properties = next_properties.filter(func(property): return property.type == TYPE_VECTOR3)
-		
-		prev_properties.map(func(property):
-			prev_vars[property.name] = previous_state[property.name]
+func get_state_properties(state: State) -> Dictionary:
+	var properties = {}
+	var list = state.get_property_list()
+	
+	list = list.filter(func(property): return property.type == TYPE_VECTOR3)
+	
+	var index: int = 0
+	
+	for property in list:
+		var value = state[property.name]
+		properties[property.name] = value
+	
+	return properties
+	
+func draw_transform(player_transform: Transform3D) -> void:
+	DebugDraw.draw_box(player_transform.origin, Vector3(0.3, 2, 0.3), Color.RED)
+	
+func debug_draw_vector(player_transform: Transform3D, direction: Vector3, color: Color) -> void:
+	DebugDraw.draw_ray_3d(player_transform.origin, direction, 1, color)
+
+func _on_state_entered(state: State, params: Dictionary) -> void:
+	DebugFrames.add({
+		"title": state.name + " enter",
+		"params": params,
+		"node_properties": get_state_properties(state)
+	})
+	
+func _on_state_exited(state: State) -> void:
+	DebugFrames.add({
+		"title": state.name + " exit"
+	})
+
+func _on_state_updated(state: State) -> void:
+	DebugFrames.add({
+		"title": state.name + " update",
+		"node_properties": get_state_properties(state),
+		"draw_transform": draw_transform.bind(global_transform),
+		"draw_input_direction": debug_draw_vector.bind(
+			global_transform, 
+			transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y)), 
+			Color.WHITE
+		),
+		"draw_velocity_direction": debug_draw_vector.bind(
+			global_transform, 
+			velocity, 
+			Color.CYAN
+		),
+		"draw_player_direction": debug_draw_vector.bind(
+			global_transform, 
+			-global_transform.basis.z, 
+			Color.BLUE
 		)
-		
-		next_properties.map(func(property):
-			next_vars[property.name] = next_state[property.name]
-		)
-		
-#		DebugTrace.startGroup()
-#		DebugTrace.point("player_position", global_transform.origin)
-#		DebugTrace.log(previous_state.name + " -> " + next_state.name, {
-#			"prev_vars": prev_vars,
-#			"message": params,
-#			"next_vars": next_vars
-#		})
-#		DebugTrace.endGroup()
+	})
+	
+func _on_state_physics_updated(state: State) -> void:
+	DebugFrames.add({
+		"title": state.name + " physics_update",
+		"node_properties": get_state_properties(state)
+	})
+	
+func _on_state_inputed(state: State) -> void:
+	DebugFrames.add({
+		"title": state.name + " input"
+	})
+	
+func _on_state_transition_requested(state_name: String, params: Dictionary) -> void:
+	DebugFrames.add({
+		"title": "transition_to " + state_name,
+		"params": params,
+	})
 
 func _ready() -> void:
-	state_machine.connect("state_changed", on_state_change)
+	if player_number == 2:
+		state_machine.connect("state_transition_requested", _on_state_transition_requested)
+		state_machine.connect("state_entered", _on_state_entered)
+		state_machine.connect("state_exited", _on_state_exited)
+		state_machine.connect("state_updated", _on_state_updated)
+		state_machine.connect("state_physics_updated", _on_state_physics_updated)
+		state_machine.connect("state_inputed", _on_state_inputed)
 
 func _process(_delta: float) -> void:
+	DebugDraw.set_text("player " + str(player_number))
 #	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
 #	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 #	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
@@ -92,10 +143,6 @@ func _process(_delta: float) -> void:
 		else:
 			state_machine.transition_to("Move")
 			return
-			
-func _physics_process(_delta: float) -> void:
-	if player_number == 2:
-		DebugGraph.plot("y_" + str(player_number), -global_transform.origin.y)
 
 func _input(event: InputEvent) -> void:
 	var is_move_left_action = event.get_action_strength(get_action_name("move_left")) > 0

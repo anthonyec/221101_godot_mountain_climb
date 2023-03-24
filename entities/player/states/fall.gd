@@ -14,8 +14,6 @@ func enter(params: Dictionary) -> void:
 	into_fall_movement = params.get("movement", Vector3.ZERO)
 	momentum_speed = params.get("momentum_speed", 0)
 	
-	print("fall -> enter:", momentum_speed)
-	
 	player.up_direction = Vector3.UP
 	player.floor_stop_on_slope = true
 	
@@ -84,8 +82,6 @@ func physics_update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
-		print("fall -> input:", momentum_speed)
-		
 		state_machine.transition_to("Jump", {
 			"movement": movement,
 			"momentum_speed": momentum_speed
