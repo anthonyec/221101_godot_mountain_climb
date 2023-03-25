@@ -1,6 +1,7 @@
-[gd_scene load_steps=20 format=3 uid="uid://dv2mxk04ly8l7"]
+[gd_scene load_steps=21 format=3 uid="uid://dv2mxk04ly8l7"]
 
 [ext_resource type="Script" path="res://levels/level_test/shape_cast_test.gd" id="1_4ywjf"]
+[ext_resource type="PackedScene" uid="uid://cg7tylpsebnlc" path="res://globals/debug/debug_window.tscn" id="2_2xby3"]
 [ext_resource type="PackedScene" uid="uid://frfc23bak04b" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="2_26xj4"]
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="3_d1yn6"]
 [ext_resource type="Script" path="res://entities/checkpoint/checkpoint.gd" id="4_x5uc8"]
@@ -76,6 +77,9 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+
+[node name="DebugFramesWindow" parent="UI" node_paths=PackedStringArray("target") instance=ExtResource("2_2xby3")]
+target = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("3_d1yn6")]
 layout_mode = 1
