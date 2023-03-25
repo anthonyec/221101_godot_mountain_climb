@@ -25,13 +25,6 @@ func _process(_delta: float) -> void:
 			frames.erase(key)
 			resized.emit(frame_keys[0], frame_keys[0] + frame_keys.size() - 1)
 
-func _input(event: InputEvent) -> void:
-	if event.is_action_pressed("debug_toggle_record"):
-		if not is_recording:
-			frames.clear()
-			
-		is_recording = !is_recording
-
 func add(data: Dictionary) -> void:
 	if not is_recording:
 		return

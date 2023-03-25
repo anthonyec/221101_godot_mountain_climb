@@ -96,8 +96,6 @@ func physics_update(delta: float) -> void:
 	momentum_speed = lerp(momentum_speed, input_length * slope_percent, momentum_lerp_speed * delta)
 	momentum = -player.global_transform.basis.z * player.walk_speed * momentum_speed
 	
-	print("move -> update: ", momentum_speed)
-	
 	player.velocity = momentum
 	player.move_and_slide()
 	player.snap_to_ground()
@@ -144,7 +142,7 @@ func handle_input(event: InputEvent) -> void:
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
 		state_machine.transition_to("Jump", {
-			"movement": player.velocity,
+			"movement": momentum,
 			"momentum_speed": momentum_speed
 		})
 		return

@@ -16,14 +16,19 @@ var max_frame: int = 1024
 func _ready() -> void:
 	frame_slider.connect("value_changed", slider_changed)
 	frame_spin_box.connect("value_changed", spin_box_changed)
+	reset_button.connect("button_up", _on_reset_button_up)
+	recording_toggle.connect("toggled", _on_recording_toggle_toggled)
+	tree.connect("item_selected", _on_tree_item_selected)
+	
 	DebugFrames.connect("resized", frames_resized)
 	DebugFrames.connect("added", frames_added)
+	
 	frames_resized(min_frame, max_frame)
 	
 func _process(_delta: float) -> void:
 	for callable in current_frame_callables:
 		callable.call()
-	
+
 func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dictionary) -> void:
 	for key in dictionary:
 		if key == "title":
@@ -97,10 +102,12 @@ func frames_added() -> void:
 
 func _on_recording_toggle_toggled(button_pressed: bool) -> void:
 	DebugFrames.is_recording = button_pressed
+	render()
 
-func _on_reset_button_button_up() -> void:
+func _on_reset_button_up() -> void:
 	DebugFrames.frames = {}
 	DebugFrames.frame_count = 0
+	render()
 
 func _on_tree_item_selected() -> void:
 	var item = tree.get_selected()
@@ -108,7 +115,3 @@ func _on_tree_item_selected() -> void:
 
 	if typeof(metadata) == TYPE_VECTOR3:
 		print("WOW")
-		DebugDraw
-##		DebugDraw.draw_ray_3d(target.global_transform.origin, metadata, Color.RED)
-#		DebugDraw.draw_cube(Vector3.ZERO, 2, Color.RED)
-#		print(DebugDraw)

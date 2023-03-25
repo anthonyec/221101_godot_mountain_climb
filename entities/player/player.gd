@@ -50,7 +50,9 @@ func get_state_properties(state: State) -> Dictionary:
 	var properties = {}
 	var list = state.get_property_list()
 	
-	list = list.filter(func(property): return property.type == TYPE_VECTOR3)
+	list = list.filter(func(property): 
+		return property.type == TYPE_VECTOR3 or property.type == TYPE_INT or property.type == TYPE_FLOAT or property.type == TYPE_ARRAY
+	)
 	
 	var index: int = 0
 	
