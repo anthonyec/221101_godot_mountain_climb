@@ -18,7 +18,7 @@ func _process(_delta: float) -> void:
 	
 	var frame_keys = frames.keys()
 	
-	if frame_keys.size() > 500:
+	if frame_keys.size() > 1024:
 		var keys_at_state = frame_keys.slice(0, 1)
 		
 		for key in keys_at_state:

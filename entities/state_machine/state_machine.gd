@@ -2,6 +2,12 @@ class_name StateMachine
 extends Node
 
 signal state_changed(previous_state: State, next_state: State, params: Dictionary)
+signal state_transition_requested(state_name: String, params: Dictionary)
+signal state_entered(state: State, params: Dictionary)
+signal state_exited(state: State)
+signal state_updated(state: State)
+signal state_physics_updated(state: State)
+signal state_inputed(state: State)
 
 var previous_state: State
 var current_state: State
@@ -22,14 +28,18 @@ func _ready() -> void:
 func _input(event: InputEvent) -> void:
 	if current_parent_state:
 		current_parent_state.handle_input(event)
+		state_inputed.emit(current_parent_state)
 		
 	current_state.handle_input(event)
+	state_inputed.emit(current_state)
 
 func _process(delta: float) -> void:
 	if current_parent_state:
 		current_parent_state.update(delta)
+		state_updated.emit(current_parent_state)
 		
 	current_state.update(delta)
+	state_updated.emit(current_state)
 	
 	# TODO: Is the correct way to time stuff or should there be another unit
 	# based on frames? What happens if there's a low frame-rate?
@@ -38,8 +48,10 @@ func _process(delta: float) -> void:
 func _physics_process(delta: float) -> void:
 	if current_parent_state:
 		current_parent_state.physics_update(delta)
+		state_physics_updated.emit(current_parent_state)
 		
 	current_state.physics_update(delta)
+	state_physics_updated.emit(current_state)
 	
 func setup_child_states(node: Node, has_parent_state: bool = false, depth: int = 0) -> void:
 	assert(depth <= 2, "Only 1 level of nested states is supported. Move '" + str(node.name) + "' up a level")
@@ -55,6 +67,8 @@ func setup_child_states(node: Node, has_parent_state: bool = false, depth: int =
 		setup_child_states(child, true, depth + 1)
 
 func transition_to(state_name: String, params: Dictionary = {}) -> void:
+	state_transition_requested.emit(state_name, params)
+	
 	var next_state: State = get_node_or_null(state_name) as State
 	assert(next_state, "No state found with the name '" + state_name + "'")
 	
@@ -68,19 +82,24 @@ func transition_to(state_name: String, params: Dictionary = {}) -> void:
 	
 	if current_state:
 		current_state.exit()
+		state_exited.emit(current_state)
 	
 	if is_different_parent_state and current_parent_state:
 		current_parent_state.exit()
+		state_exited.emit(current_parent_state)
 		
 	current_parent_state = next_state.parent_state
 	current_state = next_state
 	
 	if is_different_parent_state and current_parent_state:
 		current_parent_state.enter(params)
+		state_entered.emit(current_parent_state, params)
 	
 	current_state.enter(params)
-	time_in_current_state = 0
+	state_entered.emit(current_state, params)
 	state_changed.emit(previous_state, current_state, params)
+	
+	time_in_current_state = 0
 
 func transition_to_previous_state() -> void:
 	transition_to(previous_state.name)

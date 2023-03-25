@@ -11,7 +11,7 @@ extends Window
 var current_frame: int = 0
 var current_frame_callables: Array[Callable] = []
 var min_frame: int = 0
-var max_frame: int = 500
+var max_frame: int = 1024
 
 func _ready() -> void:
 	frame_slider.connect("value_changed", slider_changed)
