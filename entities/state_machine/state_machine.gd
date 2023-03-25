@@ -2,6 +2,8 @@ class_name StateMachine
 extends Node
 
 signal state_changed(previous_state: State, next_state: State, params: Dictionary)
+
+# Additional signal "hooks" for debugging purposes.
 signal state_transition_requested(state_name: String, params: Dictionary)
 signal state_entered(state: State, params: Dictionary)
 signal state_exited(state: State)
@@ -27,19 +29,19 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if current_parent_state:
-		current_parent_state.handle_input(event)
 		state_inputed.emit(current_parent_state)
+		current_parent_state.handle_input(event)
 		
-	current_state.handle_input(event)
 	state_inputed.emit(current_state)
+	current_state.handle_input(event)
 
 func _process(delta: float) -> void:
 	if current_parent_state:
-		current_parent_state.update(delta)
 		state_updated.emit(current_parent_state)
+		current_parent_state.update(delta)
 		
-	current_state.update(delta)
 	state_updated.emit(current_state)
+	current_state.update(delta)
 	
 	# TODO: Is the correct way to time stuff or should there be another unit
 	# based on frames? What happens if there's a low frame-rate?
@@ -47,12 +49,17 @@ func _process(delta: float) -> void:
 
 func _physics_process(delta: float) -> void:
 	if current_parent_state:
-		current_parent_state.physics_update(delta)
 		state_physics_updated.emit(current_parent_state)
-		
-	current_state.physics_update(delta)
-	state_physics_updated.emit(current_state)
+		current_parent_state.physics_update(delta)
 	
+	# It's very important to emit the signal before invoking the method
+	# because the `current_state` could change during the method invokation.
+	# For example, if `transition_to("B")` is called during state A, emitting 
+	# the signal afterwards would result in using state B which is incorrect.
+	# Note that this applies for all state methods and signals, not just physics_update.
+	state_physics_updated.emit(current_state)
+	current_state.physics_update(delta)
+
 func setup_child_states(node: Node, has_parent_state: bool = false, depth: int = 0) -> void:
 	assert(depth <= 2, "Only 1 level of nested states is supported. Move '" + str(node.name) + "' up a level")
 	
@@ -81,24 +88,26 @@ func transition_to(state_name: String, params: Dictionary = {}) -> void:
 	previous_state = current_state
 	
 	if current_state:
-		current_state.exit()
 		state_exited.emit(current_state)
+		current_state.exit()
 	
 	if is_different_parent_state and current_parent_state:
-		current_parent_state.exit()
 		state_exited.emit(current_parent_state)
+		current_parent_state.exit()
 		
 	current_parent_state = next_state.parent_state
 	current_state = next_state
 	
 	if is_different_parent_state and current_parent_state:
-		current_parent_state.enter(params)
 		state_entered.emit(current_parent_state, params)
+		current_parent_state.enter(params)
 	
-	current_state.enter(params)
 	state_entered.emit(current_state, params)
-	state_changed.emit(previous_state, current_state, params)
+	current_state.enter(params)
 	
+	# This signal is emitted after invoking the method because it provided
+	# both previous and current state, so does not rely on the order.
+	state_changed.emit(previous_state, current_state, params)
 	time_in_current_state = 0
 
 func transition_to_previous_state() -> void:
@@ -111,5 +120,4 @@ func get_current_state_path() -> String:
 		path += current_parent_state.name + "/"
 		
 	path += current_state.name
-	
 	return path
