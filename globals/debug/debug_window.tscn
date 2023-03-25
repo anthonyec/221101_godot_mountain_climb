@@ -1,20 +1,17 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg7tylpsebnlc"]
+[gd_scene load_steps=4 format=3 uid="uid://cg7tylpsebnlc"]
 
 [ext_resource type="Script" path="res://globals/debug/debug_frames_window.gd" id="1_5tuvu"]
 [ext_resource type="Script" path="res://globals/debug/debug_window.gd" id="1_p4ygl"]
+[ext_resource type="Script" path="res://globals/debug/hover_panel.gd" id="3_xb75s"]
 
 [node name="DebugFramesWindow" type="Control"]
 layout_mode = 3
 anchors_preset = 0
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 350.0
-offset_bottom = 450.0
 script = ExtResource("1_p4ygl")
 
 [node name="Window" type="Window" parent="."]
 unique_name_in_owner = true
-position = Vector2i(100, 100)
+title = "Debug Frames"
 size = Vector2i(300, 400)
 script = ExtResource("1_5tuvu")
 
@@ -68,3 +65,8 @@ text = "Recording"
 unique_name_in_owner = true
 layout_mode = 2
 text = "Reset"
+
+[node name="HoverPanel" type="Panel" parent="Window"]
+offset_right = 50.0
+offset_bottom = 50.0
+script = ExtResource("3_xb75s")
