@@ -38,10 +38,7 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
-	print("fall -> update:", momentum_speed)
-	
 	if player.is_on_ground():
-		SFX.play_attached_to_node("impact/dirt_1_footstep_[%n]", player)
 		state_machine.transition_to("Move", {
 			"momentum_speed": momentum_speed
 		})

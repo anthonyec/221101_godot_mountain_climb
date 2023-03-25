@@ -33,8 +33,7 @@ func enter(params: Dictionary) -> void:
 		
 	if params.has("momentum_speed"):
 		momentum_speed = clamp(params.get("momentum_speed", 0) * 0.9, 0, 1)
-		print("move -> enter: ", momentum_speed)
-
+		
 func exit() -> void:
 	player.stamina.can_recover = false
 	player.animation.speed_scale = 1
@@ -144,8 +143,6 @@ func handle_input(event: InputEvent) -> void:
 
 	# TODO: Do I need a floor check here?
 	if event.is_action_pressed(player.get_action_name("jump")):
-		print("move -> input: ", momentum_speed)
-		
 		state_machine.transition_to("Jump", {
 			"movement": player.velocity,
 			"momentum_speed": momentum_speed

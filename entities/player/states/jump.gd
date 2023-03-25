@@ -9,11 +9,9 @@ var momentum_speed: float = 0
 var debug_last_height: float = 0
 var debug_start_position: Vector3
 
-func enter(params: Dictionary) -> void:
+func enter(params: Dictionary) -> void:	
 	into_jump_movement = params.get("movement", Vector3.ZERO)
 	momentum_speed = clamp(params.get("momentum_speed", 0), 0, 1.1)
-	
-	print("jump -> enter: ", momentum_speed)
 	
 	into_jump_movement.x = into_jump_movement.x * 1.7 * momentum_speed
 	into_jump_movement.z = into_jump_movement.z * 1.7 * momentum_speed
@@ -46,7 +44,7 @@ func exit() -> void:
 	
 	debug_last_height = 0
 
-func update(_delta: float) -> void:
+func update(_delta: float) -> void:	
 	if player.is_on_ground():
 		state_machine.transition_to("Move")
 		return
