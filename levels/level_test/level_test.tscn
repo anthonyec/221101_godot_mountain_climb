@@ -78,7 +78,8 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="DebugFramesWindow" parent="UI" instance=ExtResource("2_2xby3")]
+[node name="DebugFramesWindow" parent="UI" node_paths=PackedStringArray("target") instance=ExtResource("2_2xby3")]
+target = NodePath("../../Player2")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("3_d1yn6")]
 layout_mode = 1

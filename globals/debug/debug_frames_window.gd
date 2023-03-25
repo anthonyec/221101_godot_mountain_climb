@@ -1,13 +1,13 @@
 extends Window
 
-@export var target: Node3D
-
 @onready var tree: Tree = %Tree
 @onready var frame_slider: HSlider = %FrameSlider
 @onready var frame_spin_box: SpinBox = %FrameSpinBox
 @onready var recording_toggle: CheckButton = %RecordingToggle
 @onready var reset_button: Button = %ResetButton
+@onready var play_button: Button = %PlayButton
 
+var is_playing: bool = false
 var current_frame: int = 0
 var current_frame_callables: Array[Callable] = []
 var min_frame: int = 0
@@ -18,7 +18,7 @@ func _ready() -> void:
 	frame_spin_box.connect("value_changed", spin_box_changed)
 	reset_button.connect("button_up", _on_reset_button_up)
 	recording_toggle.connect("toggled", _on_recording_toggle_toggled)
-	tree.connect("item_selected", _on_tree_item_selected)
+	play_button.connect("button_up", _on_play_button_up)
 	
 	DebugFrames.connect("resized", frames_resized)
 	DebugFrames.connect("added", frames_added)
@@ -28,6 +28,9 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	for callable in current_frame_callables:
 		callable.call()
+		
+	if is_playing:
+		frame_slider.value += 1
 
 func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dictionary) -> void:
 	for key in dictionary:
@@ -60,7 +63,13 @@ func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dic
 		sub_item.set_text(1, str(value))
 
 func render() -> void:
+	play_button.disabled = DebugFrames.is_recording
+	reset_button.disabled = is_playing
+	recording_toggle.disabled = is_playing
 	recording_toggle.button_pressed = DebugFrames.is_recording
+	
+	play_button.text = "Stop" if is_playing else "Play"
+	
 	current_frame_callables = []
 	tree.clear()
 	
@@ -77,6 +86,8 @@ func render() -> void:
 		
 		item.set_text(0, frame.get("title", "<untitled>"))
 		render_sub_tree(tree, item, frame)
+		
+	tree.scroll_to_item(root)
 
 func slider_changed(value: int) -> void:
 	frame_spin_box.value = value
@@ -108,10 +119,7 @@ func _on_reset_button_up() -> void:
 	DebugFrames.frames = {}
 	DebugFrames.frame_count = 0
 	render()
-
-func _on_tree_item_selected() -> void:
-	var item = tree.get_selected()
-	var metadata = item.get_metadata(0)
-
-	if typeof(metadata) == TYPE_VECTOR3:
-		print("WOW")
+	
+func _on_play_button_up() -> void:
+	is_playing = !is_playing
+	render()
