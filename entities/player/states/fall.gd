@@ -79,8 +79,10 @@ func physics_update(delta: float) -> void:
 
 func handle_input(event: InputEvent) -> void:
 	if not coyote_time.is_stopped() and event.is_action_pressed(player.get_action_name("jump")):
-		state_machine.transition_to("Jump", {
-			"movement": movement,
-			"momentum_speed": momentum_speed
-		})
+		state_machine.deferred_transition_to("Jump", func(): 
+			return {
+				"movement": movement,
+				"momentum_speed": momentum_speed
+			}
+		)
 		return

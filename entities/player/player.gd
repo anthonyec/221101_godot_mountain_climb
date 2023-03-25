@@ -118,10 +118,16 @@ func _on_state_transition_requested(state_name: String, params: Dictionary) -> v
 		"title": "transition_to " + state_name,
 		"params": params,
 	})
+	
+func _on_state_deferred_transition_requested(state_name: String, _params_callback: Callable) -> void:
+	DebugFrames.add({
+		"title": "state_deferred_transition_requested " + state_name
+	})
 
 func _ready() -> void:
 	if player_number == 2:
 		state_machine.connect("state_transition_requested", _on_state_transition_requested)
+		state_machine.connect("state_deferred_transition_requested", _on_state_deferred_transition_requested)
 		state_machine.connect("state_entered", _on_state_entered)
 		state_machine.connect("state_exited", _on_state_exited)
 		state_machine.connect("state_updated", _on_state_updated)

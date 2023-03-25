@@ -5,6 +5,7 @@ signal state_changed(previous_state: State, next_state: State, params: Dictionar
 
 # Additional signal "hooks" for debugging purposes.
 signal state_transition_requested(state_name: String, params: Dictionary)
+signal state_deferred_transition_requested(state_name: String, params_callback: Callable)
 signal state_entered(state: State, params: Dictionary)
 signal state_exited(state: State)
 signal state_updated(state: State)
@@ -15,6 +16,7 @@ var previous_state: State
 var current_state: State
 var current_parent_state: State
 var time_in_current_state: int
+var deferred_transitions: Array[Callable] = []
 
 func _ready() -> void:
 	await owner.ready
@@ -59,6 +61,11 @@ func _physics_process(delta: float) -> void:
 	# Note that this applies for all state methods and signals, not just physics_update.
 	state_physics_updated.emit(current_state)
 	current_state.physics_update(delta)
+	
+	# Perform any transitions that have been deferred.
+	if not deferred_transitions.is_empty():
+		deferred_transitions[0].call()
+		deferred_transitions.clear()
 
 func setup_child_states(node: Node, has_parent_state: bool = false, depth: int = 0) -> void:
 	assert(depth <= 2, "Only 1 level of nested states is supported. Move '" + str(node.name) + "' up a level")
@@ -112,6 +119,17 @@ func transition_to(state_name: String, params: Dictionary = {}) -> void:
 
 func transition_to_previous_state() -> void:
 	transition_to(previous_state.name)
+
+# Wait until the current state's `physics_update` has been completed before
+# transitioning to the new state. To use params, a callback must return a 
+# dictionary to ensure any variables references are using the latest values.
+func deferred_transition_to(state_name: String, params_callback: Callable) -> void:
+	state_deferred_transition_requested.emit(state_name, params_callback)
+	
+	deferred_transitions.append(func():
+		var params = params_callback.call()
+		transition_to(state_name, params)
+	)
 	
 func get_current_state_path() -> String:
 	var path: String = ""
