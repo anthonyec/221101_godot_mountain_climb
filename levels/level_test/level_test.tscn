@@ -79,7 +79,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="DebugFramesWindow" parent="UI" node_paths=PackedStringArray("target") instance=ExtResource("2_2xby3")]
-target = NodePath("../../Player2")
+target = NodePath("")
 
 [node name="ControllerInput1" parent="UI" instance=ExtResource("3_d1yn6")]
 layout_mode = 1
@@ -144,7 +144,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.3185, 3.2987, -2.87371)
 companion = NodePath("../Player2")
 
 [node name="Player2" parent="." node_paths=PackedStringArray("companion") instance=ExtResource("6_nww3r")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.7003, 2.48138, -0.495068)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.3185, 3.2987, -2.87371)
 player_number = 2
 companion = NodePath("../Player1")
 

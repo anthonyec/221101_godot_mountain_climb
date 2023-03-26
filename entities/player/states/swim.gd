@@ -26,7 +26,7 @@ func update(delta: float) -> void:
 	player.face_towards(player.global_transform.origin + direction, 5.0, delta)
 	player.stamina.use(5.0 * delta)
 	
-func physics_update(delta: float) -> void:
+func physics_update(delta: float) -> void:	
 	var player_forward = -player.global_transform.basis.z
 	
 	movement += player_forward * direction.length() * (player.walk_speed / 2) * delta
@@ -38,8 +38,10 @@ func physics_update(delta: float) -> void:
 		
 func handle_input(event: InputEvent) -> void:
 	if event.is_action_pressed(player.get_action_name("jump")):
-		state_machine.transition_to("Jump", {
-			"movement": movement,
-			"momentum_speed": 1
-		})
+		state_machine.deferred_transition_to("Jump", func(): 
+			return {
+				"movement": movement,
+				"momentum_speed": 1
+			}
+		)
 		return

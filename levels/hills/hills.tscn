@@ -1,10 +1,9 @@
-[gd_scene load_steps=22 format=3 uid="uid://c1od6um21nkhc"]
+[gd_scene load_steps=21 format=3 uid="uid://c1od6um21nkhc"]
 
 [ext_resource type="PackedScene" uid="uid://d2y8lxx2r32r1" path="res://ui/controller_input/controller_input.tscn" id="2_cn3cr"]
 [ext_resource type="PackedScene" uid="uid://frfc23bak04b" path="res://ui/stamina_indicator/stamina_indicator.tscn" id="3_qmm23"]
 [ext_resource type="PackedScene" uid="uid://cg7tylpsebnlc" path="res://globals/debug/debug_window.tscn" id="3_xa5ec"]
 [ext_resource type="PackedScene" uid="uid://x4a4si75gp2x" path="res://entities/gameplay_camera/gameplay_camera.tscn" id="5_jjc6c"]
-[ext_resource type="PackedScene" uid="uid://be35a6dwusiii" path="res://entities/camping_scene/camping_scene.tscn" id="6_53xlg"]
 [ext_resource type="PackedScene" uid="uid://cxqdpc8g3lot8" path="res://entities/player/player.tscn" id="7_s48p0"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_002.tres" id="8_ujkhn"]
 [ext_resource type="Material" path="res://addons/kenney_prototypes/assets/colors/dark/materials/material_004.tres" id="8_w8er3"]
@@ -116,9 +115,6 @@ players = Array[NodePath]([NodePath("../Player1")])
 distance = 6.0
 yaw = -90.0
 speed = 1.0
-
-[node name="CampingScene" parent="." instance=ExtResource("6_53xlg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -58.1103, 2.91536, -4.81426)
 
 [node name="Player1" parent="." instance=ExtResource("7_s48p0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.66998, 1.78078, 15.0522)

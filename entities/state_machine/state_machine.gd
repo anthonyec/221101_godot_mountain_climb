@@ -121,9 +121,14 @@ func transition_to_previous_state() -> void:
 	transition_to(previous_state.name)
 
 # Wait until the current state's `physics_update` has been completed before
-# transitioning to the new state. To use params, a callback must return a 
-# dictionary to ensure any variables references are using the latest values.
+# transitioning to the new state. Params are returned from a callback to ensure
+# any variables references are using the latest values.
+#
+# Usage: Transition params rely on calculations from `physics_update`, and you 
+# want to ensure atleast one calcuation has happened before transition.
 func deferred_transition_to(state_name: String, params_callback: Callable) -> void:
+	assert(deferred_transitions.is_empty(), "Only one transition can be deferred at a time.")
+	
 	state_deferred_transition_requested.emit(state_name, params_callback)
 	
 	deferred_transitions.append(func():

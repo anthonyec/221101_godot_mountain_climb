@@ -115,13 +115,13 @@ func _on_state_inputed(state: State) -> void:
 	
 func _on_state_transition_requested(state_name: String, params: Dictionary) -> void:
 	DebugFrames.add({
-		"title": "transition_to " + state_name,
+		"title": "[transition_to] " + state_name,
 		"params": params,
 	})
 	
 func _on_state_deferred_transition_requested(state_name: String, _params_callback: Callable) -> void:
 	DebugFrames.add({
-		"title": "state_deferred_transition_requested " + state_name
+		"title": "[deferred_transition_to] " + state_name
 	})
 
 func _ready() -> void:
