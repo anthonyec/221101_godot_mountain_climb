@@ -57,8 +57,9 @@ func _physics_process(delta: float) -> void:
 	# It's very important to emit the signal before invoking the method
 	# because the `current_state` could change during the method invokation.
 	# For example, if `transition_to("B")` is called during state A, emitting 
-	# the signal afterwards would result in using state B which is incorrect.
-	# Note that this applies for all state methods and signals, not just physics_update.
+	# the signal afterwards would result in reporting state B is active which is 
+	# incorrect. Note that this applies for all state methods and signals, not 
+	# just `physics_update`.
 	state_physics_updated.emit(current_state)
 	current_state.physics_update(delta)
 	
@@ -112,8 +113,8 @@ func transition_to(state_name: String, params: Dictionary = {}) -> void:
 	state_entered.emit(current_state, params)
 	current_state.enter(params)
 	
-	# This signal is emitted after invoking the method because it provided
-	# both previous and current state, so does not rely on the order.
+	# This signal is emitted after invoking the method because it provides
+	# both previous and current state as arguments.
 	state_changed.emit(previous_state, current_state, params)
 	time_in_current_state = 0
 
