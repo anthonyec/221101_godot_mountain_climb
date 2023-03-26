@@ -18,18 +18,22 @@ func _process(delta: float) -> void:
 	if not item:
 		hover_panel.hide()
 		return 
-		
+	
+	var title = item.get_text(0)
 	var metadata = item.get_metadata(1)
 	
 	if metadata == null:
 		hover_panel.hide()
 		return
-
-	if metadata != null and typeof(metadata) == TYPE_VECTOR3:
+		
+	if typeof(metadata) == TYPE_VECTOR3:
 		metadata = metadata as Vector3
 		hover_panel.show()
 		hover_panel.position = mouse_position - Vector2(20, 30)
 		hover_panel.vector = metadata
+		
+		if title.contains("position"):
+			DebugDraw.draw_cube(metadata, 0.1, Color.WHITE)
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("debug_show_frames"):

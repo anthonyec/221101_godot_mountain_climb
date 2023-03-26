@@ -3,7 +3,7 @@ extends Window
 @onready var tree: Tree = %Tree
 @onready var frame_slider: HSlider = %FrameSlider
 @onready var frame_spin_box: SpinBox = %FrameSpinBox
-@onready var recording_toggle: CheckButton = %RecordingToggle
+@onready var record_button: Button = %RecordButton
 @onready var reset_button: Button = %ResetButton
 @onready var play_button: Button = %PlayButton
 
@@ -11,13 +11,13 @@ var is_playing: bool = false
 var current_frame: int = 0
 var current_frame_callables: Array[Callable] = []
 var min_frame: int = 0
-var max_frame: int = 1024
+var max_frame: int = DebugFrames.max_recording_size
 
 func _ready() -> void:
 	frame_slider.connect("value_changed", slider_changed)
 	frame_spin_box.connect("value_changed", spin_box_changed)
 	reset_button.connect("button_up", _on_reset_button_up)
-	recording_toggle.connect("toggled", _on_recording_toggle_toggled)
+	record_button.connect("toggled", _on_recording_toggle_toggled)
 	play_button.connect("button_up", _on_play_button_up)
 	
 	DebugFrames.connect("resized", frames_resized)
@@ -61,12 +61,12 @@ func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dic
 		var sub_item = target_tree.create_item(target_parent)
 		sub_item.set_text(0, str(key))
 		sub_item.set_text(1, str(value))
+		sub_item.set_metadata(1, value)
 
 func render() -> void:
 	play_button.disabled = DebugFrames.is_recording
 	reset_button.disabled = is_playing
-	recording_toggle.disabled = is_playing
-	recording_toggle.button_pressed = DebugFrames.is_recording
+	record_button.disabled = is_playing
 	
 	play_button.text = "Stop" if is_playing else "Play"
 	
@@ -123,3 +123,6 @@ func _on_reset_button_up() -> void:
 func _on_play_button_up() -> void:
 	is_playing = !is_playing
 	render()
+
+func _on_search_text_changed(new_text: String) -> void:
+	print(new_text)

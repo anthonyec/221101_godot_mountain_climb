@@ -3,14 +3,13 @@ extends Node
 signal resized(min: int, max: int)
 signal added()
 
+@export var max_recording_size: int = 1024
+
 var is_recording: bool = false
 var frame_count: int = 0
 var frames: Dictionary = {}
 
-func _process(_delta: float) -> void:
-	DebugDraw.set_text("Recording frames: ", is_recording)
-	DebugDraw.set_text("Recording size: ", frames.size())
-	
+func _process(_delta: float) -> void:	
 	if not is_recording:
 		return
 		
@@ -18,7 +17,7 @@ func _process(_delta: float) -> void:
 	
 	var frame_keys = frames.keys()
 	
-	if frame_keys.size() > 1024:
+	if frame_keys.size() > max_recording_size:
 		var keys_at_state = frame_keys.slice(0, 1)
 		
 		for key in keys_at_state:
