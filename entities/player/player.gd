@@ -25,6 +25,7 @@ const WORLD_COLLISION_MASK: int = 1
 @export var max_floor_angle: float = 40
 @export var hang_distance_from_wall: float = 0.3
 @export var grab_height: float = 1.2
+@export var body_width: float = 0.75
 @export var search_distance: float = 0.7
 
 @onready var collision: CollisionShape3D = $Collision

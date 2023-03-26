@@ -57,7 +57,12 @@ func physics_update(delta: float) -> void:
 		vault_strength = -player.input_direction.y
 
 	position_on_ledge += shimmy_strength * player.shimmy_speed * delta
-	position_on_ledge = clamp(position_on_ledge, player.ledge.min_length + 0.5, player.ledge.max_length - 0.5)
+	position_on_ledge = clamp(
+		position_on_ledge, 
+		player.ledge.min_length + (player.body_width / 2), 
+		player.ledge.max_length - (player.body_width / 2)
+	)
+	
 	player.stamina.use(15.0 * abs(shimmy_strength) * delta)
 	
 	player.global_transform.origin = hang_position + (hang_normal * 0.3) + (Vector3.DOWN * 0.15)
