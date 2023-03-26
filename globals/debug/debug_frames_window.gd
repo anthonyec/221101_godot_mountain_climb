@@ -65,8 +65,9 @@ func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dic
 
 func render() -> void:
 	play_button.disabled = DebugFrames.is_recording
-	reset_button.disabled = is_playing
+	reset_button.disabled = is_playing or DebugFrames.is_recording
 	record_button.disabled = is_playing
+	record_button.button_pressed = DebugFrames.is_recording
 	
 	play_button.text = "Stop" if is_playing else "Play"
 	

@@ -45,7 +45,9 @@ enum InputType {
 }
 
 var input_type: InputType = InputType.KEYBOARD
-var input_direction: Vector2 = Vector2.ZERO
+var input_direction: Vector2
+var camera_relative_input_direction: Vector3 
+var forward: Vector3 = -global_transform.basis.z
 
 func get_state_properties(state: State) -> Dictionary:
 	var properties = {}
@@ -136,14 +138,15 @@ func _ready() -> void:
 		state_machine.connect("state_inputed", _on_state_inputed)
 
 func _process(_delta: float) -> void:
+	camera_relative_input_direction = transform_direction_to_camera_angle(Vector3(input_direction.x, 0, input_direction.y))
+	forward = -global_transform.basis.z
+	
 	DebugDraw.set_text("player " + str(player_number))
-#	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
+	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
 #	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 #	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 #	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 #	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
-	
-	DebugDraw.set_text("velocity.y", global_transform.origin.y)
 	
 	if Input.is_action_just_pressed(get_action_name("debug")):
 		if state_machine.current_state.name != "Debug":
@@ -239,6 +242,10 @@ func face_towards(target: Vector3, speed: float = 0.0, delta: float = 0.0) -> vo
 func stand_at_position(stand_position: Vector3) -> void:
 	global_transform.origin = stand_position + (Vector3.UP * 0.95)
 
+func get_offset(offset: Vector3) -> Vector3:
+	return global_transform.origin + offset
+
+# TOOD: Deprecated, switch over to using `get_offset` then rename back.
 func get_offset_position(forward: float = 0.0, up: float = 0.0) -> Vector3:
 	return global_transform.origin - (global_transform.basis.z * forward) + (global_transform.basis.y * up)
 

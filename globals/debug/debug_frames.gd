@@ -5,11 +5,11 @@ signal added()
 
 @export var max_recording_size: int = 1024
 
-var is_recording: bool = false
+var is_recording: bool = true
 var frame_count: int = 0
 var frames: Dictionary = {}
 
-func _process(_delta: float) -> void:	
+func _process(_delta: float) -> void:
 	if not is_recording:
 		return
 		

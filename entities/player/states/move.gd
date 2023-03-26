@@ -2,12 +2,17 @@ extends PlayerState
 
 const WORLD_COLLISION_MASK: int = 1
 
-var is_ready_to_lift_companion: bool = false
+var max_speed: float = 5
+var acceleration: float = 200
+var max_acceleration_force: float = 150
+
+var goal_velocity: Vector3
 
 var input_direction: Vector3 = Vector3.ZERO
 var momentum: Vector3 = Vector3.ZERO
 var momentum_speed: float = 0
 var input_length: float = 0
+var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
 	player.up_direction = Vector3.UP
@@ -45,14 +50,18 @@ func exit() -> void:
 	momentum_speed = 0
 
 func update(delta: float) -> void:
-	input_direction = player.transform_direction_to_camera_angle(Vector3(player.input_direction.x, 0, player.input_direction.y))
+	DebugDraw.draw_ray_3d(player.global_transform.origin, player.camera_relative_input_direction, 1, Color.WHITE)
+	DebugDraw.draw_ray_3d(player.global_transform.origin, player.forward, 1, Color.CYAN)
+	DebugDraw.draw_ray_3d(player.get_offset(Vector3(0, -0.05, 0)), player.velocity.normalized(), 1, Color.RED)
+	
+	return
 	
 	# TODO: Messy way to do this, maybe it should be based on a curve?
 	var is_slow_turn_speed = player.velocity.length() > (player.walk_speed - 1)
 	var turn_speed = 5 if is_slow_turn_speed else 10
 	
 	if player.velocity.length() < 0.1:
-		turn_speed = 20
+		turn_speed = 100
 	
 	player.face_towards(player.global_transform.origin + input_direction.normalized(), turn_speed, delta)
 	
@@ -67,8 +76,45 @@ func update(delta: float) -> void:
 	else:
 		player.animation.play("Idle")
 		player.animation.speed_scale = 1
+		
+func get_slope_percent() -> float:
+	# TODO: Combine this stuff with the `snap_to_ground` and other player floor methods.
+	var floor_hit = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
+	assert(not floor_hit.is_empty())
+	
+	var projected_velocity = Plane(floor_hit.normal).project(player.velocity).normalized()
+
+	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
+	return 1 - projected_velocity.y
 
 func physics_update(delta: float) -> void:
+	if not player.is_near_ground():
+		state_machine.transition_to("Fall", {
+			"coyote_time_enabled": true
+		})
+		return
+	
+	var facing_direction_percent = clamp(player.camera_relative_input_direction.dot(player.forward), 0, 1)
+	
+	# From: https://www.youtube.com/watch?v=qdskE8PJy6Q
+	var new_goal_velocity = player.camera_relative_input_direction * (max_speed * get_slope_percent())
+	goal_velocity = goal_velocity.move_toward(new_goal_velocity, acceleration * delta)
+	
+	var needed_acceleration: Vector3 = (goal_velocity - player.velocity) * delta
+	needed_acceleration = needed_acceleration.normalized() * clamp(needed_acceleration.length(), 0, max_acceleration_force)
+	
+
+#	velocity += needed_acceleration
+
+	player.velocity += needed_acceleration
+	
+	player.face_towards(player.get_offset(player.camera_relative_input_direction), 10, delta)
+	player.move_and_slide()
+	player.snap_to_ground()
+	player.align_model_to_floor(delta)
+
+	return
+	
 	var player_forward = -player.global_transform.basis.z
 	
 	if not player.is_near_ground():
@@ -79,21 +125,21 @@ func physics_update(delta: float) -> void:
 		})
 		return
 	
-	var floor_hit = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
-	assert(not floor_hit.is_empty())
+	var floor_hit_old = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
+	assert(not floor_hit_old.is_empty())
 	
-	var momentum_projected_on_slope = Plane(floor_hit.normal).project(momentum).normalized()
+	var momentum_projected_on_slope = Plane(floor_hit_old.normal).project(momentum).normalized()
 	
 	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
-	var slope_percent = 1 - momentum_projected_on_slope.y
+	var slope_percent_old = 1 - momentum_projected_on_slope.y
 	
-	slope_percent = clamp(slope_percent, 0.9, 2)
+	slope_percent_old = clamp(slope_percent_old, 0.9, 2)
 	
 	# This acts as the friction. When the player starts running, we want to 
 	# gain speed slowly. When the player stops, we want to loose speed quickly.
 	var momentum_lerp_speed = 8 if input_length == 0 else 2
 	
-	momentum_speed = lerp(momentum_speed, input_length * slope_percent, momentum_lerp_speed * delta)
+	momentum_speed = lerp(momentum_speed, input_length * slope_percent_old, momentum_lerp_speed * delta)
 	momentum = -player.global_transform.basis.z * player.walk_speed * momentum_speed
 	
 	player.velocity = momentum
@@ -101,7 +147,7 @@ func physics_update(delta: float) -> void:
 	player.snap_to_ground()
 	player.align_model_to_floor(delta)
 	
-	DebugDraw.draw_ray_3d(floor_hit.position, player.velocity * 0.5, 2, Color.WHITE)
+	DebugDraw.draw_ray_3d(floor_hit_old.position, player.velocity * 0.5, 2, Color.WHITE)
 	DebugDraw.set_text("input_length", input_length)
 	DebugDraw.set_text("momentum_lerp_speed", momentum_lerp_speed)
 	DebugDraw.set_text("momentum_speed", momentum_speed)
