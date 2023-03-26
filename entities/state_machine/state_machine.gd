@@ -136,7 +136,13 @@ func deferred_transition_to(state_name: String, params_callback: Callable) -> vo
 		var params = params_callback.call()
 		transition_to(state_name, params)
 	)
+
+func send_message(title: String, params: Dictionary = {}) -> void:
+	if current_parent_state:
+		current_parent_state.handle_message(title, params)
 	
+	current_state.handle_message(title, params)
+
 func get_current_state_path() -> String:
 	var path: String = ""
 	

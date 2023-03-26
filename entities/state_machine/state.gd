@@ -25,3 +25,7 @@ func physics_update(_delta: float) -> void:
 # TODO: Add ignore for unused variable
 func handle_input(_event: InputEvent) -> void:
 	pass
+
+# TODO: Add ignore for unused variable
+func handle_message(_title: String, _params: Dictionary) -> void:
+	pass

@@ -135,6 +135,7 @@ func handle_input(event: InputEvent) -> void:
 		return
 		
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
+		# TODO: Use `send_message` to send message instead of forcing states.
 		player.companion.state_machine.transition_to("Lift")
 		player.state_machine.transition_to("Held")
 		return
