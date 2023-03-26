@@ -83,6 +83,8 @@ func get_slope_percent() -> float:
 	assert(not floor_hit.is_empty())
 	
 	var projected_velocity = Plane(floor_hit.normal).project(player.velocity).normalized()
+	
+	# clamp(slope_percent_old, 0.9, 2)
 
 	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
 	return 1 - projected_velocity.y
@@ -102,9 +104,6 @@ func physics_update(delta: float) -> void:
 	
 	var needed_acceleration: Vector3 = (goal_velocity - player.velocity) * delta
 	needed_acceleration = needed_acceleration.normalized() * clamp(needed_acceleration.length(), 0, max_acceleration_force)
-	
-
-#	velocity += needed_acceleration
 
 	player.velocity += needed_acceleration
 	
@@ -114,43 +113,6 @@ func physics_update(delta: float) -> void:
 	player.align_model_to_floor(delta)
 
 	return
-	
-	var player_forward = -player.global_transform.basis.z
-	
-	if not player.is_near_ground():
-		state_machine.transition_to("Fall", {
-			"movement": player.velocity,
-			"momentum_speed": momentum_speed,
-			"coyote_time_enabled": true
-		})
-		return
-	
-	var floor_hit_old = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
-	assert(not floor_hit_old.is_empty())
-	
-	var momentum_projected_on_slope = Plane(floor_hit_old.normal).project(momentum).normalized()
-	
-	# Bigger than 1 is downhill, less than 1 is up hill and 1 is flat.
-	var slope_percent_old = 1 - momentum_projected_on_slope.y
-	
-	slope_percent_old = clamp(slope_percent_old, 0.9, 2)
-	
-	# This acts as the friction. When the player starts running, we want to 
-	# gain speed slowly. When the player stops, we want to loose speed quickly.
-	var momentum_lerp_speed = 8 if input_length == 0 else 2
-	
-	momentum_speed = lerp(momentum_speed, input_length * slope_percent_old, momentum_lerp_speed * delta)
-	momentum = -player.global_transform.basis.z * player.walk_speed * momentum_speed
-	
-	player.velocity = momentum
-	player.move_and_slide()
-	player.snap_to_ground()
-	player.align_model_to_floor(delta)
-	
-	DebugDraw.draw_ray_3d(floor_hit_old.position, player.velocity * 0.5, 2, Color.WHITE)
-	DebugDraw.set_text("input_length", input_length)
-	DebugDraw.set_text("momentum_lerp_speed", momentum_lerp_speed)
-	DebugDraw.set_text("momentum_speed", momentum_speed)
 
 	if player.companion:
 		var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)
