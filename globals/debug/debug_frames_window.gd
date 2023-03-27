@@ -6,6 +6,8 @@ extends Window
 @onready var record_button: Button = %RecordButton
 @onready var reset_button: Button = %ResetButton
 @onready var play_button: Button = %PlayButton
+@onready var graph_panels: VBoxContainer = %GraphPanels
+@onready var graph_panel: Panel = %Panel
 
 var is_playing: bool = false
 var current_frame: int = 0
@@ -32,36 +34,62 @@ func _process(_delta: float) -> void:
 	if is_playing:
 		frame_slider.value += 1
 
-func render_sub_tree(target_tree: Tree, target_parent: TreeItem, dictionary: Dictionary) -> void:
-	for key in dictionary:
-		if key == "title":
+func set_item_title_and_meta(item: TreeItem, key: String, value: Variant, path: String) -> void:
+	item.set_text(0, str(key))
+	
+	if typeof(value) != TYPE_ARRAY and typeof(value) != TYPE_DICTIONARY:
+		item.set_text(1, str(value))
+	
+	item.set_metadata(0, path)
+	item.set_metadata(1, value)
+	
+	item.set_tooltip_text(0, path)
+
+func render_sub_tree(target_tree: Tree, parent_item: TreeItem, data: Dictionary) -> void:
+	for key in data:
+		if key == DebugFrames.TITLE_KEY:
 			continue
 			
-		var value = dictionary[key]
+		assert(parent_item.get_metadata(0) != null, "Item path cannot be null")
 		
-		if typeof(value) == TYPE_DICTIONARY:
-			var sub_item = target_tree.create_item(target_parent)
-			
-			sub_item.set_text(0, str(key))
-			render_sub_tree(target_tree, sub_item, value)
-			continue
+		var path = str(parent_item.get_metadata(0)) + "." + key.to_snake_case()
+		var value = data[key]
 		
-		if typeof(value) == TYPE_VECTOR3:
-			var sub_item = target_tree.create_item(target_parent)
-			
-			sub_item.set_text(0, str(key))
-			sub_item.set_text(1, str(value))
-			sub_item.set_metadata(1, value)
-			continue
-			
 		if typeof(value) == TYPE_CALLABLE:
 			current_frame_callables.append(value)
 			continue
 		
-		var sub_item = target_tree.create_item(target_parent)
-		sub_item.set_text(0, str(key))
-		sub_item.set_text(1, str(value))
-		sub_item.set_metadata(1, value)
+		if typeof(value) == TYPE_ARRAY:
+			var sub_item = target_tree.create_item(parent_item)
+			set_item_title_and_meta(sub_item, key, value, path)
+			
+			if value.is_empty():
+				var empty_item = target_tree.create_item(sub_item)
+				empty_item.set_text(0, "<empty>")
+			else:
+				var dictionary_from_array = {}
+				
+				for index in value.size():
+					dictionary_from_array[str(index)] = value[index]
+					
+				render_sub_tree(target_tree, sub_item, dictionary_from_array)
+				
+			continue
+		
+		if typeof(value) == TYPE_DICTIONARY:
+			var sub_item = target_tree.create_item(parent_item)
+			set_item_title_and_meta(sub_item, key, value, path)
+			
+			if value.is_empty():
+				var empty_item = target_tree.create_item(sub_item)
+				empty_item.set_text(0, "<empty>")
+			else:
+				render_sub_tree(target_tree, sub_item, value)
+				
+			continue
+		
+		var sub_item = target_tree.create_item(parent_item)
+		set_item_title_and_meta(sub_item, key, value, path)
 
 func render() -> void:
 	play_button.disabled = DebugFrames.is_recording
@@ -84,8 +112,10 @@ func render() -> void:
 	
 	for frame in frames:
 		var item = tree.create_item(root)
+		var key = frame.get(DebugFrames.TITLE_KEY, "<untitled>")
+		var path = key.to_snake_case()
 		
-		item.set_text(0, frame.get("title", "<untitled>"))
+		set_item_title_and_meta(item, key, "", path)
 		render_sub_tree(tree, item, frame)
 		
 	tree.scroll_to_item(root)
@@ -117,8 +147,7 @@ func _on_recording_toggle_toggled(button_pressed: bool) -> void:
 	render()
 
 func _on_reset_button_up() -> void:
-	DebugFrames.frames = {}
-	DebugFrames.frame_count = 0
+	DebugFrames.reset()
 	render()
 	
 func _on_play_button_up() -> void:

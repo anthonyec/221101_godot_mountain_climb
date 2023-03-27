@@ -1,20 +1,19 @@
 extends Node
 
+const TITLE_KEY = "_title"
+
 signal resized(min: int, max: int)
 signal added()
 
 @export var max_recording_size: int = 1024
+@export var is_recording: bool = true
 
-var is_recording: bool = true
-var frame_count: int = 0
 var frames: Dictionary = {}
 
-func _process(_delta: float) -> void:
-	if not is_recording:
-		return
-		
-	frame_count += 1
-	
+func _ready() -> void:
+	added.connect(_on_data_added)
+
+func _on_data_added() -> void:
 	var frame_keys = frames.keys()
 	
 	if frame_keys.size() > max_recording_size:
@@ -27,9 +26,35 @@ func _process(_delta: float) -> void:
 func add(data: Dictionary) -> void:
 	if not is_recording:
 		return
+		
+	var count = Engine.get_frames_drawn()
 	
-	if not frames.has(frame_count):
-		frames[frame_count] = []
+	if not frames.has(count):
+		frames[count] = []
 	
-	frames[frame_count].append(data)
+	frames[count].append(data)
 	added.emit()
+	
+func record(title: String, data: Dictionary = {}) -> void:
+	if not is_recording:
+		return
+		
+	var count = Engine.get_frames_drawn()
+	
+	if not frames.has(count):
+		frames[count] = []
+	
+	data[TITLE_KEY] = title
+	
+	frames[count].append(data)
+	added.emit()
+	
+func get_all() -> Array[Dictionary]:
+	var keys = frames.keys()
+	
+	return keys.map(func(key):
+		return frames[key]
+	)
+
+func reset() -> void:
+	frames = {}
