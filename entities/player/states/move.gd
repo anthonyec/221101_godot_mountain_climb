@@ -2,16 +2,14 @@ extends PlayerState
 
 const WORLD_COLLISION_MASK: int = 1
 
-var max_speed: float = 5
-var acceleration: float = 200
-var max_acceleration_force: float = 150
-
-var goal_velocity: Vector3
+var speed_percent: float = 0 
+var max_speed: float = 6
+var acceleration: float = 60
+var deceleration: float = 60
 
 var input_direction: Vector3 = Vector3.ZERO
 var momentum: Vector3 = Vector3.ZERO
 var momentum_speed: float = 0
-var input_length: float = 0
 var is_ready_to_lift_companion: bool = false
 
 func enter(params: Dictionary) -> void:
@@ -44,39 +42,16 @@ func exit() -> void:
 	player.animation.speed_scale = 1
 	player.reset_model_alignment()
 	
-	input_length = 0
 	input_direction = Vector3.ZERO
 	momentum = Vector3.ZERO
 	momentum_speed = 0
 
 func update(delta: float) -> void:
+	return
 	DebugDraw.draw_ray_3d(player.global_transform.origin, player.camera_relative_input_direction, 1, Color.WHITE)
 	DebugDraw.draw_ray_3d(player.global_transform.origin, player.forward, 1, Color.CYAN)
 	DebugDraw.draw_ray_3d(player.get_offset(Vector3(0, -0.05, 0)), player.velocity.normalized(), 1, Color.RED)
-	
-	return
-	
-	# TODO: Messy way to do this, maybe it should be based on a curve?
-	var is_slow_turn_speed = player.velocity.length() > (player.walk_speed - 1)
-	var turn_speed = 5 if is_slow_turn_speed else 10
-	
-	if player.velocity.length() < 0.1:
-		turn_speed = 100
-	
-	player.face_towards(player.global_transform.origin + input_direction.normalized(), turn_speed, delta)
-	
-	if input_direction.length() == 0:
-		input_length = 0
-	else:
-		input_length = remap(input_direction.length(), 0, 1, 0.2, 1)
-	
-	if player.velocity.length() > 0.2:
-		player.animation.play("Run")
-		player.animation.speed_scale = player.velocity.length() / player.walk_speed
-	else:
-		player.animation.play("Idle")
-		player.animation.speed_scale = 1
-		
+
 func get_slope_percent() -> float:
 	# TODO: Combine this stuff with the `snap_to_ground` and other player floor methods.
 	var floor_hit = Raycast.cast_in_direction(player.global_transform.origin, Vector3.DOWN, player.height, player.WORLD_COLLISION_MASK)
@@ -90,6 +65,8 @@ func get_slope_percent() -> float:
 	return 1 - projected_velocity.y
 
 func physics_update(delta: float) -> void:
+	DebugGraph.plot(str(player.player_number) + "_player.velocity", player.velocity.length())
+	
 	if not player.is_near_ground():
 		state_machine.transition_to("Fall", {
 			"coyote_time_enabled": true
@@ -98,21 +75,41 @@ func physics_update(delta: float) -> void:
 	
 	var facing_direction_percent = clamp(player.camera_relative_input_direction.dot(player.forward), 0, 1)
 	
-	# From: https://www.youtube.com/watch?v=qdskE8PJy6Q
-	var new_goal_velocity = player.camera_relative_input_direction * (max_speed * get_slope_percent())
-	goal_velocity = goal_velocity.move_toward(new_goal_velocity, acceleration * delta)
+	var input_length: float = player.camera_relative_input_direction.length()	
+	input_length = clamp(input_length, 0.5, 1) if input_length > 0.1 else 0
 	
-	var needed_acceleration: Vector3 = (goal_velocity - player.velocity) * delta
-	needed_acceleration = needed_acceleration.normalized() * clamp(needed_acceleration.length(), 0, max_acceleration_force)
+	var is_input_length_zero: float = is_zero_approx(input_length)
+	var velocity_change_speed: float = deceleration if is_input_length_zero else acceleration
+	
+	var speed_toward_speed: float = 30 if is_input_length_zero else 1.5
 
-	player.velocity += needed_acceleration
+	var unit_forward_velocity: Vector3 = player.velocity.normalized() * (player.velocity.length() / max_speed)
+	var forward_speed_percent: float = unit_forward_velocity.dot(player.forward)	
+	DebugDraw.set_text("forward_speed_percent", forward_speed_percent)
+	
+	speed_percent = move_toward(speed_percent, input_length, speed_toward_speed * delta)
+	
+	DebugGraph.plot(str(player.player_number) + "_speed_percent", speed_percent)
+	DebugDraw.set_text("speed_percent", speed_percent)
+	
+	var target_velocity = player.forward * max_speed * input_length
+	
+	player.velocity = player.velocity.move_toward(
+		target_velocity, 
+		velocity_change_speed * delta
+	)
+	
+	if player.input_direction.length() > 0.2:
+		player.animation.play("Run")
+		player.animation.speed_scale = input_length
+	else:
+		player.animation.play("Idle")
+		player.animation.speed_scale = 1
 	
 	player.face_towards(player.get_offset(player.camera_relative_input_direction), 10, delta)
 	player.move_and_slide()
 	player.snap_to_ground()
 	player.align_model_to_floor(delta)
-
-	return
 
 	if player.companion:
 		var distance_to_companion = player.global_transform.origin.distance_to(player.companion.global_transform.origin)

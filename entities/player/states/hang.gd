@@ -29,7 +29,7 @@ func update(_delta: float) -> void:
 		return
 
 func physics_update(delta: float) -> void:
-	DebugFrames.add({"title": "Hang physics_update", "ledge": player.ledge})
+	DebugFrames.record("Hang physics_update", { "ledge": player.ledge })
 	var direction = player.transform_direction_to_camera_angle(
 		Vector3(player.input_direction.x, 0, player.input_direction.y)
 	)

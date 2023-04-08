@@ -7,7 +7,9 @@ extends Window
 @onready var reset_button: Button = %ResetButton
 @onready var play_button: Button = %PlayButton
 @onready var graph_panels: VBoxContainer = %GraphPanels
-@onready var graph_panel: Panel = %Panel
+@onready var graph_panel: Panel = %GraphPanel
+@onready var window: Window = %Window
+@onready var pause_graphs_button: Button = $MarginContainer/TabContainer/Graphs/MenuBar/PauseGraphsButton
 
 var is_playing: bool = false
 var current_frame: int = 0
@@ -21,9 +23,11 @@ func _ready() -> void:
 	reset_button.connect("button_up", _on_reset_button_up)
 	record_button.connect("toggled", _on_recording_toggle_toggled)
 	play_button.connect("button_up", _on_play_button_up)
+	pause_graphs_button.connect("button_up", _on_pause_graph_button_up)
 	
 	DebugFrames.connect("resized", frames_resized)
 	DebugFrames.connect("added", frames_added)
+	DebugGraph.connect("added", _on_graph_added)
 	
 	frames_resized(min_frame, max_frame)
 	
@@ -154,5 +158,14 @@ func _on_play_button_up() -> void:
 	is_playing = !is_playing
 	render()
 
-func _on_search_text_changed(new_text: String) -> void:
-	print(new_text)
+func _on_pause_graph_button_up() -> void:
+	DebugGraph.is_recording = !DebugGraph.is_recording
+
+func _on_graph_added(graph_name) -> void:
+	var panel_resource = preload("res://globals/debug/graph_panel.tscn")
+	var panel: GraphPanel = panel_resource.instantiate() as GraphPanel
+	var color: Color = [Color.WHITE, Color.DEEP_PINK, Color.GREEN].pick_random()
+	
+	graph_panels.add_child(panel)
+	panel.graph_name = graph_name
+	panel.color = color

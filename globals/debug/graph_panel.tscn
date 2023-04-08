@@ -1,0 +1,25 @@
+[gd_scene load_steps=2 format=3 uid="uid://dysehqqaewhcp"]
+
+[ext_resource type="Script" path="res://globals/debug/graph_panel.gd" id="1_xpdt8"]
+
+[node name="GraphPanel" type="Panel"]
+custom_minimum_size = Vector2(2.08165e-12, 100)
+size_flags_horizontal = 3
+script = ExtResource("1_xpdt8")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_left = 10.0
+offset_top = 5.0
+offset_right = 57.0
+offset_bottom = 61.0
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Name"
+
+[node name="ValueLabel" type="Label" parent="VBoxContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Value"

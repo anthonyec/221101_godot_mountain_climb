@@ -72,20 +72,16 @@ func debug_draw_vector(player_transform: Transform3D, direction: Vector3, color:
 	DebugDraw.draw_ray_3d(player_transform.origin, direction, 1, color)
 
 func _on_state_entered(state: State, params: Dictionary) -> void:
-	DebugFrames.add({
-		"title": state.name + " enter",
+	DebugFrames.record(state.name + " enter", {
 		"params": params,
-		"node_properties": get_state_properties(state)
+		"node_properties": get_state_properties(state),
 	})
 	
 func _on_state_exited(state: State) -> void:
-	DebugFrames.add({
-		"title": state.name + " exit"
-	})
+	DebugFrames.record(state.name + " exit")
 
 func _on_state_updated(state: State) -> void:
-	DebugFrames.add({
-		"title": state.name + " update",
+	DebugFrames.record(state.name + " update", {
 		"node_properties": get_state_properties(state),
 		"draw_transform": draw_transform.bind(global_transform),
 		"draw_input_direction": debug_draw_vector.bind(
@@ -106,26 +102,20 @@ func _on_state_updated(state: State) -> void:
 	})
 	
 func _on_state_physics_updated(state: State) -> void:
-	DebugFrames.add({
-		"title": state.name + " physics_update",
+	DebugFrames.record(state.name + " physics_update", {
 		"node_properties": get_state_properties(state)
 	})
 	
 func _on_state_inputed(state: State) -> void:
-	DebugFrames.add({
-		"title": state.name + " input"
-	})
+	DebugFrames.record(state.name + " input")
 	
 func _on_state_transition_requested(state_name: String, params: Dictionary) -> void:
-	DebugFrames.add({
-		"title": "[transition_to] " + state_name,
+	DebugFrames.record("[transition_to] " + state_name, {
 		"params": params,
 	})
 	
 func _on_state_deferred_transition_requested(state_name: String, _params_callback: Callable) -> void:
-	DebugFrames.add({
-		"title": "[deferred_transition_to] " + state_name
-	})
+	DebugFrames.record("[deferred_transition_to] " + state_name)
 
 func _ready() -> void:
 	if player_number == 2:
