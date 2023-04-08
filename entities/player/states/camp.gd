@@ -23,8 +23,8 @@ func enter(_params: Dictionary) -> void:
 	
 	# TODO: This should probably not clear the wood, but instead subtract the right
 	# amount. Maybe burning extra wood though gets benefits?
-	player.companion.inventory.clear_item("wood")
-	player.inventory.clear_item("wood")
+	player.companion.inventory.remove_item("wood")
+	player.inventory.remove_item("wood")
 
 func exit() -> void:
 	main_camera.make_current()

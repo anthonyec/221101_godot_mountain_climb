@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://cxqdpc8g3lot8"]
+[gd_scene load_steps=33 format=3 uid="uid://cxqdpc8g3lot8"]
 
 [ext_resource type="Script" path="res://entities/player/player.gd" id="1_os0ed"]
 [ext_resource type="PackedScene" uid="uid://bieqc1wwcclta" path="res://entities/stamina/stamina.tscn" id="2_pxhhj"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://entities/player/states/vault.gd" id="11_avnck"]
 [ext_resource type="Script" path="res://entities/player/states/pickup.gd" id="12_lvry5"]
 [ext_resource type="Script" path="res://entities/player/states/camp.gd" id="13_yrp36"]
+[ext_resource type="Script" path="res://entities/player/states/drop.gd" id="14_5sybq"]
 [ext_resource type="Script" path="res://entities/player/states/held.gd" id="14_73klr"]
 [ext_resource type="Script" path="res://entities/player/states/lift.gd" id="15_7bnln"]
 [ext_resource type="Script" path="res://entities/player/states/swing.gd" id="16_mc18k"]
@@ -81,6 +82,9 @@ script = ExtResource("11_avnck")
 
 [node name="Pickup" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("12_lvry5")
+
+[node name="Drop" parent="StateMachine" instance=ExtResource("6_jtsi6")]
+script = ExtResource("14_5sybq")
 
 [node name="Camp" parent="StateMachine" instance=ExtResource("6_jtsi6")]
 script = ExtResource("13_yrp36")

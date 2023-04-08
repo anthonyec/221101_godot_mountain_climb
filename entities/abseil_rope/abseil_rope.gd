@@ -20,6 +20,10 @@ func _process(_delta: float) -> void:
 		end.global_transform.origin = grabbed_by.global_transform.origin
 	else:
 		(end.get_node("CollisionShape3D") as CollisionShape3D).disabled = false
+		
+func pick_up(inventory: Inventory):
+	inventory.add_item("abseil_rope")
+	queue_free()
 
 func throw() -> void:
 	var force_forward = -host.global_transform.basis.z * 7

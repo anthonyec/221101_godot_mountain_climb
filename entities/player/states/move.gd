@@ -135,8 +135,8 @@ func physics_update(delta: float) -> void:
 		return
 	
 func handle_input(event: InputEvent) -> void:
-	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")):
-		state_machine.transition_to("Belay")
+	if event.is_action_pressed(player.get_action_name("start_hosting_abseil")) and player.inventory.has_item("abseil_rope"):
+		state_machine.transition_to("Drop")
 		return
 		
 	if event.is_action_pressed(player.get_action_name("jump")) and is_ready_to_lift_companion:
@@ -168,6 +168,11 @@ func handle_input(event: InputEvent) -> void:
 		for abseil_rope in abseil_ropes:
 			# TODO: Abstract get nearest stuff away into AbseilRope.
 			var rope = abseil_rope as AbseilRope
+			
+			if abseil_rope.global_transform.origin.distance_to(player.global_transform.origin) < 0.5:
+				state_machine.transition_to("Pickup", { "item": rope })
+				return
+			
 			var nearest_position = rope.get_nearest_position_to(player.global_transform.origin)
 			
 			if nearest_position.distance_to(player.global_transform.origin) < 1.5:

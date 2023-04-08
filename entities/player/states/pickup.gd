@@ -13,8 +13,7 @@ func enter(params: Dictionary) -> void:
 			push_warning("Item pick does not have `pick_up` method")
 			return
 
-		item.pick_up()
-		player.inventory.add_item("wood")
+		item.pick_up(player.inventory)
 		
 	state_machine.transition_to("Move")
 	return

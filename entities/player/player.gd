@@ -118,6 +118,8 @@ func _on_state_deferred_transition_requested(state_name: String, _params_callbac
 	DebugFrames.record("[deferred_transition_to] " + state_name)
 
 func _ready() -> void:
+	inventory.add_item("abseil_rope")
+	
 	if player_number == 2:
 		state_machine.connect("state_transition_requested", _on_state_transition_requested)
 		state_machine.connect("state_deferred_transition_requested", _on_state_deferred_transition_requested)
@@ -133,7 +135,7 @@ func _process(_delta: float) -> void:
 	
 	DebugDraw.set_text("player " + str(player_number))
 	DebugDraw.set_text("player " + str(player_number) + " speed", velocity.length())
-#	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
+	DebugDraw.set_text("player " + str(player_number) + " state", state_machine.get_current_state_path())
 #	DebugDraw.set_text("player " + str(player_number) + " animation", animation.current_animation)
 #	DebugDraw.set_text("player " + str(player_number) + " woods", inventory.items.get("wood", 0))
 #	DebugDraw.set_text("player " + str(player_number) + " input", InputType.keys()[input_type])
